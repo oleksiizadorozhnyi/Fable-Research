@@ -1,0 +1,14 @@
+[
+ {
+  "name": "mixed_conv0.7_PW80_edgeonly",
+  "F": 11,
+  "nB": 6,
+  "nD": 6,
+  "shor": 0.8691145397832888,
+  "best_single": 0.9568466316067533,
+  "lasserre2": 0.9552408714569133,
+  "status": "optimal_inaccurate",
+  "time": 288.3169403076172,
+  "M2": 91
+ }
+]

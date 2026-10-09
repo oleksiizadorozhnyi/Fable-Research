@@ -139,7 +139,11 @@ Lasserre-2 single-mask bound coincides with the best single mask found (to 1e-6)
 7.8%, 12.5%, 13.0% and 16.2% are certified, each with a rank-2 optimal face (two exposures). Lasserre-2 values were
 cross-checked with two solvers (CLARABEL 0.4787045 vs SCS 0.4787037 on the mixed target). One random instance
 (trial 16) has a certified bound ≈ 1e-7 (the dark region can be made essentially perfectly dark), for which the relative
-gap is ill-defined; its absolute gap is 9e-4. [[pending: process-window case, exp11b]]
+gap is ill-defined; its absolute gap is 9e-4. For the three-focus (±80 nm) mixed-width target under σ = 0.7 illumination (F = 11, 12 edge-offset constraints per
+focus; the bound 0.86911 with edge points only equals the bound with all interior points, confirming that interior
+constraints are inactive), the Lasserre-2 single-mask bound is 0.9552 (best single mask found 0.9568) against the
+multi-exposure bound 0.8691: a certified ≥ 9.9% ratio gain from incoherent multi-exposure across the focus window,
+i.e. a certified process-window benefit of multiple exposure.
 6.5 **PSM vs binary (Table 3).** DNN relaxation for nonnegative masks: iso-dense 0.4266 vs PSM 0.3879 (binary ≥ 10%
 worse, certified); pixel-domain and Fourier-domain PSM relaxations agree to 1e-5.
 6.6 **Standard ILT vs certified optimum (Table 3b).** Pattern-error ILT (sigmoid resist, open-frame-normalized
