@@ -19,6 +19,7 @@
 |---|---|---|---|---|---|---|
 | mixed_coh | 7 | 0.6235 | 0.6408 | 0.6408 | 2.78% | optimal_inaccurate |
 | isodense_coh | 9 | 0.5645 | 0.5738 | 0.5738 | 1.63% | optimal_inaccurate |
+| mixed_conv0.7_PW80_edgeonly | 11 | 0.8691 | 0.9552 | 0.9568 | 9.91% | optimal_inaccurate |
 
 ### Random 1D targets (n=109): gap ≤1e-4: 69.7%; ≤1%: 82.6%; ≤5%: 91.7%; median 1.8e-06; max 0.173; worst certificate min-eig 1.3e-19
 
@@ -79,6 +80,17 @@ Theorem 4 numerics: necessity violations 0/2000; sufficiency failures 0/200.
 | contacts120_quasar | [120, 120] | 20 | 9 | 216 | 0.5740 | 0.271 | 0.5747 | 0.13% | 1 | 0.3 |
 | contacts100_quasar | [100, 100] | 20 | 5 | 197 | 0.8751 | 0.067 | 0.8754 | 0.03% | 1 | 0.2 |
 | Tjunction320_annular | [320, 320] | 28 | 61 | 1210 | 0.0000 | 1.000 | 0.4789 | 47889002351532.03% | 6 | 142.7 |
+| Tjunction320_quasar | [320, 320] | 20 | 61 | 1210 | 0.0000 | 1.000 | 0.4444 | 44443415016828.16% | 3 | 104.6 |
+| lineend320_annular | [320, 320] | 28 | 61 | 1189 | 0.0000 | 1.000 | 0.5328 | 53282795773005.17% | 6 | 204.3 |
+
+### Outlier / process-window re-examination (strong primal search, face exploration, Lasserre-2 where F≤11)
+| case | F | bound | old best | new best | new gap | min face rank | Lasserre-2 | status |
+|---|---|---|---|---|---|---|---|---|
+| trial16 | 13 | 0.0000 | 0.0009 | 0.0009 | 3564.26% | 4 | None | skipped(F>11) |
+| trial82 | 5 | 0.2675 | 0.3023 | 0.3023 | 13.01% | 2 | 0.30229613422788243 | optimal_inaccurate |
+| trial91 | 5 | 0.5314 | 0.6176 | 0.6176 | 16.21% | 2 | 0.6176092396629675 | optimal_inaccurate |
+| trial110 | 5 | 0.2155 | 0.2424 | 0.2424 | 12.49% | 2 | 0.2423820972285146 | optimal_inaccurate |
+| trial50 | 5 | 0.2479 | 0.2674 | 0.2674 | 7.85% | 2 | 0.2673924261747016 | optimal_inaccurate |
 
 ### Table 7 — Baseline Rayleigh-quotient bound vs SDP; complex-transmission masks
 | case | source | F | SDP real-mask bound | Rayleigh-quotient bound | SDP complex-mask bound |

@@ -601,3 +601,31 @@ def build_2d(L, lam, NA, src, target_fn, margin, spacing=10.0, fine=1.0, focus=(
     s, w = src; x, B, D, tgt, sd = samples_2d(L, target_fn, margin, spacing, fine=fine)
     md = Model(L, lam, NA, s, w, nx=None, focus=focus, dim=2, xs=x)
     return md, B, D, tgt
+
+# ----------------------------------------------------------------------------- rigorous certificate (null-space aware; overrides)
+def rigorize_certificate(model, mu, lamb, safety=1e-10, null_tol=1e-9):
+    """Largest c<=1 with S_c = SD - c*SB PSD (SD = sum mu Q_d / sum mu, SB = sum lam Q_b / sum mu), verified by an
+       eigenvalue test with a relative safety margin on the orthogonal complement of the near-null space N of SD
+       (eigenvalues < null_tol*||SD||). On N both SD and SB must vanish (reported residual resid_null = ||P_N SB P_N||/||SB||;
+       a valid certificate has resid_null ~ 0 up to solver tolerance). Returns (bound, min_eig_on_complement, c)."""
+    F = model.F
+    SD = np.zeros((F, F), complex); smu = 0.0
+    for (z, ix), v in mu.items(): SD += v * model.Q(ix, z); smu += v
+    SB = np.zeros((F, F), complex); slam = 0.0
+    for (z, ix), v in lamb.items(): SB += v * model.Q(ix, z); slam += v
+    SD /= smu; SB /= smu; slam /= smu
+    SD = 0.5*(SD+SD.conj().T); SB = 0.5*(SB+SB.conj().T)
+    w, V = np.linalg.eigh(SD); nD = np.linalg.norm(SD, 2)
+    keep = w > null_tol*nD; Vk = V[:, keep]; Vn = V[:, ~keep]
+    resid_null = (np.linalg.norm(Vn.conj().T @ SB @ Vn, 2)/max(np.linalg.norm(SB, 2), 1e-300)) if Vn.shape[1] else 0.0
+    rigorize_certificate.last_resid_null = float(resid_null); rigorize_certificate.last_null_dim = int(Vn.shape[1])
+    def mineig(c):
+        S = Vk.conj().T @ (SD - c*SB) @ Vk; S = 0.5*(S+S.conj().T)
+        return np.linalg.eigvalsh(S).min() - safety*np.linalg.norm(S, 2)
+    if mineig(1.0) >= 0: return slam, mineig(1.0), 1.0
+    lo, hi = 0.0, 1.0
+    for _ in range(60):
+        mid = 0.5*(lo+hi)
+        if mineig(mid) >= 0: lo = mid
+        else: hi = mid
+    return lo*slam, mineig(lo), lo

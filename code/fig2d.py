@@ -20,8 +20,9 @@ if any(r['name'] == name for r in e4):
     ax[1].imshow(mask.T, origin='lower', extent=[0,320,0,320], cmap='RdBu'); ax[1].set_title('best bandlimited mask (PSM)')
     im = ax[2].imshow(I.T, origin='lower', extent=[0,320,0,320], cmap='magma'); ax[2].contour(gx, gy, I, levels=[1.0], colors='c'); plt.colorbar(im, ax=ax[2]); ax[2].set_title('image / min bright; cyan: I=1')
     mu = np.zeros(md.nx); la = np.zeros(md.nx)
-    for k, v in dual['mu'].items(): mu[int(k.split(',')[1].strip(' )'))] += v
-    for k, v in dual['lam'].items(): la[int(k.split(',')[1].strip(' )'))] += v
+    import re
+    for k, v in dual['mu'].items(): mu[int(re.findall(r'\d+', k)[-1])] += v
+    for k, v in dual['lam'].items(): la[int(re.findall(r'\d+', k)[-1])] += v
     ax[3].scatter(md.x[D,0], md.x[D,1], c=mu[D]/mu.sum(), s=12, cmap='Reds', label='mu (dark)'); ax[3].scatter(md.x[B,0], md.x[B,1], c=la[B]/mu.sum(), s=12, cmap='Greens', marker='s', label='lambda (bright)')
     ax[3].set_xlim(0,320); ax[3].set_ylim(0,320); ax[3].set_aspect('equal'); ax[3].set_title('certificate weights'); ax[3].legend(fontsize=7)
     rec = [r for r in e4 if r['name'] == name][0]

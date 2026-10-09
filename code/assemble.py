@@ -42,8 +42,8 @@ if e8:
     m = e8['mp_check']; md.append(f"- 50-digit certificate check: Cholesky success={m['cholesky_success']}, min eig={m['mineig_mp50']:.2e}, bound={m['bound']:.6f}")
 e4 = load('exp4_2d.json')
 if e4:
-    md.append("\n### Table 6 — 2D layouts (DUV, NA 1.35), edge tolerance 12 nm (contacts120/100: 10/8 nm; T/line-end: 14 nm)\n| layout | cell (nm) | source pts | F | samples | bound ρ | max EL | best single mask ρ | gap | rank | SDP time (s) |\n|---|---|---|---|---|---|---|---|---|---|---|")
-    for r in e4: md.append(f"| {r['name']} | {r['L']} | {r['nsrc']} | {r['F']} | {r['nB']+r['nD']} | {r['rigorous']:.4f} | {r['EL_bound']:.3f} | {r['best_feasible']:.4f} | {r['gap_rel']:.2%} | {r['rank']} | {r['sdp_time']:.1f} |")
+    md.append("\n### Table 6 — 2D layouts (DUV, NA 1.35), edge tolerance 12 nm (contacts120/100: 10/8 nm; T/line-end: 14 nm)\n| layout | cell (nm) | source pts | F | samples | bound ρ | max EL | best single mask ρ | gap | rank | cert. null dim | SDP time (s) |\n|---|---|---|---|---|---|---|---|---|---|---|---|")
+    for r in e4: md.append(f"| {r['name']} | {r['L']} | {r['nsrc']} | {r['F']} | {r['nB']+r['nD']} | {r['rigorous']:.4f} | {r['EL_bound']:.3f} | {r['best_feasible']:.4f} | {r['gap_rel']:.2%} | {r['rank']} | {r.get('cert_null_dim', 0)} | {r['sdp_time']:.1f} |")
 e9 = load('exp9_outlier_pw.json')
 if e9:
     md.append("\n### Outlier / process-window re-examination (strong primal search, face exploration, Lasserre-2 where F≤11)\n| case | F | bound | old best | new best | new gap | min face rank | Lasserre-2 | status |\n|---|---|---|---|---|---|---|---|---|")

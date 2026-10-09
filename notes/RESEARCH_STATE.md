@@ -51,3 +51,8 @@ Next: finish 2D battery; figures; paper draft; adversarial review (sampling, thi
   (0.46907 for spacing 16..1 nm) and monotone in margin. ALL 1D experiments rerun (run_all_1d.sh). Pre-fix numbers
   in this file above are superseded.
 - ILT baseline threshold changed from adaptive midpoint to fixed 0.4 of max normalized intensity (standard).
+- 2026-10-09 ~23:20: Rigorization returned bound 0 on the three 320-nm 2D layouts (F=61). Cause: the weighted dark
+  matrix SD has an exact null space (4 orders invisible to all constraints), so a strict eigenvalue margin can never be
+  met; the bisection collapsed to c=0 although the SDP value (0.4387) was solver-consistent (CLARABEL/SCS agree 1e-7).
+  FIX: null-space-aware rigorization: verify PSD with margin on the complement of the near-null space of SD and report
+  the residual of SB on that space (1e-31 here). 1D results unaffected (null dim 0). Certificates recomputed.
