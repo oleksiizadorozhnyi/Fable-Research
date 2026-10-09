@@ -1,0 +1,42 @@
+import sys, json, numpy as np, time; sys.path.insert(0, '/home/user/Fable-Research/code')
+import warnings; warnings.filterwarnings('ignore')
+from certlitho import *
+
+def analyze(md, B, D, nround=300, nstart=10, iters=400, polish=True, save_prefix=None):
+    """Full pipeline on a Model: certified bound (rigorous), rank, rounding, local refine, multistart, SLSQP polish."""
+    rm = RealModel(md)
+    t0 = time.time(); r = sdp_bound_real(rm, B, D); t_sdp = time.time() - t0
+    rig, mineig, c = rigorize_certificate(rm, r['mu'], r['lam'])
+    rr, rv = round_from_Y(rm, r['X'], B, D, nsamp=nround)
+    rl, rvl = local_refine_real(rm, rv, B, D, iters=iters)
+    rmv, rvm = multistart_local_real(rm, B, D, nstart=nstart, iters=iters)
+    cands = [(rl, rvl), (rmv, rvm)]
+    if polish:
+        for v, x in list(cands):
+            try:
+                vp, xp = exact_minimax_polish(rm, x, B, D)
+                if np.isfinite(vp): cands.append((vp, xp))
+            except Exception as e: pass
+    best, rbest = min(cands, key=lambda z: z[0])
+    rec = dict(F=rm.F, nB=int(len(B)), nD=int(len(D)), focus=list(md.focus), status=r['status'], solver=r['solver'], t_sdp=r['t'],
+               rigorous=rig, cert_mineig=float(mineig), cert_scale=float(c), rank=r['rank_eps'],
+               eig_top=[float(e) for e in r['eig'][:5]], rounded=rr, round_refined=rl, multistart=rmv, best_feasible=best,
+               gap_rel=(best - rig) / max(rig, 1e-12), EL_bound=(1 - rig) / (1 + rig), EL_best=(1 - best) / (1 + best),
+               sdp_time=t_sdp, total_time=time.time() - t0)
+    if save_prefix:
+        np.save(save_prefix + '_Y.npy', r['X']); np.save(save_prefix + '_rbest.npy', rbest)
+        json.dump(dict(mu={str(k): v for k, v in r['mu'].items()}, lam={str(k): v for k, v in r['lam'].items()}), open(save_prefix + '_dual.json', 'w'))
+    return rec, rm, r, rbest
+
+def sets_2d(md, tf, margin):
+    pts = md.x; tgt = np.array([tf(a, b) for a, b in pts]); Lx, Ly = md.L
+    nx = int(round(np.sqrt(md.nx)))
+    def nbrs(i):
+        a, b = divmod(i, nx); return [((a+1)%nx)*nx+b, ((a-1)%nx)*nx+b, a*nx+(b+1)%nx, a*nx+(b-1)%nx]
+    bnd = np.array([pts[i] for i in range(len(pts)) if any(tgt[i] != tgt[j] for j in nbrs(i))]).reshape(-1, 2)
+    def dist(p):
+        if len(bnd) == 0: return np.inf
+        d = bnd - p; d[:, 0] = (d[:, 0] + Lx/2) % Lx - Lx/2; d[:, 1] = (d[:, 1] + Ly/2) % Ly - Ly/2
+        return np.min(np.hypot(d[:, 0], d[:, 1]))
+    dd = np.array([dist(p) for p in pts])
+    return np.where(tgt & (dd >= margin))[0], np.where(~tgt & (dd >= margin))[0], tgt

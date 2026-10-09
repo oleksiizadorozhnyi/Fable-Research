@@ -1,0 +1,26 @@
+[
+ {
+  "name": "mixed_coh",
+  "F": 7,
+  "shor_bound": 0.6234718988993423,
+  "rigorous_shor": 0.6234505083938587,
+  "lasserre2_bound": 0.6407829950222036,
+  "lasserre_status": "optimal_inaccurate",
+  "lasserre_time": 86.51737761497498,
+  "M2_size": 45,
+  "best_single_mask": 0.6407599187537324,
+  "multi_exposure_gain_certified": 0.027800902228786423
+ },
+ {
+  "name": "isodense_coh",
+  "F": 9,
+  "shor_bound": 0.5645416554394427,
+  "rigorous_shor": 0.5645416338810955,
+  "lasserre2_bound": 0.5737641787999883,
+  "lasserre_status": "optimal_inaccurate",
+  "lasserre_time": 252.32434678077698,
+  "M2_size": 66,
+  "best_single_mask": 0.573764122843955,
+  "multi_exposure_gain_certified": 0.01633634149440839
+ }
+]
