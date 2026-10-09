@@ -18,8 +18,8 @@ bounded by a small SDP in the diffraction-order domain whose dual is a one-matri
 relaxation is exactly the unlimited-multi-exposure problem (Theorem 3), nonnegative 1D masks have an exact convex
 realizability cone (Theorem 4), complex phase cannot improve the relaxation under symmetric illumination (Lemma 6), and
 the classical k1 cutoffs are reproduced exactly (Proposition 5). Empirically: local optimization is certified globally
-optimal on most targets (75% of random 1D targets exactly; all 2D contact layouts within 0.3%); certified
-multi-exposure gains of 13.7% and ≥27% exist for coherent illumination; binary masks are certified ≥10% worse than PSM
+optimal on most targets (70% of random 1D targets exactly, 83% within 1%; all 2D contact layouts within 0.3%; T-junction/line-end cells within 3–14%); certified
+multi-exposure gains of 13.7% and ≥27% exist for coherent illumination (7.8–16.2% on four random targets; ≥9.9% across a ±80 nm focus window); binary masks are certified ≥10% worse than PSM
 on an iso-dense target; standard pattern-error ILT is 30–67% above the certified optimum; the SDP bound is 3–150×
 tighter than the Rayleigh-quotient bound underlying prior global heuristics.
 

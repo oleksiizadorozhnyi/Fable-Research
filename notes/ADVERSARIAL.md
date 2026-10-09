@@ -28,3 +28,8 @@ imaging tool or against commercial ILT; and the 'theorems' are either weak duali
    simplification) are weaker than the SDP (they drop the min/max structure); checked numerically (TODO: include).
 8. Hidden counterexamples — the relaxation is NOT always tight (documented rank-2 cases); the certificate is still valid.
    Binary (DNN) relaxation in 2D is only an outer approximation (no 2D Fejér–Riesz). Stated.
+
+9. Large-2D gaps (9–14% on T-junction) are NOT certified as multi-exposure gains: Lasserre-2 is out of reach at F=61 and
+   the primal search omitted SLSQP polish; they are reported as unresolved upper bounds on the gap. (Open.)
+10. Rigorization initially failed on layouts whose weighted dark matrix is singular (orders invisible to every
+   constraint); fixed by verifying on the complement and reporting the residual (1e-31). Documented in the bug log.

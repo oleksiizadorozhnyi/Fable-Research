@@ -18,9 +18,9 @@ masks in one dimension we show the realizable in-band spectra form exactly the C
 that, for symmetric illumination, allowing arbitrary complex transmission does not improve the relaxation. The bound
 reproduces the classical k1 cutoffs exactly (DUV and EUV), is invariant to interior sampling, is 3–150× tighter than
 the generalized-eigenvalue (Rayleigh-quotient) bound used in prior global-optimization heuristics, and certifies that
-local optimizers reach the global optimum on 75% of random 1D targets and on all 2D contact/line-end layouts tested,
-while a standard pattern-error ILT lands 30–45% above the certified optimum. 2D layouts under annular and quasar
-illumination are certified in under a second each. Code and data are provided.
+local optimizers reach the global optimum on 70% of random 1D targets (within 1% on 83%) and on all 2D contact-array layouts tested,
+while a standard pattern-error ILT lands 30–45% above the certified optimum. 2D contact layouts under annular and quasar
+illumination are certified in under a second each, and 320 nm T-junction and line-end cells in minutes. Code and data are provided.
 
 ## 1 Introduction
 Computational lithography synthesizes mask (and source) patterns so that the projected aerial image prints a target
@@ -155,9 +155,18 @@ objective (pattern error vs exposure latitude) and local minima contribute.
 6.7 **SMO entitlement (Table 4).** For the iso-dense target the per-source-point relaxation equals the coherent bound
 (0.3625) for conventional σ=0.7 and a 13-point σ=0.9 grid: no illumination supported on these points beats on-axis
 coherent light for this metric; fixed-source bounds are 0.43–0.51.
-6.8 **2D layouts (Table 6).** [[pending exp4 rerun with edge-offset sampling]] Contact arrays (160, 120, 100 nm pitch)
-and a T-junction and line-end layout under annular/quasar illumination; all SDPs < 1 s; previous grid-sampled run:
-all contact arrays tight (rank 1, gap 0.00%).
+6.8 **2D layouts (Table 6, Fig. 4).** Contact arrays at 160/120/100 nm pitch (F = 5–13 orders, 200–320 edge-offset
+samples) under annular 0.6/0.9, conventional σ = 0.5 and quasar illumination are certified essentially tight: the best
+single mask is within 0.03–0.30% of the bound, the SDP optimum is rank one, and each SDP solves in < 0.5 s. Certified
+maximum exposure latitudes at the stated edge tolerance range from 0.07 (100 nm pitch, quasar) to 0.27 (120 nm,
+quasar). For a 320 nm T-junction and a line-end layout (F = 61, ~1200 samples) the SDP solves in 100–200 s; the
+certified bounds are 0.4386 (annular) and 0.3893 (quasar) for the T-junction and 0.5194 for the line-ends, with best
+single masks 9.2%, 14.2% and 2.6% above the bound (local refinement without SLSQP polish; minimum optimal-face rank not
+explored for these sizes), so these gaps are upper bounds on the multi-exposure benefit and may partly reflect primal
+search. The dual certificates concentrate on a few edge-offset points near corners and line-ends (Fig. 4), identifying
+the geometric features that limit printability. For these layouts the weighted dark matrix has an exact null space of
+4–16 orders (orders no constraint sees); the certificate is verified on its complement and the bright matrix vanishes
+on it to 1e-31.
 6.9 **Robustness.** Bound invariant to interior spacing (0.46907 for 16→1 nm); monotone in edge tolerance
 (2 nm: EL 0.09 → 20 nm: EL 0.74); CLARABEL/SCS agree to 1e-8; source quadrature converges (0.513–0.526 for 11–21
 points); 50-digit Cholesky of the certificate succeeds; Rayleigh-quotient bound is 3–150× weaker (Table 7).

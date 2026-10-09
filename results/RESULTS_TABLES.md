@@ -72,16 +72,16 @@ Theorem 4 numerics: necessity violations 0/2000; sufficiency failures 0/200.
 - 50-digit certificate check: Cholesky success=True, min eig=8.25e-11, bound=0.469065
 
 ### Table 6 — 2D layouts (DUV, NA 1.35), edge tolerance 12 nm (contacts120/100: 10/8 nm; T/line-end: 14 nm)
-| layout | cell (nm) | source pts | F | samples | bound ρ | max EL | best single mask ρ | gap | rank | SDP time (s) |
-|---|---|---|---|---|---|---|---|---|---|---|
-| contacts160_annular | [160, 160] | 28 | 13 | 320 | 0.5843 | 0.262 | 0.5861 | 0.30% | 1 | 0.4 |
-| contacts160_conv0.5 | [160, 160] | 13 | 9 | 320 | 0.6174 | 0.237 | 0.6177 | 0.04% | 1 | 0.4 |
-| contacts120_annular | [120, 120] | 28 | 9 | 216 | 0.6957 | 0.179 | 0.6962 | 0.07% | 1 | 0.4 |
-| contacts120_quasar | [120, 120] | 20 | 9 | 216 | 0.5740 | 0.271 | 0.5747 | 0.13% | 1 | 0.3 |
-| contacts100_quasar | [100, 100] | 20 | 5 | 197 | 0.8751 | 0.067 | 0.8754 | 0.03% | 1 | 0.2 |
-| Tjunction320_annular | [320, 320] | 28 | 61 | 1210 | 0.0000 | 1.000 | 0.4789 | 47889002351532.03% | 6 | 142.7 |
-| Tjunction320_quasar | [320, 320] | 20 | 61 | 1210 | 0.0000 | 1.000 | 0.4444 | 44443415016828.16% | 3 | 104.6 |
-| lineend320_annular | [320, 320] | 28 | 61 | 1189 | 0.0000 | 1.000 | 0.5328 | 53282795773005.17% | 6 | 204.3 |
+| layout | cell (nm) | source pts | F | samples | bound ρ | max EL | best single mask ρ | gap | rank | cert. null dim | SDP time (s) |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| contacts160_annular | [160, 160] | 28 | 13 | 320 | 0.5843 | 0.262 | 0.5861 | 0.30% | 1 | 0 | 0.4 |
+| contacts160_conv0.5 | [160, 160] | 13 | 9 | 320 | 0.6174 | 0.237 | 0.6177 | 0.04% | 1 | 0 | 0.4 |
+| contacts120_annular | [120, 120] | 28 | 9 | 216 | 0.6957 | 0.179 | 0.6962 | 0.07% | 1 | 0 | 0.4 |
+| contacts120_quasar | [120, 120] | 20 | 9 | 216 | 0.5740 | 0.271 | 0.5747 | 0.13% | 1 | 0 | 0.3 |
+| contacts100_quasar | [100, 100] | 20 | 5 | 197 | 0.8751 | 0.067 | 0.8754 | 0.03% | 1 | 0 | 0.2 |
+| Tjunction320_annular | [320, 320] | 28 | 61 | 1210 | 0.4386 | 0.390 | 0.4789 | 9.17% | 6 | 4 | 142.7 |
+| Tjunction320_quasar | [320, 320] | 20 | 61 | 1210 | 0.3893 | 0.440 | 0.4444 | 14.17% | 3 | 16 | 104.6 |
+| lineend320_annular | [320, 320] | 28 | 61 | 1189 | 0.5194 | 0.316 | 0.5328 | 2.59% | 6 | 4 | 204.3 |
 
 ### Outlier / process-window re-examination (strong primal search, face exploration, Lasserre-2 where F≤11)
 | case | F | bound | old best | new best | new gap | min face rank | Lasserre-2 | status |

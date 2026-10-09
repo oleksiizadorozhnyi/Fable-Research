@@ -56,3 +56,10 @@ Next: finish 2D battery; figures; paper draft; adversarial review (sampling, thi
   met; the bisection collapsed to c=0 although the SDP value (0.4387) was solver-consistent (CLARABEL/SCS agree 1e-7).
   FIX: null-space-aware rigorization: verify PSD with margin on the complement of the near-null space of SD and report
   the residual of SB on that space (1e-31 here). 1D results unaffected (null dim 0). Certificates recomputed.
+
+## FINAL CHECKPOINT 2026-10-09 ~23:40
+All experiments complete (exp1–exp12, exp3b, exp4b, exp11b); tables in results/RESULTS_TABLES.md; figures in results/figs;
+manuscript notes/PAPER_DRAFT.md; report notes/FINAL_REPORT.md. Tests: 6/6 pass.
+Continuation instruction (if resumed): remaining open items are (1) rigorize Lasserre-2 bounds via SOS dual extraction,
+(2) resolve the 2D T-junction gaps (9–14%) with face exploration + stronger primal or a scalable Lasserre, (3) vector/
+3D-mask models, (4) non-periodic clips. No experiment needs rerunning.
