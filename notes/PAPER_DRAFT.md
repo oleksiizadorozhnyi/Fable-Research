@@ -133,8 +133,13 @@ gaps > 5% have minimal optimal-face rank 2 or 3, consistent with Theorem 3 (inco
 coherent light). All certificates pass the independent PSD test after rigorization.
 6.4 **Certified multi-exposure gains (Table 2).** Lasserre-2 single-mask bounds: mixed_coh 0.4787 (= best single mask
 found to 7e-7) vs multi-exposure bound 0.4211 → certified gain 13.7%; iso-dense coherent: single-mask ≥ 0.4608 (best
-found 0.4741) vs 0.3625 → certified gain ≥ 27%. Both have minimum optimal-face rank 2: two exposures suffice.
-[[pending: process-window case from exp11]]
+found 0.4741) vs 0.3625 → certified gain ≥ 27%. Both have minimum optimal-face rank 2: two exposures suffice. On the random-target set, the four coherent-illumination
+instances with the largest gaps were re-examined with optimal-face exploration and Lasserre-2: in all four the
+Lasserre-2 single-mask bound coincides with the best single mask found (to 1e-6), so the multi-exposure gains of
+7.8%, 12.5%, 13.0% and 16.2% are certified, each with a rank-2 optimal face (two exposures). Lasserre-2 values were
+cross-checked with two solvers (CLARABEL 0.4787045 vs SCS 0.4787037 on the mixed target). One random instance
+(trial 16) has a certified bound ≈ 1e-7 (the dark region can be made essentially perfectly dark), for which the relative
+gap is ill-defined; its absolute gap is 9e-4. [[pending: process-window case, exp11b]]
 6.5 **PSM vs binary (Table 3).** DNN relaxation for nonnegative masks: iso-dense 0.4266 vs PSM 0.3879 (binary ≥ 10%
 worse, certified); pixel-domain and Fourier-domain PSM relaxations agree to 1e-5.
 6.6 **Standard ILT vs certified optimum (Table 3b).** Pattern-error ILT (sigmoid resist, open-frame-normalized

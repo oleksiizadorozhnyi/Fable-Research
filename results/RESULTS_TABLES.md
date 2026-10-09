@@ -20,7 +20,7 @@
 | mixed_coh | 7 | 0.6235 | 0.6408 | 0.6408 | 2.78% | optimal_inaccurate |
 | isodense_coh | 9 | 0.5645 | 0.5738 | 0.5738 | 1.63% | optimal_inaccurate |
 
-### Random 1D targets (n=6): gap ≤1e-4: 100.0%; ≤1%: 100.0%; ≤5%: 100.0%; median 2.3e-07; max 0.000; worst certificate min-eig 4.1e-18
+### Random 1D targets (n=109): gap ≤1e-4: 69.7%; ≤1%: 82.6%; ≤5%: 91.7%; median 1.8e-06; max 0.173; worst certificate min-eig 1.3e-19
 
 ### Table 3 — Pixel vs Fourier relaxations, PSM vs binary (DNN), ILT baseline (σ=0.7 conventional)
 | case | F | Fourier PSM bound | pixel PSM bound | pixel nonneg (DNN) bound | ILT-PSM ratio | ILT-PSM refined | ILT-binary ratio | best PSM (pipeline) |
@@ -73,11 +73,12 @@ Theorem 4 numerics: necessity violations 0/2000; sufficiency failures 0/200.
 ### Table 6 — 2D layouts (DUV, NA 1.35), edge tolerance 12 nm (contacts120/100: 10/8 nm; T/line-end: 14 nm)
 | layout | cell (nm) | source pts | F | samples | bound ρ | max EL | best single mask ρ | gap | rank | SDP time (s) |
 |---|---|---|---|---|---|---|---|---|---|---|
-| contacts160_annular | [160, 160] | 28 | 13 | 260 | 0.2324 | 0.623 | 0.2324 | 0.00% | 1 | 0.3 |
-| contacts160_conv0.5 | [160, 160] | 13 | 9 | 260 | 0.2661 | 0.580 | 0.2661 | 0.00% | 1 | 0.2 |
-| contacts120_annular | [120, 120] | 28 | 9 | 156 | 0.3555 | 0.475 | 0.3555 | 0.00% | 1 | 0.2 |
-| contacts120_quasar | [120, 120] | 20 | 9 | 156 | 0.1932 | 0.676 | 0.1932 | 0.00% | 1 | 0.2 |
-| contacts100_quasar | [100, 100] | 20 | 5 | 156 | 0.6193 | 0.235 | 0.6193 | 0.00% | 1 | 0.2 |
+| contacts160_annular | [160, 160] | 28 | 13 | 320 | 0.5843 | 0.262 | 0.5861 | 0.30% | 1 | 0.4 |
+| contacts160_conv0.5 | [160, 160] | 13 | 9 | 320 | 0.6174 | 0.237 | 0.6177 | 0.04% | 1 | 0.4 |
+| contacts120_annular | [120, 120] | 28 | 9 | 216 | 0.6957 | 0.179 | 0.6962 | 0.07% | 1 | 0.4 |
+| contacts120_quasar | [120, 120] | 20 | 9 | 216 | 0.5740 | 0.271 | 0.5747 | 0.13% | 1 | 0.3 |
+| contacts100_quasar | [100, 100] | 20 | 5 | 197 | 0.8751 | 0.067 | 0.8754 | 0.03% | 1 | 0.2 |
+| Tjunction320_annular | [320, 320] | 28 | 61 | 1210 | 0.0000 | 1.000 | 0.4789 | 47889002351532.03% | 6 | 142.7 |
 
 ### Table 7 — Baseline Rayleigh-quotient bound vs SDP; complex-transmission masks
 | case | source | F | SDP real-mask bound | Rayleigh-quotient bound | SDP complex-mask bound |
