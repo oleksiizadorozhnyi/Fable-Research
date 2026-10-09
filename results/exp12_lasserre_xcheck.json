@@ -1,0 +1,12 @@
+{
+ "CLARABEL": {
+  "t": 0.47870449564447864,
+  "status": "optimal_inaccurate",
+  "time": 155.41112661361694
+ },
+ "SCS": {
+  "t": 0.4787037178670431,
+  "status": "optimal_inaccurate",
+  "time": 739.2230167388916
+ }
+}

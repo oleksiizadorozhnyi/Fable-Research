@@ -125,8 +125,12 @@ k1 = 0.244 are certified unprintable with any mask under both sources, and a σ=
 6.2 **1D feature library (Table 1).** Dipole/dense cases are tight (gap 0.00%); conventional illumination gaps ≤ 2.5%;
 coherent illumination shows large gaps (iso-dense 30.8%, mixed 13.7%); three-focus process-window cases show 11–17%
 gaps. Certified max exposure latitude at 8 nm edge tolerance: 0.35–0.47 single focus; 0.07–0.13 at ±80 nm focus.
-6.3 **Random targets (n=[[pending exp2 rerun]]).** Certified global optimality (gap ≤ 1e-4) in [[75%]] of instances;
-gap ≤ 1% in [[84%]]; worst certificate min-eigenvalue ≥ 0 after rigorization.
+6.3 **Random targets (n = 109; 1–4 random segments ≥ 40 nm in 300–600 nm cells; coherent, σ = 0.5, σ = 0.9, dipole
+σ = 0.7; edge tolerance 10 nm).** The best single mask found matches the certified bound to ≤ 1e-4 in 69.7% of
+instances (certified global optimality), to ≤ 1% in 82.6%, to ≤ 5% in 91.7%; median gap 1.8e-6; maximum 17.3%. Exact
+tightness is source dependent: 85% for σ = 0.9, 75% for the dipole, 57% for coherent and σ = 0.5 illumination, and all
+gaps > 5% have minimal optimal-face rank 2 or 3, consistent with Theorem 3 (incoherent multi-exposure helps most under
+coherent light). All certificates pass the independent PSD test after rigorization.
 6.4 **Certified multi-exposure gains (Table 2).** Lasserre-2 single-mask bounds: mixed_coh 0.4787 (= best single mask
 found to 7e-7) vs multi-exposure bound 0.4211 → certified gain 13.7%; iso-dense coherent: single-mask ≥ 0.4608 (best
 found 0.4741) vs 0.3625 → certified gain ≥ 27%. Both have minimum optimal-face rank 2: two exposures suffice.
