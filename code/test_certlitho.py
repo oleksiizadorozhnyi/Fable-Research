@@ -42,6 +42,23 @@ def test_toeplitz_necessity():
         m = rng.random(N)*(rng.random(N) < 0.5); Mf = np.fft.fft(m)/N; M = np.array([Mf[k] for k in range(K+1)])
         T = np.array([[M[a-b] if a >= b else np.conj(M[b-a]) for b in range(K+1)] for a in range(K+1)])
         assert np.linalg.eigvalsh(T).min() >= -1e-12*abs(M[0])
+def test_bnb_consistency():
+    from bnb_cert import bnb_single_mask
+    s, w = ([0.0],[1.0]); md, B, D, tgt = build_1d(300, lam, NA, (s, w), [(30,80),(150,230)], 10, spacing=6.0); rm = RealModel(md)   # F=5
+    r = sdp_bound_real(rm, B, D); rig, _, _ = rigorize_certificate(rm, r['mu'], r['lam'])
+    v, rv = round_from_Y(rm, r['X'], B, D, nsamp=100); v, rv = local_refine_real(rm, rv, B, D)
+    res = bnb_single_mask(rm, B, D, tol=5e-3, max_nodes=1500000, U0=v)
+    assert res['converged'] and res['L'] <= res['U'] + 1e-12 and res['L'] >= rig - 1e-9, (res, rig)   # single-mask optimum >= multi-exposure bound
+def test_vector_model_consistency():
+    s, w = conventional_source_1d(0.7, NA, 7); segs = [(0,45),(90,135),(180,225),(270,315)]
+    md0, B, D, _ = build_1d(360, lam, NA, (s, w), segs, 6, spacing=8.0); mdx, _, _, _ = build_1d_x(360, lam, NA, (s, w), segs, 6, spacing=8.0)
+    r0 = sdp_bound_real(RealModel(md0), B, D); rx = sdp_bound_real(RealModel(mdx), B, D); assert abs(r0['t'] - rx['t']) < 1e-7
+    mdv, _, _, _ = build_1d_x(360, lam, NA, (s, w), segs, 6, spacing=8.0, vector=True, pol='x', n_img=1.7)
+    rR = sdp_bound_real(RealModel(mdv), B, D); rC = sdp_bound(mdv, B, D, real_mask=False, solver="CLARABEL"); assert abs(rR['t'] - rC['t']) < 1e-5   # Lemma 6 under vector model
+    # TM (x-pol for lines along y) must not beat TE
+    mdt, _, _, _ = build_1d_x(360, lam, NA, (s, w), segs, 6, spacing=8.0, vector=True, pol='y', n_img=1.7); rT = sdp_bound_real(RealModel(mdt), B, D)
+    assert rR['t'] >= rT['t'] - 1e-9
+
 if __name__ == "__main__":
-    for f in [test_abbe_cutoff, test_certificate_and_rounding, test_pixel_vs_fourier, test_real_equals_complex_symmetric_source, test_ilt_gradient, test_toeplitz_necessity]:
+    for f in [test_abbe_cutoff, test_certificate_and_rounding, test_pixel_vs_fourier, test_real_equals_complex_symmetric_source, test_ilt_gradient, test_toeplitz_necessity, test_bnb_consistency, test_vector_model_consistency]:
         f(); print("PASS", f.__name__)

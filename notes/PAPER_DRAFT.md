@@ -136,7 +136,7 @@ found to 7e-7) vs multi-exposure bound 0.4211 → certified gain 13.7%; iso-dens
 found 0.4741) vs 0.3625 → certified gain ≥ 27%. Both have minimum optimal-face rank 2: two exposures suffice. On the random-target set, the four coherent-illumination
 instances with the largest gaps were re-examined with optimal-face exploration and Lasserre-2: in all four the
 Lasserre-2 single-mask bound coincides with the best single mask found (to 1e-6), so the multi-exposure gains of
-7.8%, 12.5%, 13.0% and 16.2% are certified, each with a rank-2 optimal face (two exposures). Lasserre-2 values were
+6.6%, 12.1%, 13.0% and 16.6% are certified, each with a rank-2 optimal face (two exposures). Lasserre-2 values were
 cross-checked with two solvers (CLARABEL 0.4787045 vs SCS 0.4787037 on the mixed target). One random instance
 (trial 16) has a certified bound ≈ 1e-7 (the dark region can be made essentially perfectly dark), for which the relative
 gap is ill-defined; its absolute gap is 9e-4. For the three-focus (±80 nm) mixed-width target under σ = 0.7 illumination (F = 11, 12 edge-offset constraints per

@@ -629,3 +629,115 @@ def rigorize_certificate(model, mu, lamb, safety=1e-10, null_tol=1e-9):
         if mineig(mid) >= 0: lo = mid
         else: hi = mid
     return lo*slam, mineig(lo), lo
+
+# ----------------------------------------------------------------------------- vectorized SLSQP minimax polish (overrides)
+def exact_minimax_polish(rm, r0, B, D, maxiter=300):
+    """min t s.t. I_d(r) <= t (D x Z), I_b(r) >= 1 (B x Z): vectorized constraints/Jacobians for SLSQP."""
+    from scipy.optimize import minimize
+    F = rm.F
+    r0 = r0/np.sqrt(min(rm.image(r0, z)[B].min() for z in rm.focus))
+    x0 = np.concatenate([r0, [rm.ratio(r0, B, D)]])
+    Cs = [rm.C[z] for z in rm.focus]
+    def IG(r):
+        Is, Gs = [], []
+        for C in Cs:
+            fld = C @ r; I = np.einsum('s,sx->x', rm.w, np.abs(fld)**2); G = 2*np.einsum('s,sx,sxk->xk', rm.w, fld.conj(), C).real
+            Is.append(I); Gs.append(G)
+        return Is, Gs
+    def cfun(x):
+        Is, _ = IG(x[:F]); return np.concatenate([np.concatenate([x[-1] - I[D] for I in Is]), np.concatenate([I[B] - 1 for I in Is])])
+    def cjac(x):
+        _, Gs = IG(x[:F]); nd = sum(len(D) for _ in Gs); nb = sum(len(B) for _ in Gs)
+        J = np.zeros((nd+nb, F+1)); J[:nd, :F] = -np.concatenate([G[D] for G in Gs]); J[:nd, F] = 1.0; J[nd:, :F] = np.concatenate([G[B] for G in Gs])
+        return J
+    res = minimize(lambda x: x[-1], x0, jac=lambda x: np.concatenate([np.zeros(F), [1.0]]), constraints=[dict(type='ineq', fun=cfun, jac=cjac)], method='SLSQP', options=dict(maxiter=maxiter, ftol=1e-12))
+    r = res.x[:F]
+    return rm.ratio(r, B, D), r
+
+# ----------------------------------------------------------------------------- physics extensions: aberrations, vector imaging, pixel-integrated masks
+def zernike_phase(g, lam, NA, aberr):
+    """Pupil phase (radians) from fringe-Zernike coefficients in waves: keys 'Z4' defocus, 'Z5','Z6' astig, 'Z7','Z8' coma,
+       'Z9' spherical. g: (F,dim) spatial frequencies; rho = |g| lam/NA, phi = atan2."""
+    if not aberr: return np.zeros(len(g))
+    gx = g[:, 0]; gy = g[:, 1] if g.shape[1] > 1 else np.zeros(len(g))
+    rho = np.hypot(gx, gy)*lam/NA; phi = np.arctan2(gy, gx); W = np.zeros(len(g))
+    Z = {'Z4': 2*rho**2 - 1, 'Z5': rho**2*np.cos(2*phi), 'Z6': rho**2*np.sin(2*phi), 'Z7': (3*rho**3 - 2*rho)*np.cos(phi),
+         'Z8': (3*rho**3 - 2*rho)*np.sin(phi), 'Z9': 6*rho**4 - 6*rho**2 + 1}
+    for k, a in aberr.items(): W += a*Z[k]
+    return 2*np.pi*W
+
+class ModelX(Model):
+    """Model with optional pupil aberrations (fringe Zernikes, waves) and vector (high-NA) imaging.
+       vector=True: image-side plane wave with direction cosines (alpha,beta,gamma) = (lam g / n_img, sqrt(1-...)) carries the
+       mask-side polarization p rotated by the minimal rotation taking z to the propagation direction (Rodrigues):
+         R p = p - (p.k_t) k_t/(1+gamma) ... explicitly for p=x: (1 - a^2/(1+g), -a b/(1+g), -a); p=y: (-a b/(1+g), 1 - b^2/(1+g), -b).
+       Intensity = |E_x|^2+|E_y|^2+|E_z|^2 summed over source points and over the polarization ensemble
+       (pol in {'x','y','unpol','TE','TM'}; TE/TM are azimuthal/radial w.r.t. each source point). Optional obliquity
+       amplitude factor 1/sqrt(gamma) (aplanatic, 4x reduction). Still quadratic in M: channels = (source, pol, component)."""
+    def __init__(self, L, lam, NA, src_pts, src_w, nx, focus=(0.0,), dim=1, xs=None, aberr=None, vector=False, pol='unpol', n_img=1.0, obliquity=True):
+        self.aberr = aberr or {}; self.vector = vector; self.pol = pol; self.n_img = n_img; self.obliquity = obliquity
+        super().__init__(L, lam, NA, src_pts, src_w, nx, focus, dim, xs)
+        # rebuild C with aberration / vector channels
+        lamv = lam
+        Cs, ws = {z: [] for z in self.focus}, []
+        for s, wsrc in zip(self.src, self.w):
+            g = self.f + s/lamv; gn = np.linalg.norm(g, axis=1); inside = (gn*lamv <= NA + 1e-12)
+            gl = np.clip(gn*lamv, 0, 1); 
+            if self.vector:
+                a = g[:, 0]*lamv/n_img; b = (g[:, 1] if self.dim == 2 else np.zeros(self.F))*lamv/n_img
+                gam = np.sqrt(np.clip(1 - a**2 - b**2, 1e-9, 1))
+            E = np.exp(2j*np.pi*(self.x @ self.f.T))
+            ab = zernike_phase(g, lamv, NA, self.aberr)
+            pols = []
+            if not self.vector: pols = [None]
+            elif pol == 'x': pols = [np.array([1.0, 0.0])]
+            elif pol == 'y': pols = [np.array([0.0, 1.0])]
+            elif pol == 'unpol': pols = [np.array([1.0, 0.0]), np.array([0.0, 1.0])]
+            elif pol in ('TE', 'TM'):
+                sv = np.array([s[0], s[1] if len(s) > 1 else 0.0]); ns = np.linalg.norm(sv)
+                rad = sv/ns if ns > 1e-12 else np.array([1.0, 0.0]); azi = np.array([-rad[1], rad[0]])
+                pols = [azi if pol == 'TE' else rad]
+            for z in self.focus:
+                ph = 2*np.pi/lamv*z*(np.sqrt(1 - gl**2) - 1) + ab
+                P = inside*np.exp(1j*ph)
+                if not self.vector:
+                    Cs[z].append(E*P[None, :])
+                else:
+                    ob = (1/np.sqrt(gam)) if obliquity else np.ones(self.F)
+                    for p in pols:
+                        ex = p[0]*(1 - a**2/(1+gam)) + p[1]*(-a*b/(1+gam)); ey = p[0]*(-a*b/(1+gam)) + p[1]*(1 - b**2/(1+gam)); ez = -p[0]*a - p[1]*b
+                        for comp in (ex, ey, ez): Cs[z].append(E*(P*ob*comp)[None, :])
+            nch = 1 if not self.vector else 3*len(pols)
+            ws += [wsrc/ (len(pols) if self.vector else 1)]*nch
+        self.C = {z: np.stack(Cs[z]) for z in self.focus}; self.w = np.array(ws)
+    def Q(self, ix, z=0.0):
+        Cz = self.C[z][:, ix, :]; return np.einsum('s,sa,sb->ab', self.w, Cz.conj(), Cz)
+
+def build_1d_x(L, lam, NA, src, segs, margin, spacing=4.0, focus=(0.0,), **kw):
+    s, w = src; x, B, D, tgt = samples_1d(L, segs, margin, spacing)
+    return ModelX(L, lam, NA, s, w, nx=len(x), focus=focus, xs=x, **kw), B, D, tgt
+def build_2d_x(L, lam, NA, src, target_fn, margin, spacing=10.0, fine=1.0, focus=(0.0,), **kw):
+    s, w = src; x, B, D, tgt, sd = samples_2d(L, target_fn, margin, spacing, fine=fine)
+    return ModelX(L, lam, NA, s, w, nx=None, focus=focus, dim=2, xs=x, **kw), B, D, tgt
+
+def sdp_bound_pixel_int(model, N, B, D, nonneg=False, box=None, solver="CLARABEL"):
+    """Pixel-domain lifted relaxation with PIXEL-INTEGRATED transform (mask piecewise constant on N pixels of width L/N):
+       M_k = sinc(k/N) * (1/N) sum_n m_n e^{-2 pi i k n /N}. nonneg -> DNN. Returns bound for masks of that pixelation."""
+    assert model.dim == 1
+    n = np.arange(N); k = model.k[:, 0]
+    G = (np.sinc(k/N)[:, None]) * np.exp(-2j*np.pi*np.outer(k, n)/N)/N
+    X = cp.Variable((N, N), symmetric=True); t = cp.Variable(); cons = [X >> 0]
+    if nonneg: cons.append(X >= 0)
+    for z in model.focus:
+        for ix in D:
+            Qp = np.real(G.conj().T @ model.Q(ix, z) @ G); cons.append(cp.trace(0.5*(Qp+Qp.T) @ X) <= t)
+        for ix in B:
+            Qp = np.real(G.conj().T @ model.Q(ix, z) @ G); cons.append(cp.trace(0.5*(Qp+Qp.T) @ X) >= 1)
+    prob = cp.Problem(cp.Minimize(t), cons)
+    for sv in (solver, "SCS"):
+        try:
+            prob.solve(solver=sv, **(dict(eps=1e-9, max_iters=200000) if sv == "SCS" else {}))
+            if prob.status in ("optimal", "optimal_inaccurate"): break
+        except Exception: pass
+    ev = np.linalg.eigvalsh(X.value)[::-1]
+    return dict(t=float(t.value), status=prob.status, rank_eps=int(np.sum(ev > 1e-6*ev[0])))

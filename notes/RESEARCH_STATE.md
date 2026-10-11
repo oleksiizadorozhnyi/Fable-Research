@@ -63,3 +63,10 @@ manuscript notes/PAPER_DRAFT.md; report notes/FINAL_REPORT.md. Tests: 6/6 pass.
 Continuation instruction (if resumed): remaining open items are (1) rigorize Lasserre-2 bounds via SOS dual extraction,
 (2) resolve the 2D T-junction gaps (9–14%) with face exploration + stronger primal or a scalable Lasserre, (3) vector/
 3D-mask models, (4) non-periodic clips. No experiment needs rerunning.
+
+## Session 2 (2026-10-11) — hardening pass
+- Found stale results/exp7_lasserre.json (pre-edge-fix values 0.6235/0.6408) feeding Table 2 while the manuscript used
+  the rerun log values (0.4211/0.4787, 0.3625/0.4608). Regenerated the JSON from the rerun log; clean rerun scheduled.
+- Found that results/exp9_outlier_pw.json had been rebuilt from the STALE pre-fix log (exp9.log, 21:30) instead of the
+  rerun log (exp9_outlier_pw.log, 22:25-22:37). The manuscript's "7.8–16.2% certified gains on four random targets"
+  therefore referred to pre-fix instances. Rebuilt from the correct log; numbers re-derived below and in the manuscript.

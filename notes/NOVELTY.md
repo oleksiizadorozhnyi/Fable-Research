@@ -38,3 +38,24 @@ classical; its application as a realizability cone for binary/attenuated masks w
 pattern-specific k1 curves)
 Closest: NVIDIA arXiv 2602.19027 and ILT reviews discuss local minima qualitatively; no certified gap measurements found.
 Status: new measurements within a simplified (scalar, thin-mask, periodic) model.
+
+## Session-2 additions (2026-10-11)
+- IBM abstract (Rosenbluth et al., "Global optimization of masks, including film stack design...", SPIE 6520, 2007; text
+  seen only as a search snippet): "mask optimization tends inherently to be a problem with non-convex quadratic
+  constraints"; with exposure latitude cast as edge-slope maximization "the solution space can be split into regions
+  with at most one local minimum". => IBM's global method is an enumeration/partition of the nonconvex problem, not a
+  convex relaxation; no bound is produced for solutions found by other means. Our certificates are complementary.
+- US 7,944,545 (IBM, "High contrast lithographic masks"): quadratic problem in diffraction-order amplitudes with
+  quadratic bright/dark constraints — same formulation as ours (confirms the QCQP framing is prior art).
+- Liu & Zakhor (UC Berkeley 1992; IEEE Trans. Semicond. Manuf. 5(2):138–152, bibliographic details partially confirmed
+  via a 1992 Berkeley technical report listing): binary mask design by branch and bound / simplex on a pixel MSE
+  criterion — exact methods for small binary masks (combinatorial, not a bound on the continuous problem).
+- Kohira et al. (SPIE 9427, 2015; JM3 15(2), 2016): positive-semidefinite relaxation + randomized rounding for mask
+  ASSIGNMENT in triple patterning (layout decomposition) — different problem, same tool.
+- HKU dissertation (hub.hku.hk/handle/10722/238351; abstract only): convex formulation of SOURCE optimization via Zernike
+  bases; sparse nonlinear inverse imaging for masks — no semidefinite lifting of the mask problem mentioned.
+- Searches for "semidefinite"/"Shor"/"sum of squares" with "inverse lithography"/"OPC"/"mask optimization" (2024–2026)
+  return no hits beyond the above. Residual risk: SPIE proceedings not indexed by the search engine; full texts unread.
+- NEW in this session: rigorous branch-and-bound certification of the single-mask optimum (sphere/box covering with
+  PSD-form interval bounds) — B&B for mask design exists (Liu–Zakhor, combinatorial binary); a rigorous continuous
+  single-mask certificate used to separate single- from multi-exposure optima was not found in the literature reviewed.

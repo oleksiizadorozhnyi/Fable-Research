@@ -1,26 +1,28 @@
 [
  {
-  "name": "mixed_coh",
-  "F": 7,
-  "shor_bound": 0.6234718988993423,
-  "rigorous_shor": 0.6234505083938587,
-  "lasserre2_bound": 0.6407829950222036,
-  "lasserre_status": "optimal_inaccurate",
-  "lasserre_time": 86.51737761497498,
-  "M2_size": 45,
-  "best_single_mask": 0.6407599187537324,
-  "multi_exposure_gain_certified": 0.027800902228786423
- },
- {
   "name": "isodense_coh",
   "F": 9,
-  "shor_bound": 0.5645416554394427,
-  "rigorous_shor": 0.5645416338810955,
-  "lasserre2_bound": 0.5737641787999883,
+  "shor_bound": 0.36251709708571583,
+  "rigorous_shor": 0.3625170854762293,
+  "min_face_rank": 2,
+  "lasserre2_bound": 0.46075546947596513,
   "lasserre_status": "optimal_inaccurate",
-  "lasserre_time": 252.32434678077698,
+  "lasserre_time": 443.01517939567566,
   "M2_size": 66,
-  "best_single_mask": 0.573764122843955,
-  "multi_exposure_gain_certified": 0.01633634149440839
+  "best_single_mask": 0.4741089251387798,
+  "multi_exposure_gain_certified": 0.27098966624064796
+ },
+ {
+  "name": "mixed_coh",
+  "F": 7,
+  "shor_bound": 0.4210834603652769,
+  "rigorous_shor": 0.4210810525022769,
+  "min_face_rank": 2,
+  "lasserre2_bound": 0.47870449564447864,
+  "lasserre_status": "optimal_inaccurate",
+  "lasserre_time": 103.39962267875671,
+  "M2_size": 45,
+  "best_single_mask": 0.47870382204697515,
+  "multi_exposure_gain_certified": 0.13684644037002866
  }
 ]

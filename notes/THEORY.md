@@ -102,3 +102,34 @@ and has image ½(I_M + I_{M̃}) = I_M. Hence every complex-feasible X yields a r
 constraint values; the converse inclusion is trivial. ∎  (Numerically confirmed: Table 7, all cases equal.)
 Note: for SINGLE masks the complex optimum can still be better than the real optimum; the lemma concerns the relaxation
 (equivalently, a two-exposure ensemble {M, M̃}).
+
+## 6. Model extensions (session 2)
+**Lemma 7 (vector imaging and aberrations preserve the quadratic structure).** With a pupil phase W(g) (any
+aberration) and the high-NA vector model in which the image-side plane wave of direction cosines (α,β,γ) carries the
+mask-side polarization p rotated by the minimal rotation taking ẑ to (α,β,γ) (Rodrigues; for p = x̂:
+E = (1−α²/(1+γ), −αβ/(1+γ), −α)), the image I(x) = Σ_s w_s Σ_{p∈𝒫_s} Σ_{c∈{x,y,z}} |Σ_k V_{c,p,s}(k) M_k e^{2πi f_k·x}|²
+is a sum of rank-one Hermitian forms in M. Hence Theorems 1, 3 and Proposition 5 and the SDP relaxation apply verbatim
+with the channel set (s,p,c) in place of s. Lemma 6 extends when the polarization ensemble is reflection-symmetric
+(x, y, unpolarized, or TE/TM with a symmetric source): the rotation factors satisfy E_{x,y}(−g) = E_{x,y}(g),
+E_z(−g) = −E_z(g), so |·|² is invariant. Proof: direct substitution. ∎
+**Lemma 8 (pixelation).** If the mask is piecewise constant on N ≥ F pixels per period (1D), the map from pixel values
+to collected orders, M_k = sinc(k/N)·DFT_k(m), is surjective onto ℂ^F (sinc(k/N) ≠ 0 for |k| < N), so for the scale-free
+ratio problem the pixel-domain relaxation equals the Fourier-domain relaxation; pixelation below the collected-band
+count (N < F) restricts the mask class and can only raise the bound. (Verified: Table "pixelation".) ∎
+
+**Theorem 9 (rigorous single-mask lower bound by branch and bound).** Let Q_1..Q_m ⪰ 0 (real symmetric, F×F) be the
+dark forms (over D×Z) and P_1..P_n ⪰ 0 the bright forms (over B×Z), and ρ(r) = max_i r^TQ_i r / min_j r^TP_j r for r ≠ 0.
+(i) ρ is invariant under r ↦ αr (α ≠ 0), so ρ*(𝓜_ℝ) = min over the union of faces Φ_i = {r : r_i = 1, |r_j| ≤ 1 ∀j}.
+(ii) For a box 𝔅 = {c + δ : |δ_j| ≤ h_j} ⊂ Φ_i and q(r) = r^TQr with Q ⪰ 0:
+     q(c) − 2|Qc|·h ≤ q(r) ≤ q(c) + 2|Qc|·h + h^T|Q|h  for all r ∈ 𝔅,
+   because q(c+δ) = q(c) + 2(Qc)·δ + δ^TQδ, |2(Qc)·δ| ≤ 2|Qc|·h, 0 ≤ δ^TQδ ≤ h^T|Q|h.
+(iii) Hence inf_{𝔅} ρ ≥ LB(𝔅) := max_i max(q_i(c) − 2|Q_ic|·h, 0) / min_j (p_j(c) + 2|P_jc|·h + h^T|P_j|h).
+(iv) If a finite family of boxes covers ∪Φ_i, then ρ*(𝓜_ℝ) ≥ min_𝔅 LB(𝔅). Branch and bound refines boxes whose LB is
+   below the incumbent U(1−tol) (U = ρ at a box centre, an upper bound on ρ*); at any stopping time the minimum of LB
+   over all leaves is a valid lower bound, and on convergence it is within tol of ρ*.
+Proof. (i) sign and scale invariance; every r ≠ 0 has a coordinate of maximal modulus, which can be scaled to +1.
+(ii)–(iv) as written. ∎
+Numerical note. LB is evaluated in floating point; error terms are multiplied by (1+1e-9) and 1e-12 is subtracted; the
+forms Q, P are themselves floating-point images of exact complex exponentials with relative error ~1e-15. The reported
+certified gains (≥ 6%) exceed these perturbations by many orders of magnitude; a fully interval-arithmetic version is
+left as future work.
