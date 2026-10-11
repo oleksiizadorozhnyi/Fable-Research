@@ -33,3 +33,19 @@ imaging tool or against commercial ILT; and the 'theorems' are either weak duali
    the primal search omitted SLSQP polish; they are reported as unresolved upper bounds on the gap. (Open.)
 10. Rigorization initially failed on layouts whose weighted dark matrix is singular (orders invisible to every
    constraint); fixed by verifying on the complement and reporting the residual (1e-31). Documented in the bug log.
+
+## Session-2 review items (2026-10-11)
+11. Stale-data risk: two result files (exp7_lasserre.json, exp9_outlier_pw.json) were found to carry pre-fix numbers while
+    the manuscript quoted rerun logs. Both regenerated from the correct logs; the final deliverable is produced by a single
+    clean run (code/run_all.sh) so that tables, figures and text derive from one consistent set of outputs.
+12. Solver reliability: on near-degenerate random instances (bound ≈ 1e-3) the first-order solver SCS returned values off
+    by up to 0.14 (trial 103) and even negative; CLARABEL + independent certificate is used throughout; SCS only as fallback,
+    and every reported bound is re-verified by the 50-digit Cholesky check (exp15). Two EUV instances with bound exactly 1
+    have S = 0 (uniform certificate of Prop. 5), where Cholesky is undefined; they are reported as degenerate.
+13. Lasserre-2 "optimal_inaccurate": no longer load-bearing. Multi-exposure gains are certified by Theorem 9 (B&B), which
+    is rigorous up to floating-point rounding of order 1e-12. Lasserre-2 is reported as corroboration only.
+14. 2D 320 nm gaps: addressed by exp13 (optimal-face exploration, 24-start strong primal, explicit two-exposure
+    realization). Whatever remains is reported as an unresolved upper bound on the multi-exposure benefit.
+15. Vector model: conclusions re-tested (Table 10–11): tightness statistics unchanged; TM polarization raises bounds
+    substantially, as expected physically; aberrations up to 0.1λ change bounds by < 7%; pixelation below the collected-band
+    count raises bounds (Lemma 8).
