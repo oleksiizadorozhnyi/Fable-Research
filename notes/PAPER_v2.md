@@ -126,13 +126,81 @@ Complexity: F ≈ (2(1+σ)NA L/λ)^d; SDP in F×F with |B|+|D| constraints per f
 F = 61 (1,200 constraints) with CLARABEL.
 
 ## 6 Experiments
-[[to be filled from results/RESULTS_TABLES.md after the clean rerun: §6.1 cutoffs; §6.2 1D library; §6.3 random
-targets; §6.4 certified multi-exposure gains (Lasserre-2 and B&B); §6.5 PSM vs binary; §6.6 ILT; §6.7 SMO; §6.8 2D;
-§6.9 robustness and solver validation; §6.10 physics sensitivity (vector, aberrations, pixelation)]]
+Settings: DUV λ = 193 nm, NA = 1.35 (sources: coherent; conventional σ = 0.5, 0.7, 0.9; dipole σ = 0.7, 0.8; annular
+0.6/0.9; quasar 0.6/0.9); EUV λ = 13.5 nm, NA = 0.33. Edge tolerance τ = 8 nm unless stated. Every bound quoted is the
+rigorized certificate value (§5.2); "best single mask" is the best feasible real mask found by §5.3. All tables:
+`results/RESULTS_TABLES.md`.
+
+**6.1 Cutoff recovery.** For dense lines the bound is exactly 1 (uniform certificate) for pitches below
+λ/((1+σ)NA) = 84.1 nm at σ = 0.7 and drops below 1 immediately above it (Fig. 2). In EUV with ±50 nm focus the
+20 nm pitch (k1 = 0.244) is certified unprintable with any mask under both sources; a σ = 0.8 dipole is also certified
+unprintable at 22 nm pitch (its first order falls outside the pupil) while the σ = 0.9 conventional source reaches
+EL = 0.36 there; all 14 EUV cases are tight (Table 5).
+
+**6.2 1D feature library (Table 1).** Certified maximum exposure latitudes at τ = 8 nm range from 0.35 to 0.47 at
+best focus and 0.07–0.13 over ±80 nm. Dipole and dense-line cases are exactly tight; conventional illumination gaps
+are ≤ 2.5%; coherent illumination shows large gaps (iso-dense 30.8%, mixed 13.7%) and the three-focus cases 11–17%.
+
+**6.3 Random targets (Table "random", n = 109).** Local optimization attains the certified bound to 1e-4 in 69.7% of
+instances, to 1% in 82.6% and to 5% in 91.7% (median gap 1.8e-6). Tightness is source-dependent (85% exact for
+σ = 0.9, 75% dipole, 57% coherent and σ = 0.5), and every gap above 5% has minimal optimal-face rank 2 or 3. One
+instance has bound ≈ 1e-3 (the dark region can be made almost perfectly dark); relative gaps are ill-conditioned
+there and the first-order solver SCS fails (§6.9).
+
+**6.4 Certified multi-exposure gains (Tables 2, 9; Fig. 5).** Algorithm 2 converges in 0.3–1.6 s for the four
+coherent random targets with F = 5 and proves single-mask optima 0.4061, 0.6775, 0.4033, 0.3343 (within 0.1% of the
+best masks found) against multi-exposure bounds 0.3597, 0.6049, 0.3464, 0.3141: certified gains of 12.9%, 12.0%,
+16.4% and 6.4%, each attained by a rank-2 optimal face (two exposures). For the mixed-width coherent target (F = 7)
+the 6M-node run certifies ≥ 10.8% [[exp14b: large-budget value]]; for F = 9 and 11 the interval B&B does not converge
+within 6M nodes and only the Lasserre-2 values (0.4608 and 0.9552, solver status "optimal_inaccurate", cross-checked
+between CLARABEL and SCS to 1e-6 on the F = 7 case) corroborate gains of 27% and 9.9%.
+
+**6.5 PSM versus binary masks (Table 3).** The DNN relaxation for nonnegative masks gives 0.4266 (iso-dense), 0.4599
+(mixed), 0.3777 (dense-120) against PSM bounds 0.3879, 0.4031, 0.3671: binary masks forfeit a certified 3–14% in
+ratio. Pixel- and Fourier-domain PSM relaxations agree to 1e-5.
+
+**6.6 Standard ILT versus certified optimum (Table 3b).** Pattern-error ILT (sigmoid resist, open-frame-normalized
+intensity, threshold 0.3, best of six settings, 1500 Adam steps) reaches 0.55/0.67/0.48 (PSM) and 0.58/0.72/0.52
+(binary) against certified 0.388/0.403/0.367: 30–67% above the optimum. Refining the ILT mask on the ratio objective
+closes the gap completely on dense-120 and partially elsewhere, so both the objective mismatch and local minima
+contribute.
+
+**6.7 SMO entitlement (Table 4).** For the iso-dense target the per-source-point relaxation equals the coherent bound
+(0.3625) for σ = 0.7 and a 13-point σ = 0.9 grid: no illumination supported on these points beats on-axis coherent
+light for this metric; fixed-source bounds are 0.43–0.51. This is the lithographic folklore "coherent + strong PSM is
+the contrast entitlement", now a certified statement for this target.
+
+**6.8 2D layouts (Tables 6, 8; Fig. 4).** Contact arrays at 160/120/100 nm pitch under annular, conventional and
+quasar illumination are certified tight within 0.03–0.30% with rank-one optima; each SDP solves in < 0.5 s. For the
+320 nm T-junction and line-end cells (F = 61, ~1,200 constraints; 100–200 s per SDP) the certified bounds are 0.4386
+(annular) and 0.3893 (quasar) for the T-junction and 0.5194 for the line-ends; [[exp13: strong search, face rank,
+two-exposure realization]]. The weighted dark matrix has a 4–16-dimensional null space (orders invisible to every
+constraint); the certificate is verified on its complement and the bright matrix vanishes on it to 1e-31.
+
+**6.9 Robustness and solver validation (Tables 7, "robustness", exp15).** The bound is invariant to interior sampling
+(0.46907 for 16→1 nm spacing) and monotone in τ; source quadrature converges (0.513–0.526 for 11–21 points); the
+Rayleigh-quotient bound is 3–150× weaker; complex-mask and real-mask relaxations coincide on all nine cases
+(Lemma 6). All 140 reported bounds were recomputed and their certificates verified by a 50-digit Cholesky
+factorization (two EUV cases with bound exactly 1 have S = 0 and are covered by Prop. 5). CLARABEL and SCS agree to
+median 4.5e-9; on six near-degenerate random instances SCS is off by up to 0.14 and once negative, which the
+certificate check exposes.
+
+**6.10 Physics sensitivity (Tables 10–11; Fig. 5).** Under the vector model (n_resist = 1.7, Rodrigues rotation,
+obliquity): TE-polarized bounds are 0–4% below scalar, unpolarized 10–40% above, TM 70–120% above (classical TM contrast
+loss at NA 1.35); tightness statistics are unchanged (gaps ≤ 2.5%, mostly 0). Aberrations of 0.02–0.1 λ (astigmatism,
+coma, spherical) move the iso-dense bound by 0.0–7%. Mask pixelation at or above the collected-band count (N ≥ F = 15)
+leaves the bound unchanged; coarser pixels raise it (50 nm: +15%, 67 nm: +46%), as Lemma 8 predicts.
+[[exp17: random 2D, adversarial 1D, EUV 2D]]
 
 ## 7 Discussion
-[[to be finalized]]
-
+The certificates turn folklore into checkable statements: (i) local optimization of the exposure-latitude objective is
+globally optimal for most 1D targets and for the 2D contact arrays tested, and when it is not, the shortfall is—by
+Theorem 3—exactly the benefit of incoherent multiple exposure, which Algorithm 2 proves to be strictly positive on
+concrete coherent-illumination targets; (ii) coherent illumination with phase-shift masks is the certified entitlement
+for the iso-dense target; (iii) binary masks forfeit a certified 3–14%; (iv) pattern-error ILT is far from EL-optimal,
+suggesting EL/contrast objectives or the certificate as a stopping criterion; (v) the dual weights localize the limiting
+geometry (corners and line-ends in Fig. 4). The conclusions survive the vector model and moderate aberrations. The
+relaxation gap has a physical meaning, so it is informative rather than merely a weakness.
 ## 8 Limitations
 Scalar/vector thin-mask periodic model (no 3D mask electromagnetics, resist chemistry, flare, mask error); sampled
 constraints with an explicit edge tolerance; ratio/EL objective (any constraint linear in intensity lifts identically;
