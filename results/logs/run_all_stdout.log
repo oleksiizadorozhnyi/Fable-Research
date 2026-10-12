@@ -1,0 +1,1 @@
+./run_all_par.sh: line 6:  5657 Killed                  python3 -W ignore $e.py > ../results/logs/$e.log 2>&1
