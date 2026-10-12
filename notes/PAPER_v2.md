@@ -182,8 +182,9 @@ constraint); the certificate is verified on its complement and the bright matrix
 **6.9 Robustness and solver validation (Tables 7, "robustness", exp15).** The bound is invariant to interior sampling
 (0.46907 for 16→1 nm spacing) and monotone in τ; source quadrature converges (0.513–0.526 for 11–21 points); the
 Rayleigh-quotient bound is 3–150× weaker; complex-mask and real-mask relaxations coincide on all nine cases
-(Lemma 6). All 140 reported bounds were recomputed and their certificates verified by a 50-digit Cholesky
-factorization (two EUV cases with bound exactly 1 have S = 0 and are covered by Prop. 5). CLARABEL and SCS agree to
+(Lemma 6). All 136 reported bounds were recomputed and their projected certificate matrices factorized exactly by a 50-digit
+Cholesky (135 succeed; one EUV case with bound exactly 1 has S = 0, Prop. 5); the rigorization scale c exceeds 0.99999
+except on one near-degenerate random instance (bound 1e-3, c = 0.835). CLARABEL and SCS agree to
 median 4.5e-9; on six near-degenerate random instances SCS is off by up to 0.14 and once negative, which the
 certificate check exposes.
 

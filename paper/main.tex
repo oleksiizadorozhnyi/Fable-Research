@@ -1,12 +1,13 @@
 \documentclass[11pt,a4paper]{article}
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath,amssymb,amsthm,bm}
-\usepackage{graphicx,booktabs,siunitx,microtype,hyperref,xcolor}
+\usepackage{lmodern}\usepackage[T1]{fontenc}\usepackage{graphicx,booktabs,hyperref,xcolor}\usepackage[expansion=false]{microtype}
+\newcommand{\SI}[2]{\ensuremath{#1\,\mathrm{#2}}}\newcommand{\SIrange}[3]{\ensuremath{#1\text{--}#2\,\mathrm{#3}}}
 \usepackage[numbers,sort&compress]{natbib}
 \hypersetup{colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black,urlcolor=blue!60!black}
 \graphicspath{{../results/figs/}}
 \newtheorem{theorem}{Theorem}\newtheorem{lemma}[theorem]{Lemma}\newtheorem{proposition}[theorem]{Proposition}
-\newtheorem{corollary}[theorem]{Corollary}\theoremstyle{remark}\newtheorem{remark}[theorem]{Remark}
+\newtheorem{corollary}[theorem]{Corollary}\theoremstyle{remark}\newtheorem*{remark}{Remark}
 \newcommand{\R}{\mathbb{R}}\newcommand{\C}{\mathbb{C}}\newcommand{\PSD}{\succeq 0}
 \DeclareMathOperator{\Tr}{Tr}\DeclareMathOperator{\rank}{rank}\DeclareMathOperator{\conj}{conj}
 \newcommand{\I}{I}\newcommand{\rhostar}{\rho^{\star}}
@@ -15,6 +16,7 @@
 \author{Autonomous research system (Claude), with human oversight\thanks{Code, data and the full verification record are available in the accompanying repository (\texttt{code/}, \texttt{results/}, \texttt{notes/}). Every number in this manuscript is produced by \texttt{code/run\_all\_par.sh} from scratch.}}
 \date{October 12, 2026 --- manuscript v2 (internally verified; not peer reviewed)}
 
+\sloppy
 \begin{document}\maketitle
 
 \begin{abstract}
@@ -49,9 +51,10 @@ A target is specified by finite sample sets $B$ (bright) and $D$ (dark) placed a
 \end{equation}
 is scale-invariant; for a threshold resist with one dose over the focus set, $\mathrm{EL}(\rho)=(1-\rho)/(1+\rho)$ is the exposure latitude. The synthesis problem and its relaxation are
 \begin{align}
-(\mathrm P_{\mathcal M})\quad & \rhostar(\mathcal M)=\inf_{M\in\mathcal M\setminus\{0\}}\rho(M)
- = \min\{t:\ M^{\mathsf H}Q_dM\le t\ (d\in D\!\times\! Z),\ M^{\mathsf H}Q_bM\ge1\ (b\in B\!\times\! Z)\},\\
-(\mathrm R)\quad & t_R=\min\{t:\ \Tr(Q_dX)\le t\ (d\in D\!\times\! Z),\ \Tr(Q_bX)\ge1\ (b\in B\!\times\! Z),\ X\PSD\ [,\ X=\conj(\Pi X\Pi)]\},\label{eq:R}
+(\mathrm P_{\mathcal M})\quad & \rhostar(\mathcal M)=\inf_{M\in\mathcal M\setminus\{0\}}\rho(M)\nonumber\\
+ &\hphantom{\rhostar(\mathcal M)}= \min\big\{t:\ M^{\mathsf H}Q_dM\le t\ \ \forall d\in D\times Z,\ \ M^{\mathsf H}Q_bM\ge1\ \ \forall b\in B\times Z\big\},\\
+(\mathrm R)\quad & t_R=\min\big\{t:\ \Tr(Q_dX)\le t\ \ \forall d\in D\times Z,\ \ \Tr(Q_bX)\ge1\ \ \forall b\in B\times Z,\nonumber\\
+ &\hphantom{t_R=\min\big\{t:\ }X\PSD\ \ [\,X=\conj(\Pi X\Pi)\,]\big\},\label{eq:R}
 \end{align}
 where $\Pi$ is the order-flip permutation and the bracketed constraint selects real masks.
 
@@ -118,7 +121,7 @@ For dense lines the bound is exactly 1 for pitches below $\lambda/((1+\sigma)\ma
 
 \subsection{One-dimensional feature library}
 \begin{table}[t]\centering\small\caption{1D feature library (DUV; $\tau=\SI{8}{nm}$, dense-90: \SI{6}{nm}). Gap $=$ (best single mask $-$ bound)/bound.}\label{tab:1d}
-\begin{tabular}{lrrrrrr}\toprule
+\resizebox{\linewidth}{!}{\begin{tabular}{lrrrrrr}\toprule
 case & $F$ & foci & bound $\rho$ & max EL & best single $\rho$ & gap\\\midrule
 iso-dense, coherent & 9 & 1 & 0.3625 & 0.468 & 0.4741 & 30.8\%\\
 mixed, coherent & 7 & 1 & 0.4211 & 0.407 & 0.4787 & 13.7\%\\
@@ -130,7 +133,7 @@ iso-dense, $\sigma=0.7$, $\pm\SI{80}{nm}$ & 15 & 3 & 0.8131 & 0.103 & 0.9044 & 1
 mixed, $\sigma=0.7$, $\pm\SI{80}{nm}$ & 11 & 3 & 0.8691 & 0.070 & 0.9742 & 12.1\%\\
 iso-dense, dipole 0.8, $\pm\SI{80}{nm}$ & 15 & 3 & 0.7686 & 0.131 & 0.8921 & 16.1\%\\
 dense 90, $\sigma=0.7$ / dipole / coherent & 9/9/5 & 1 & 0.6428/0.4217/0.4217 & 0.217/0.407/0.407 & = bound & 0.0\%\\
-\bottomrule\end{tabular}\end{table}
+\bottomrule\end{tabular}}\end{table}
 Dipole and dense-line cases are exactly tight; conventional-illumination gaps are $\le2.5\%$; coherent illumination shows large gaps (iso-dense 30.8\%, mixed 13.7\%) and the three-focus cases 11--16\% (Table~\ref{tab:1d}).
 
 \subsection{Random targets}
@@ -138,14 +141,14 @@ On 109 random targets (1--4 segments $\ge\SI{40}{nm}$ in 300--\SI{600}{nm} cells
 
 \subsection{Certified multi-exposure gains}
 \begin{table}[t]\centering\small\caption{Rigorous separation of single- and multi-exposure optima (Theorem~\ref{thm:bnb}; $L\le\rhostar(\mathcal M_\R)\le U$).}\label{tab:bnb}
-\begin{tabular}{lrrrrrrr}\toprule
+\resizebox{\linewidth}{!}{\begin{tabular}{lrrrrrrr}\toprule
 case & $F$ & SDP bound & B\&B $L$ & best single $U$ & nodes & converged & certified gain\\\midrule
 random 82 (coh.) & 5 & 0.3597 & 0.4061 & 0.4066 & 40,383 & yes & 12.9\%\\
 random 91 (coh.) & 5 & 0.6049 & 0.6775 & 0.6782 & 76,027 & yes & 12.0\%\\
 random 110 (coh.) & 5 & 0.3464 & 0.4033 & 0.4037 & 17,413 & yes & 16.4\%\\
 random 50 (coh.) & 5 & 0.3141 & 0.3343 & 0.3347 & 28,517 & yes & 6.4\%\\
 mixed, coherent & 7 & 0.4211 & 0.4776 & 0.4787 & $3.0\times10^7$ & no (0.23\% gap) & 13.4\%\\
-\bottomrule\end{tabular}\end{table}
+\bottomrule\end{tabular}}\end{table}
 Theorem~\ref{thm:bnb} converges in \SIrange{0.3}{1.6}{s} for $F=5$ and proves the gains of Table~\ref{tab:bnb}; each optimal face has rank 2, so two exposures suffice. The Lasserre-2 single-mask bounds coincide with $U$ to $10^{-6}$ on these instances (cross-checked between CLARABEL, 0.4787045, and SCS, 0.4787037, on the mixed target). For $F=9$ (iso-dense coherent) and $F=11$ (three-focus mixed target) the interval branch-and-bound does not converge within $6\times10^6$ nodes; only Lasserre-2 values (0.4608 and 0.9552, solver status \emph{optimal\_inaccurate}) corroborate gains of 27\% and 9.9\%, which we therefore do not count as certified.
 
 \subsection{Phase-shift versus binary masks; standard ILT}
@@ -156,7 +159,7 @@ For the iso-dense target the per-source-point relaxation equals the coherent bou
 
 \subsection{Two-dimensional layouts}
 \begin{table}[t]\centering\small\caption{2D layouts (DUV, NA 1.35). Contacts: $\tau=12/10/8$\,nm for 160/120/100\,nm pitch; T-junction and line-ends: $\tau=\SI{14}{nm}$. ``strong'' = 12-start search with vectorized SLSQP polish.}\label{tab:2d}
-\begin{tabular}{lrrrrrr}\toprule
+\resizebox{\linewidth}{!}{\begin{tabular}{lrrrrrr}\toprule
 layout & $F$ & bound $\rho$ & max EL & best single $\rho$ & gap & SDP time\\\midrule
 contacts 160, annular & 13 & 0.5843 & 0.262 & 0.5861 & 0.30\% & \SI{1.4}{s}\\
 contacts 160, $\sigma=0.5$ & 9 & 0.6174 & 0.237 & 0.6177 & 0.04\% & \SI{1.5}{s}\\
@@ -166,14 +169,14 @@ contacts 100, quasar & 5 & 0.8751 & 0.067 & 0.8754 & 0.03\% & \SI{0.5}{s}\\
 T-junction 320, annular (strong) & 61 & 0.4387 & 0.390 & 0.4413 & 0.61\% & \SI{410}{s}\\
 T-junction 320, quasar (strong) & 61 & 0.3893 & 0.440 & 0.4135 & 6.2\% & \SI{269}{s}\\
 line-ends 320, annular (strong) & 61 & 0.5194 & 0.316 & 0.5195 & 0.03\% & \SI{649}{s}\\
-\bottomrule\end{tabular}\end{table}
+\bottomrule\end{tabular}}\end{table}
 Contact arrays are certified essentially tight with rank-one optima (Table~\ref{tab:2d}, Fig.~\ref{fig:2d}). For the \SI{320}{nm} cells ($F=61$, $\approx$1,200 constraints) the strong search closes the annular T-junction and the line-end gaps to $0.61\%$ and $0.03\%$; the quasar T-junction retains a 6.2\% gap that we could neither close nor certify as a multi-exposure gain (the interval branch-and-bound is out of reach at $F=61$; a two-exposure local refinement did not beat the single mask). The weighted dark matrix has a 4-dimensional common null space (orders invisible to every constraint); the certificate is verified on its complement. On 40 random two-rectangle layouts in 200--\SI{240}{nm} cells (annular, quasar, $\sigma=0.5$; $F=13$--37) the single-mask search matches the bound to $10^{-3}$ in 45\% and to 5\% in 62.5\% of cases; the remaining gaps (up to 26\%, mostly $\sigma=0.5$ and $F=37$) are unresolved upper bounds on the multi-exposure benefit. EUV contact arrays (32--\SI{44}{nm} pitch, $\pm\SI{40}{nm}$ focus) are tight with certified EL from 0.13 to 0.41 (Fig.~\ref{fig:dataset}).
 
 \subsection{Adversarial targets}
 Near-cutoff mixed pitches, SRAF-like \SI{20}{nm} spaces, 5\%/95\% duty cycles, alternating widths and three-pitch mixtures (Fig.~\ref{fig:dataset}) are tight under dipole illumination, mostly tight under $\sigma=0.7$, and show 12--37\% gaps under coherent illumination (rank 3--5), the regime where multi-exposure helps most. The isolated \SI{20}{nm} space under coherent or dipole light has certified bound $\approx0$: a phase-edge mask prints an arbitrarily dark narrow line, which the relaxation recognises.
 
 \subsection{Robustness, solver validation and physics sensitivity}\label{sec:robust}
-The bound is invariant to interior spacing (0.46907 for 16$\to$\SI{1}{nm}) and monotone in $\tau$ (EL 0.09 at \SI{2}{nm} to 0.74 at \SI{20}{nm}); source quadrature converges (0.513--0.526 for 11--21 points); the Rayleigh-quotient bound is 1--148$\times$ weaker (Table~\ref{tab:rayleigh}); complex- and real-mask relaxations coincide on all nine cases (Lemma~\ref{lem:complex}). Every reported bound was recomputed and its projected certificate matrix factorized by a 50-digit Cholesky (two EUV cases with bound exactly 1 have $S=0$, Prop.~\ref{prop:cutoff}). CLARABEL and SCS agree to median $7\times10^{-9}$; on five near-degenerate random instances (bounds $\le10^{-2}$) SCS is off by up to 0.14 and once negative, which the certificate check exposes. Under the vector model ($n_{\rm resist}=1.7$) TE bounds are 0--4\% below scalar, unpolarized 10--40\% above, TM 70--120\% above (classical TM contrast loss at NA 1.35), with tightness unchanged; aberrations of 0.02--0.1$\lambda$ move the iso-dense bound by 0--7\%; pixelation at $N\ge F$ leaves it unchanged and coarser pixels raise it (+15\% at \SI{50}{nm}, +46\% at \SI{67}{nm}), as Lemma~\ref{lem:pixel} predicts (Fig.~\ref{fig:bnb}).
+The bound is invariant to interior spacing (0.46907 for 16$\to$\SI{1}{nm}) and monotone in $\tau$ (EL 0.09 at \SI{2}{nm} to 0.74 at \SI{20}{nm}); source quadrature converges (0.513--0.526 for 11--21 points); the Rayleigh-quotient bound is 1--148$\times$ weaker (Table~\ref{tab:rayleigh}); complex- and real-mask relaxations coincide on all nine cases (Lemma~\ref{lem:complex}). All 136 reported bounds were recomputed and their projected certificate matrices factorized exactly by a 50-digit Cholesky (135 succeed; the remaining EUV case with bound exactly 1 has $S=0$, Prop.~\ref{prop:cutoff}); the rigorization scale $c$ exceeds 0.99999 except on one near-degenerate random instance (bound $10^{-3}$, $c=0.835$). CLARABEL and SCS agree to median $7\times10^{-9}$; on five near-degenerate random instances (bounds $\le10^{-2}$) SCS is off by up to 0.14 and once negative, which the certificate check exposes. Under the vector model ($n_{\rm resist}=1.7$) TE bounds are 0--4\% below scalar, unpolarized 10--40\% above, TM 70--120\% above (classical TM contrast loss at NA 1.35), with tightness unchanged; aberrations of 0.02--0.1$\lambda$ move the iso-dense bound by 0--7\%; pixelation at $N\ge F$ leaves it unchanged and coarser pixels raise it (+15\% at \SI{50}{nm}, +46\% at \SI{67}{nm}), as Lemma~\ref{lem:pixel} predicts (Fig.~\ref{fig:bnb}).
 \begin{table}[t]\centering\small\caption{SDP bound versus the generalized-eigenvalue (Rayleigh-quotient) bound and the complex-mask relaxation.}\label{tab:rayleigh}
 \begin{tabular}{llrrrr}\toprule case & source & $F$ & SDP (real) & Rayleigh & SDP (complex)\\\midrule
 iso-dense & coherent & 9 & 0.3625 & 0.0668 & 0.3625\\ iso-dense & $\sigma=0.7$ & 15 & 0.4691 & 0.1387 & 0.4691\\ iso-dense & dipole & 15 & 0.4313 & 0.0823 & 0.4313\\
@@ -198,7 +201,7 @@ The certificates turn folklore into checkable statements: local optimization of 
 Thin-mask periodic model (no 3D mask electromagnetics, resist chemistry, flare or mask error); sampled constraints with an explicit edge tolerance; ratio/EL objective (any constraint linear in intensity lifts identically, EPE enters only through $\tau$); the DNN relaxation is only an outer approximation in 2D; Lasserre-2 values carry solver status and are not counted as certificates; the branch-and-bound converges only for $F\le7$; one \SI{320}{nm} 2D gap (6.2\%) and the large-$F$ random 2D gaps remain unresolved; near-degenerate instances (bound $\lesssim10^{-2}$) stress first-order solvers; literature verification relied on abstracts and search snippets (full texts of \cite{rosenbluth2002,rosenbluth2007,liu1992} were not accessible).
 
 \section{Reproducibility}
-\texttt{pip install numpy scipy cvxpy matplotlib mpmath}; \texttt{cd code \&\& python3 -W ignore test\_certlitho.py} (9 tests) and \texttt{./run\_all\_par.sh} regenerate every table and figure (about 3.5 hours on four cores). JSON outputs and logs are in \texttt{results/}.
+\texttt{pip install numpy scipy cvxpy matplotlib mpmath}; \texttt{cd code \&\& python3 -W ignore test\_certlitho.py} (9 tests) and\\ \texttt{./run\_all\_par.sh} regenerate every table and figure (about 3.5 hours on four cores). JSON outputs and logs are in \texttt{results/}.
 
 \bibliographystyle{unsrtnat}
 \bibliography{refs}
