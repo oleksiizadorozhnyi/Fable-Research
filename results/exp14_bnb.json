@@ -58,5 +58,50 @@
   "bnb_time": 0.5077745914459229,
   "certified_gain": 0.0644806926043387,
   "sdp_ensemble_ratio": 0.3140903266566415
+ },
+ {
+  "name": "mixed_coh",
+  "F": 7,
+  "nB": 67,
+  "nD": 52,
+  "sdp_bound": 0.5875386935924869,
+  "best_single": 0.6439091102736308,
+  "bnb_L": 0.6270022323981113,
+  "bnb_U": 0.6439091102736308,
+  "bnb_nodes": 6002549,
+  "bnb_converged": false,
+  "bnb_time": 391.1528398990631,
+  "certified_gain": 0.06713075901955153,
+  "sdp_ensemble_ratio": 0.5875589538569599
+ },
+ {
+  "name": "isodense_coh",
+  "F": 9,
+  "nB": 48,
+  "nD": 98,
+  "sdp_bound": 0.5358712761823466,
+  "best_single": 0.6383065847247975,
+  "bnb_L": 0.1495901032217362,
+  "bnb_U": 0.6383065847247975,
+  "bnb_nodes": 6005751,
+  "bnb_converged": false,
+  "bnb_time": 590.5815343856812,
+  "certified_gain": -0.7208469512120942,
+  "sdp_ensemble_ratio": 0.5358712859173941
+ },
+ {
+  "name": "mixed_conv0.7_PW80_edgeonly",
+  "F": 11,
+  "nB": 6,
+  "nD": 6,
+  "sdp_bound": 0.8361840332797126,
+  "best_single": 0.8467266972140858,
+  "bnb_L": -1e-12,
+  "bnb_U": 0.8467266972140858,
+  "bnb_nodes": 6007797,
+  "bnb_converged": false,
+  "bnb_time": 176.30952429771423,
+  "certified_gain": -1.000000000001196,
+  "sdp_ensemble_ratio": 0.8361840354677654
  }
 ]
