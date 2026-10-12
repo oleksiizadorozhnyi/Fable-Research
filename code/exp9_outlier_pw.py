@@ -20,7 +20,7 @@ for name, L, segs, (s, w) in [("mixed_conv0.7_PW80", 500, [(0,40),(100,180),(240
     r = sdp_bound_real(rm, B, D); rig, _, _ = rigorize_certificate(rm, r['mu'], r['lam'])
     best, ranks = face_min_rank(rm, B, D, r['t'], ntries=6)
     v, rb = strong_primal(rm, B, D, [r['X'], best[1]], nround=600, nstart=60)
-    las = lasserre2_single_mask(rm, B, D, tmax=1.0, solvers=("SCS",)) if rm.F <= 11 else dict(t=None, status='skipped(F>11)')
+    las = dict(t=None, status='skipped(three foci: Lasserre-2 exceeds memory; see exp11b for the edge-only through-focus instance)')   # was F<=11 with SCS: 11.5 GB, OOM-killed
     rec = dict(name=name, F=rm.F, bound=rig, new_best=v, gap_new=(v-rig)/rig, min_face_rank=best[0], face_eigs=[float(e) for e in best[2][:4]], lasserre2=las['t'], lasserre_status=las['status'])
     print(json.dumps(rec), flush=True); out[name] = rec
     np.save(f'/home/user/Fable-Research/results/exp9_{name}_rbest.npy', rb); np.save(f'/home/user/Fable-Research/results/exp9_{name}_Yface.npy', best[1])
