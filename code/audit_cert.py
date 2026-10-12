@@ -1,6 +1,6 @@
 # Audit (3),(4): dual extraction, rigorize_certificate (last def) validity: rho(r) >= bound for random real masks
 import numpy as np, warnings, json; warnings.filterwarnings('ignore')
-from certlitho import *
+from certlitho import *; from pipeline import *
 lam, NA = 193.0, 1.35; rng = np.random.default_rng(1)
 conv = conventional_source_1d(0.7, NA, 7); dip = dipole_source_1d(0.8, NA); coh = ([0.0],[1.0])
 holes = lambda P, hw: (lambda a, b: (abs((a+P/2)%P-P/2) < hw) and (abs((b+P/2)%P-P/2) < hw))

@@ -1,1 +1,11 @@
 PASS test_abbe_cutoff
+PASS test_certificate_and_rounding
+PASS test_pixel_vs_fourier
+PASS test_real_equals_complex_symmetric_source
+PASS test_ilt_gradient
+PASS test_toeplitz_necessity
+PASS test_bnb_consistency
+PASS test_vector_model_consistency
+PASS test_multifocus_metric
+PASS test_two_beam_closed_form
+PASS test_catalogue_and_defocus_medium

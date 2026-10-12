@@ -1,18 +1,8 @@
 ### Table 1 — 1D feature library (DUV 193 nm, NA 1.35; edge tolerance 8 nm; dense90: 6 nm)
-| case | F | foci | certified bound ρ | max EL | best single mask ρ | gap | SDP time (s) |
+| case | F | foci | certified bound ρ | max EL (full range) | best single mask ρ | gap | SDP time (s) |
 |---|---|---|---|---|---|---|---|
-| isodense_coh | 9 | 1 | 0.3625 | 0.468 | 0.4741 | 30.78% | 0.19 |
-| mixed_coh | 7 | 1 | 0.4211 | 0.407 | 0.4787 | 13.68% | 0.12 |
-| isodense_conv0.7 | 15 | 1 | 0.4691 | 0.361 | 0.4808 | 2.50% | 0.56 |
-| mixed_conv0.7 | 11 | 1 | 0.4825 | 0.349 | 0.4836 | 0.22% | 0.44 |
-| isodense_dipole0.8 | 15 | 1 | 0.4313 | 0.397 | 0.4313 | 0.00% | 0.54 |
-| mixed_dipole0.8 | 13 | 1 | 0.4211 | 0.407 | 0.4211 | 0.00% | 0.88 |
-| isodense_conv0.7_PW80 | 15 | 3 | 0.8131 | 0.103 | 0.9044 | 11.22% | 2.93 |
-| mixed_conv0.7_PW80 | 11 | 3 | 0.8691 | 0.070 | 0.9742 | 12.09% | 1.35 |
-| isodense_dipole0.8_PW80 | 15 | 3 | 0.7686 | 0.131 | 0.8921 | 16.06% | 1.95 |
-| dense90_conv0.7 | 9 | 1 | 0.6428 | 0.217 | 0.6428 | 0.00% | 0.31 |
-| dense90_dipole0.8 | 9 | 1 | 0.4217 | 0.407 | 0.4217 | 0.00% | 0.22 |
-| dense90_coh | 5 | 1 | 0.4217 | 0.407 | 0.4217 | 0.00% | 0.27 |
+| isodense_coh | 9 | 1 | 0.5359 | 0.604 | 0.6383 | 19.12% | 0.25 |
+| mixed_coh | 7 | 1 | 0.5875 | 0.520 | 0.6439 | 9.59% | 0.70 |
 
 ### Table 2 — Certified multi-exposure gain (Lasserre-2 single-mask bound vs SDP multi-exposure bound)
 | case | F | SDP (multi-exposure) bound | Lasserre-2 single-mask bound | best single mask found | certified gain | status |
@@ -45,23 +35,23 @@
 | dipole0.8 | 2 | 0.4313 | 0.4313 |
 | full_grid0.9 | 13 | 0.5091 | 0.3625 |
 
-### Table 5 — EUV (13.5 nm, NA 0.33, ±50 nm focus) dense lines: certified max EL vs pitch
-| pitch (nm) | k1 | source | F | bound ρ | max EL | best single mask ρ | gap |
+### Table 5 — EUV (13.5 nm, NA 0.33, ±50 nm focus) dense lines: certified max EL (full range) vs pitch
+| pitch (nm) | k1 | source | F | bound ρ | max EL (full range) | best single mask ρ | gap |
 |---|---|---|---|---|---|---|---|
 | 20 | 0.244 | conv0.9 | 7 | 1.0000 | 0.000 | 1.0000 | 0.00% |
 | 20 | 0.244 | dipole0.8 | 7 | 1.0000 | 0.000 | 1.0000 | 0.00% |
-| 22 | 0.269 | conv0.9 | 9 | 0.4685 | 0.362 | 0.4685 | 0.00% |
+| 22 | 0.269 | conv0.9 | 9 | 0.4685 | 0.724 | 0.4685 | 0.00% |
 | 22 | 0.269 | dipole0.8 | 7 | 1.0000 | 0.000 | 1.0000 | 0.00% |
-| 24 | 0.293 | conv0.9 | 9 | 0.4733 | 0.357 | 0.4733 | 0.00% |
-| 24 | 0.293 | dipole0.8 | 9 | 0.2007 | 0.666 | 0.2007 | 0.00% |
-| 26 | 0.318 | conv0.9 | 9 | 0.4123 | 0.416 | 0.4123 | 0.00% |
-| 26 | 0.318 | dipole0.8 | 9 | 0.1880 | 0.684 | 0.1880 | 0.00% |
-| 28 | 0.342 | conv0.9 | 11 | 0.3951 | 0.434 | 0.3951 | 0.00% |
-| 28 | 0.342 | dipole0.8 | 9 | 0.2044 | 0.661 | 0.2044 | 0.00% |
-| 32 | 0.391 | conv0.9 | 11 | 0.3930 | 0.436 | 0.3930 | 0.00% |
-| 32 | 0.391 | dipole0.8 | 11 | 0.2566 | 0.592 | 0.2566 | 0.00% |
-| 40 | 0.489 | conv0.9 | 15 | 0.3282 | 0.506 | 0.3282 | 0.00% |
-| 40 | 0.489 | dipole0.8 | 15 | 0.1891 | 0.682 | 0.1891 | 0.00% |
+| 24 | 0.293 | conv0.9 | 9 | 0.4733 | 0.715 | 0.4733 | 0.00% |
+| 24 | 0.293 | dipole0.8 | 9 | 0.2007 | 1.331 | 0.2007 | 0.00% |
+| 26 | 0.318 | conv0.9 | 9 | 0.4123 | 0.832 | 0.4123 | 0.00% |
+| 26 | 0.318 | dipole0.8 | 9 | 0.1880 | 1.367 | 0.1880 | 0.00% |
+| 28 | 0.342 | conv0.9 | 11 | 0.3951 | 0.867 | 0.3951 | 0.00% |
+| 28 | 0.342 | dipole0.8 | 9 | 0.2044 | 1.321 | 0.2044 | 0.00% |
+| 32 | 0.391 | conv0.9 | 11 | 0.3930 | 0.872 | 0.3930 | 0.00% |
+| 32 | 0.391 | dipole0.8 | 11 | 0.2566 | 1.183 | 0.2566 | 0.00% |
+| 40 | 0.489 | conv0.9 | 15 | 0.3282 | 1.012 | 0.3282 | 0.00% |
+| 40 | 0.489 | dipole0.8 | 15 | 0.1891 | 1.364 | 0.1891 | 0.00% |
 
 Theorem 4 numerics: necessity violations 0/2000; sufficiency failures 0/200.
 
@@ -72,16 +62,13 @@ Theorem 4 numerics: necessity violations 0/2000; sufficiency failures 0/200.
 - 50-digit certificate check: Cholesky success=False, min eig=-8.25e-12, bound=0.469065
 
 ### Table 6 — 2D layouts (DUV, NA 1.35), edge tolerance 12 nm (contacts120/100: 10/8 nm; T/line-end: 14 nm)
-| layout | cell (nm) | source pts | F | samples | bound ρ | max EL | best single mask ρ | gap | rank | cert. null dim | SDP time (s) |
+| layout | cell (nm) | source pts | F | samples | bound ρ | max EL (full range) | best single mask ρ | gap | rank | cert. null dim | SDP time (s) |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| contacts160_annular | [160, 160] | 28 | 13 | 320 | 0.5843 | 0.262 | 0.5861 | 0.30% | 1 | 0 | 1.4 |
-| contacts160_conv0.5 | [160, 160] | 13 | 9 | 320 | 0.6174 | 0.237 | 0.6177 | 0.04% | 1 | 0 | 1.5 |
-| contacts120_annular | [120, 120] | 28 | 9 | 216 | 0.6957 | 0.179 | 0.6962 | 0.07% | 1 | 0 | 0.7 |
-| contacts120_quasar | [120, 120] | 20 | 9 | 216 | 0.5740 | 0.271 | 0.5747 | 0.13% | 1 | 0 | 0.7 |
-| contacts100_quasar | [100, 100] | 20 | 5 | 197 | 0.8751 | 0.067 | 0.8754 | 0.03% | 1 | 0 | 0.5 |
-| Tjunction320_annular | [320, 320] | 28 | 61 | 1210 | 0.4387 | 0.390 | 0.4789 | 9.17% | 6 | 0 | 410.2 |
-| Tjunction320_quasar | [320, 320] | 20 | 61 | 1210 | 0.3893 | 0.440 | 0.4444 | 14.17% | 3 | 0 | 268.8 |
-| lineend320_annular | [320, 320] | 28 | 61 | 1189 | 0.5194 | 0.316 | 0.5328 | 2.59% | 6 | 0 | 649.3 |
+| contacts160_annular | [160, 160] | 268 | 13 | 92 | 0.3852 | 0.888 | 0.3860 | 0.21% | 1 | 0 | 0.3 |
+| contacts160_conv0.5 | [160, 160] | 349 | 9 | 92 | 0.3884 | 0.881 | 0.3892 | 0.21% | 1 | 0 | 0.4 |
+| contacts120_annular | [120, 120] | 268 | 9 | 57 | 0.6769 | 0.385 | 0.6836 | 0.98% | 1 | 0 | 0.2 |
+| contacts120_quasar | [120, 120] | 140 | 9 | 57 | 0.6041 | 0.494 | 0.6110 | 1.14% | 1 | 0 | 0.3 |
+| contacts100_quasar | [100, 100] | 140 | 5 | 50 | 0.8051 | 0.216 | 0.8187 | 1.68% | 1 | 0 | 0.2 |
 
 ### Outlier / process-window re-examination (strong primal search, face exploration, Lasserre-2 where F≤11)
 | case | F | bound | old best | new best | new gap | min face rank | Lasserre-2 | status |
@@ -146,35 +133,35 @@ Theorem 4 numerics: necessity violations 0/2000; sufficiency failures 0/200.
 ### Random 2D layouts (n=40; cells 200/240 nm; annular/quasar/conv0.5; τ=12 nm): gap ≤1e-3: 45.0%; ≤1%: 52.5%; ≤5%: 62.5%; median 7.7e-03; max 0.265; F range 13–37; median SDP time 4.1 s
 
 ### Table 12 — Adversarial 1D targets
-| target | source | F | bound ρ | max EL | best single ρ | gap | rank |
+| target | source | F | bound ρ | max EL (full range) | best single ρ | gap | rank |
 |---|---|---|---|---|---|---|---|
-| nearcutoff_mixed_p88_p130 | coh | 7 | 0.5100 | 0.325 | 0.5720 | 12.16% | 3 |
-| nearcutoff_mixed_p88_p130 | conv0.7 | 11 | 0.6578 | 0.206 | 0.6727 | 2.26% | 2 |
-| nearcutoff_mixed_p88_p130 | dipole0.8 | 11 | 0.6994 | 0.177 | 0.6994 | 0.00% | 7 |
-| sraf_like_narrow_space | coh | 7 | 0.2426 | 0.610 | 0.2426 | 0.00% | 1 |
-| sraf_like_narrow_space | conv0.7 | 11 | 0.5290 | 0.308 | 0.5294 | 0.07% | 2 |
-| sraf_like_narrow_space | dipole0.8 | 13 | 0.2426 | 0.610 | 0.2426 | 0.00% | 1 |
-| extreme_duty_5pct | coh | 5 | 0.7951 | 0.114 | 0.7951 | 0.00% | 1 |
-| extreme_duty_5pct | conv0.7 | 9 | 0.8014 | 0.110 | 0.8014 | 0.00% | 2 |
-| extreme_duty_5pct | dipole0.8 | 11 | 0.7038 | 0.174 | 0.7038 | 0.00% | 5 |
-| extreme_duty_95pct | coh | 5 | 0.0000 | 1.000 | 0.0000 | -100.00% | 3 |
-| extreme_duty_95pct | conv0.7 | 9 | 0.0734 | 0.863 | 0.0734 | 0.00% | 1 |
-| extreme_duty_95pct | dipole0.8 | 11 | 0.0000 | 1.000 | 0.0000 | 1592.09% | 7 |
-| alternating_widths | coh | 9 | 0.5244 | 0.312 | 0.5989 | 14.22% | 4 |
-| alternating_widths | conv0.7 | 15 | 0.6826 | 0.189 | 0.6830 | 0.06% | 2 |
-| alternating_widths | dipole0.8 | 15 | 0.6798 | 0.191 | 0.6798 | 0.00% | 7 |
-| three_pitches | coh | 11 | 0.3853 | 0.444 | 0.5259 | 36.50% | 5 |
-| three_pitches | conv0.7 | 17 | 0.4973 | 0.336 | 0.5410 | 8.78% | 3 |
-| three_pitches | dipole0.8 | 19 | 0.3853 | 0.444 | 0.3855 | 0.05% | 7 |
+| nearcutoff_mixed_p88_p130 | coh | 7 | 0.5100 | 0.649 | 0.5720 | 12.16% | 3 |
+| nearcutoff_mixed_p88_p130 | conv0.7 | 11 | 0.6578 | 0.413 | 0.6727 | 2.26% | 2 |
+| nearcutoff_mixed_p88_p130 | dipole0.8 | 11 | 0.6994 | 0.354 | 0.6994 | 0.00% | 7 |
+| sraf_like_narrow_space | coh | 7 | 0.2426 | 1.219 | 0.2426 | 0.00% | 1 |
+| sraf_like_narrow_space | conv0.7 | 11 | 0.5290 | 0.616 | 0.5294 | 0.07% | 2 |
+| sraf_like_narrow_space | dipole0.8 | 13 | 0.2426 | 1.219 | 0.2426 | 0.00% | 1 |
+| extreme_duty_5pct | coh | 5 | 0.7951 | 0.228 | 0.7951 | 0.00% | 1 |
+| extreme_duty_5pct | conv0.7 | 9 | 0.8014 | 0.220 | 0.8014 | 0.00% | 2 |
+| extreme_duty_5pct | dipole0.8 | 11 | 0.7038 | 0.348 | 0.7038 | 0.00% | 5 |
+| extreme_duty_95pct | coh | 5 | 0.0000 | 2.000 | 0.0000 | -100.00% | 3 |
+| extreme_duty_95pct | conv0.7 | 9 | 0.0734 | 1.727 | 0.0734 | 0.00% | 1 |
+| extreme_duty_95pct | dipole0.8 | 11 | 0.0000 | 2.000 | 0.0000 | 1592.09% | 7 |
+| alternating_widths | coh | 9 | 0.5244 | 0.624 | 0.5989 | 14.22% | 4 |
+| alternating_widths | conv0.7 | 15 | 0.6826 | 0.377 | 0.6830 | 0.06% | 2 |
+| alternating_widths | dipole0.8 | 15 | 0.6798 | 0.381 | 0.6798 | 0.00% | 7 |
+| three_pitches | coh | 11 | 0.3853 | 0.887 | 0.5259 | 36.50% | 5 |
+| three_pitches | conv0.7 | 17 | 0.4973 | 0.671 | 0.5410 | 8.78% | 3 |
+| three_pitches | dipole0.8 | 19 | 0.3853 | 0.887 | 0.3855 | 0.05% | 7 |
 
 ### Table 13 — EUV 2D contact arrays (13.5 nm, NA 0.33, ±40 nm focus, τ = 0.1 pitch)
-| pitch | k1 | source | F | bound ρ | max EL | best single ρ | gap | rank |
+| pitch | k1 | source | F | bound ρ | max EL (full range) | best single ρ | gap | rank |
 |---|---|---|---|---|---|---|---|---|
-| 44 | 0.538 | annular | 13 | 0.4303 | 0.398 | 0.4303 | 0.00% | 1 |
-| 44 | 0.538 | quasar | 13 | 0.4168 | 0.412 | 0.4168 | 0.00% | 5 |
-| 40 | 0.489 | annular | 9 | 0.4786 | 0.353 | 0.4786 | 0.00% | 1 |
-| 40 | 0.489 | quasar | 9 | 0.4194 | 0.409 | 0.4194 | 0.00% | 1 |
-| 36 | 0.440 | annular | 9 | 0.5690 | 0.275 | 0.5690 | 0.00% | 1 |
-| 36 | 0.440 | quasar | 9 | 0.4258 | 0.403 | 0.4258 | 0.00% | 1 |
-| 32 | 0.391 | annular | 9 | 0.7681 | 0.131 | 0.7681 | 0.00% | 5 |
-| 32 | 0.391 | quasar | 9 | 0.5782 | 0.267 | 0.5782 | 0.00% | 1 |
+| 44 | 0.538 | annular | 13 | 0.4303 | 0.797 | 0.4303 | 0.00% | 1 |
+| 44 | 0.538 | quasar | 13 | 0.4168 | 0.823 | 0.4168 | 0.00% | 5 |
+| 40 | 0.489 | annular | 9 | 0.4786 | 0.705 | 0.4786 | 0.00% | 1 |
+| 40 | 0.489 | quasar | 9 | 0.4194 | 0.818 | 0.4194 | 0.00% | 1 |
+| 36 | 0.440 | annular | 9 | 0.5690 | 0.549 | 0.5690 | 0.00% | 1 |
+| 36 | 0.440 | quasar | 9 | 0.4258 | 0.806 | 0.4258 | 0.00% | 1 |
+| 32 | 0.391 | annular | 9 | 0.7681 | 0.262 | 0.7681 | 0.00% | 5 |
+| 32 | 0.391 | quasar | 9 | 0.5782 | 0.535 | 0.5782 | 0.00% | 1 |
