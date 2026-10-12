@@ -25,7 +25,7 @@ out['aberrations'] = res
 # (c) 2D contacts: vector unpolarized / TE vs scalar
 res = []
 ann = SRC_DUV['annular']; qua = SRC_DUV['quasar']
-holes = lambda P, hw: (lambda a, b: (abs((a+P/2)%P-P/2) < hw) and (abs((b+P/2)%P-P/2) < hw))
+holes = lambda P, hw: rect_target((P, P), [(P/2 - hw, P/2 - hw, 2*hw, 2*hw)])
 for name, L, tf, src, margin in [("contacts120_annular", (120,120), holes(120,25), ann, 5), ("contacts120_quasar", (120,120), holes(120,25), qua, 5)]:
     md0, B, D, _ = build_2d(L, lam, NA, src, tf, margin, spacing=16.0, fine=2.0); rec0, *_ = analyze(md0, B, D, nround=150, nstart=4, polish=False)
     row = dict(case=name, scalar_bound=rec0['rigorous'], scalar_gap=rec0['gap_rel'])

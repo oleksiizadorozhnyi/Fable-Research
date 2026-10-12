@@ -1,7 +1,7 @@
 from pipeline import *
 lam, NA = 193.0, 1.35; ann = SRC_DUV['annular']; qua = SRC_DUV['quasar']
-Tj = lambda a, b: (abs(a-160) < 30 and 60 < b < 220) or (abs(b-40) < 30)
-lineend = lambda a, b: (abs(a-100) < 25 and 30 < b < 210) or (abs(a-220) < 25 and (b < 150 or b > 270))
+Tj = rect_target((320, 320), [(130, 60, 60, 160), (0, 10, 320, 60)])
+lineend = rect_target((320, 320), [(75, 30, 50, 180), (195, 270, 50, 200)])
 e4 = json.load(open('/home/user/Fable-Research/results/exp4_2d.json'))
 for name, tf, src in [("Tjunction320_quasar", Tj, qua), ("lineend320_annular", lineend, ann)]:
     md, B, D, tgt = build_2d((320,320), lam, NA, src, tf, 6, spacing=16.0, fine=2.0); rm = RealModel(md)

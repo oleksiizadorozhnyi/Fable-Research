@@ -724,7 +724,7 @@ def sdp_bound_pixel_int(model, N, B, D, nonneg=False, box=None, solver="CLARABEL
        M_k = sinc(k/N) * (1/N) sum_n m_n e^{-2 pi i k n /N}. nonneg -> DNN. Returns bound for masks of that pixelation."""
     assert model.dim == 1
     n = np.arange(N); k = model.k[:, 0]
-    G = (np.sinc(k/N)[:, None]) * np.exp(-2j*np.pi*np.outer(k, n)/N)/N
+    G = (np.sinc(k/N)[:, None]) * np.exp(-2j*np.pi*np.outer(k, n + 0.5)/N)/N   # pixel n covers [nL/N,(n+1)L/N): centre phase e^{-i pi k/N}
     X = cp.Variable((N, N), symmetric=True); t = cp.Variable(); cons = [X >> 0]
     if nonneg: cons.append(X >= 0)
     for z in model.focus:
@@ -828,12 +828,20 @@ class Model(Model):
         if src.ndim == 1: src = src.reshape(-1, 1)
         if src.shape[1] == 1: src = np.hstack([src, np.zeros((src.shape[0], 1))])     # legacy 1-D slit points
         self.src = src; self.w = np.asarray(src_w, float) / np.sum(src_w); self.focus = tuple(focus)
+        if NA > n_img + 1e-12 and any(abs(z) > 0 for z in focus): raise ValueError(f"NA={NA} exceeds the image-side index n_img={n_img}; defocus needs the immersion index (1.44 for water)")
         smax = np.max(np.linalg.norm(self.src, axis=1)); R = (NA + smax) / lam
         if dim == 1:
             K = int(np.floor(R * self.L[0] + 1e-9)); ks = [(k,) for k in range(-K, K + 1)]
         else:
             Kx = int(np.floor(R * self.L[0] + 1e-9)); Ky = int(np.floor(R * self.L[1] + 1e-9))
             ks = [(kx, ky) for kx in range(-Kx, Kx + 1) for ky in range(-Ky, Ky + 1) if np.hypot(kx / self.L[0], ky / self.L[1]) <= R + 1e-12]
+        # drop dead orders: k that no source point ever brings inside the pupil (kept if -k is live, so K = -K)
+        kk = np.array(ks, float); ff = kk / self.L; ff2 = ff if dim == 2 else np.hstack([ff, np.zeros((len(ff), 1))])
+        live = np.zeros(len(ks), bool)
+        for s_ in self.src: live |= (np.linalg.norm(ff2 + s_ / lam, axis=1) * lam <= NA + 1e-12)
+        live_set = {tuple(k_) for k_, l in zip(ks, live) if l}
+        ks = [k_ for k_ in ks if tuple(k_) in live_set or tuple(-np.array(k_)) in live_set]
+        self.n_dead_dropped = int(len(kk) - len(ks))
         self.k = np.array(ks); self.F = len(self.k); self.f = self.k / self.L
         self.f2 = self.f if dim == 2 else np.hstack([self.f, np.zeros((self.F, 1))])
         self.kindex = {tuple(kk): i for i, kk in enumerate(self.k)}
@@ -920,3 +928,91 @@ def build_1d_x(L, lam, NA, src, segs, margin, spacing=4.0, focus=(0.0,), **kw):
 def build_2d_x(L, lam, NA, src, target_fn, margin, spacing=10.0, fine=1.0, focus=(0.0,), **kw):
     s, w = src; x, B, D, tgt, sd = samples_2d(L, target_fn, margin, spacing, fine=fine)
     return ModelX(L, lam, NA, s, w, nx=None, focus=focus, dim=2, xs=x, **kw), B, D, tgt
+
+# ----------------------------------------------------------------------------- exact 2D edge-offset sampling (session 3, code audit item 1)
+def rect_target(L, rects):
+    """Periodic union of axis-aligned rectangles (x0, y0, w, h) in a cell L=(Lx,Ly). Returns a boolean target function
+       with attributes .rects and .L so that samples_2d can place samples at EXACT distance tau from the boundary."""
+    Lx, Ly = float(L[0]), float(L[1]); rr = [(float(a) % Lx, float(b) % Ly, float(w), float(h)) for a, b, w, h in rects]
+    def tf(a, b): return any(((a - x0) % Lx) < w_ and ((b - y0) % Ly) < h_ for x0, y0, w_, h_ in rr)
+    tf.rects = rr; tf.L = (Lx, Ly); return tf
+
+def _union_boundary_segments(tf):
+    """Axis-aligned boundary segments of the periodic union of tf.rects, each with its outward unit normal.
+       Every rectangle edge is split at all candidate coordinates; a piece is kept iff tf is inside on one side and
+       outside on the other (so edges buried inside other rectangles, and collinear coincident edges, are discarded)."""
+    Lx, Ly = tf.L; eps = 1e-6
+    xs_all = sorted({v % Lx for x0, y0, w, h in tf.rects for v in (x0, x0 + w)}); ys_all = sorted({v % Ly for x0, y0, w, h in tf.rects for v in (y0, y0 + h)})
+    def cuts(vals, lo, hi, P):
+        c = {lo, hi}
+        for v in vals:
+            for sh in (-P, 0.0, P, 2 * P):
+                if lo + eps < v + sh < hi - eps: c.add(v + sh)
+        return sorted(c)
+    segs = []   # (orientation 'v'|'h', fixed coord, lo, hi, normal sign)
+    for x0, y0, w, h in tf.rects:
+        for xf in (x0, x0 + w):                       # vertical edges
+            for a, b in zip(cuts(ys_all, y0, y0 + h, Ly)[:-1], cuts(ys_all, y0, y0 + h, Ly)[1:]):
+                ym = 0.5 * (a + b)
+                for sgn in (+1.0, -1.0):
+                    if tf(xf + sgn * eps, ym) == False and tf(xf - sgn * eps, ym) == True: segs.append(('v', xf % Lx, a, b, sgn))
+        for yf in (y0, y0 + h):                       # horizontal edges
+            for a, b in zip(cuts(xs_all, x0, x0 + w, Lx)[:-1], cuts(xs_all, x0, x0 + w, Lx)[1:]):
+                xm = 0.5 * (a + b)
+                for sgn in (+1.0, -1.0):
+                    if tf(xm, yf + sgn * eps) == False and tf(xm, yf - sgn * eps) == True: segs.append(('h', yf % Ly, a, b, sgn))
+    return segs
+
+def exact_boundary_distance(pts, segs, L):
+    """Exact Euclidean distance (periodic, minimum image over 3x3 cell images) from points (n,2) to the union of segments."""
+    Lx, Ly = L; pts = np.asarray(pts, float); d = np.full(len(pts), np.inf)
+    for o, c, lo, hi, _ in segs:
+        for i in (-1, 0, 1):
+            for j in (-1, 0, 1):
+                px = pts[:, 0] + i * Lx; py = pts[:, 1] + j * Ly
+                if o == 'v': dx = px - c; dy = np.maximum(0.0, np.maximum(lo - py, py - hi))
+                else: dy = py - c; dx = np.maximum(0.0, np.maximum(lo - px, px - hi))
+                d = np.minimum(d, np.hypot(dx, dy))
+    return d
+
+def samples_2d(L, target_fn, margin, spacing, fine=1.0, band=0.6):
+    """2D periodic target as a union of rectangles (rect_target). Sample points: (i) the offset contours at EXACT distance
+       `margin` on both sides of every boundary segment (points every `fine` nm along the contour, plus the circular arcs
+       around convex corners), (ii) a coarse interior grid (step `spacing`) at distance > margin. Every returned point is
+       at distance >= margin (asserted) and both rings are non-empty (asserted). `band` is kept for signature compatibility.
+       Returns (x, B, D, tgt, sd_grid) where sd_grid is the signed distance on a 1 nm raster (for plots)."""
+    if not hasattr(target_fn, 'rects'): raise TypeError("samples_2d needs a rect_target (exact geometry); boolean functions are no longer accepted")
+    Lx, Ly = float(L[0]), float(L[1]); tau = float(margin); step = float(fine)
+    segs = _union_boundary_segments(target_fn); assert segs, "target has no boundary"
+    cand = []
+    for o, c, lo, hi, sgn in segs:
+        ts = np.append(np.arange(lo, hi, step), hi)
+        for t in ts:
+            if o == 'v': cand += [(c + sgn * tau, t), (c - sgn * tau, t)]
+            else: cand += [(t, c + sgn * tau), (t, c - sgn * tau)]
+        for t in (lo, hi):                            # corner arcs (both sides; concave-side points are removed by the distance filter)
+            cx, cy = (c, t) if o == 'v' else (t, c)
+            for ang in np.arange(0, 2 * np.pi, step / tau): cand.append((cx + tau * np.cos(ang), cy + tau * np.sin(ang)))
+    cand = np.array(cand); cand[:, 0] %= Lx; cand[:, 1] %= Ly
+    cand = np.unique(np.round(cand, 6), axis=0)
+    d = exact_boundary_distance(cand, segs, (Lx, Ly)); keep = d >= tau - 1e-7
+    ring = cand[keep]; tg = np.array([bool(target_fn(a, b)) for a, b in ring])
+    pts = [tuple(p) for p in ring]; tgl = list(tg)
+    grid = np.array([(a, b) for a in np.arange(0, Lx, spacing) for b in np.arange(0, Ly, spacing)]) if spacing < max(Lx, Ly) else np.zeros((0, 2))
+    if len(grid):
+        dg = exact_boundary_distance(grid, segs, (Lx, Ly)); sel = dg > tau + 1e-7
+        pts += [tuple(p) for p in grid[sel]]; tgl += [bool(target_fn(a, b)) for a, b in grid[sel]]
+    x = np.array(pts); tgt = np.array(tgl)
+    dall = exact_boundary_distance(x, segs, (Lx, Ly)); assert dall.min() >= tau - 1e-6, dall.min()
+    assert tg.any() and (~tg).any(), "empty bright or dark offset ring"
+    gx = np.arange(0, Lx, 1.0); gy = np.arange(0, Ly, 1.0); G = np.array([(a, b) for a in gx for b in gy])
+    sdg = exact_boundary_distance(G, segs, (Lx, Ly)); ins = np.array([target_fn(a, b) for a, b in G])
+    sd = np.where(ins, sdg, -sdg).reshape(len(gx), len(gy))
+    return x, np.where(tgt)[0], np.where(~tgt)[0], tgt, sd
+
+def ensemble_ratio(rm, X, B, D):
+    """Dark/bright ratio of the summed image of the lifted solution X (real-structured, F x F real symmetric PSD):
+       max_d Tr(Qr_d X) / min_b Tr(Qr_b X). A feasible X realizes this ratio with rank(X) exposures (Theorem 3), so the
+       value is an UPPER bound on t_R and the right reference for a certified multi-exposure gain."""
+    X = np.real(np.asarray(X)); vals = lambda S: [float(np.sum(rm.Q(ix, z) * X)) for z in rm.focus for ix in S]
+    return max(vals(D)) / min(vals(B))

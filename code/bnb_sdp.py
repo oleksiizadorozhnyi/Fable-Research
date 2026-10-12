@@ -83,7 +83,7 @@ def certify_target(rm, B, D, T, mu=None, lam=None, max_nodes=20000, wmin=1e-3, v
         if nodes >= max_nodes: break
         _, _, i, l, u = heapq.heappop(heap); nodes += 1
         LB, ok, sp = node_certificate(F, i, l, u, A_pairs)
-        if ok and LB > 0: continue                                  # box certified empty
+        if ok and LB > 1e-9: continue                               # box certified empty (LB > 0 with floating-point slack)
         h = u - l
         if h.max() < wmin: failed.append((i, l.copy(), u.copy(), LB, sp)); continue
         j = int(np.argmax(h)); m = 0.5*(l[j]+u[j])

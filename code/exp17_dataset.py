@@ -10,7 +10,7 @@ for trial in range(40):
     Lc = float(rng.choice([200, 240])); nrect = int(rng.integers(1, 4)); rects = []
     for _ in range(nrect):
         w_ = rng.uniform(50, 0.6*Lc); h_ = rng.uniform(50, 0.6*Lc); x0 = rng.uniform(0, Lc); y0 = rng.uniform(0, Lc); rects.append((x0, y0, w_, h_))
-    tf = lambda a, b, rects=rects, Lc=Lc: any(((a - x0) % Lc) < w_ and ((b - y0) % Lc) < h_ for x0, y0, w_, h_ in rects)
+    tf = rect_target((Lc, Lc), rects)
     sname = str(rng.choice(list(srcs2)))
     try:
         md, B, D, tgt = build_2d((Lc, Lc), lam, NA, srcs2[sname], tf, 5, spacing=16.0, fine=2.0)
@@ -37,7 +37,7 @@ for name, L, segs, margin in adv:
 # (c) EUV 2D contacts: lam 13.5, NA 0.33, pitch 40/36/32 nm, holes 0.5 pitch, annular 0.5-0.9 and quasar, margin 0.1 pitch
 lamE, NAE = 13.5, 0.33
 annE = SRC_EUV['annularE']; quaE = SRC_EUV['quasarE']
-holes = lambda P, hw: (lambda a, b: (abs((a+P/2)%P-P/2) < hw) and (abs((b+P/2)%P-P/2) < hw))
+holes = lambda P, hw: rect_target((P, P), [(P/2 - hw, P/2 - hw, 2*hw, 2*hw)])
 for P in [44, 40, 36, 32]:
     for sname, src in [("annular", annE), ("quasar", quaE)]:
         try:

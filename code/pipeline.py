@@ -64,8 +64,10 @@ def analyze_el(rec):
     """Add full-range exposure-latitude fields (window width / centre dose) and a degenerate flag."""
     rec['EL_full_bound'] = el_full(rec['rigorous']); rec['EL_full_best'] = el_full(rec['best_feasible'])
     rec['degenerate'] = bool(rec['rigorous'] < 1e-6)
+    rec['cert_violation'] = bool(rec['best_feasible'] < rec['rigorous'] * (1 - 1e-6) - 1e-12)   # a feasible mask below the bound = invalid certificate
+    if rec['cert_violation']: print(f"WARNING: certificate violation: best_feasible {rec['best_feasible']} < rigorous {rec['rigorous']}", flush=True)
     if rec['degenerate']: rec['gap_rel'] = None; rec['gap_abs'] = rec['best_feasible'] - rec['rigorous']
     return rec
 _analyze_orig = analyze
 def analyze(md, B, D, **kw):
-    rec, rm, r, rbest = _analyze_orig(md, B, D, **kw); return analyze_el(rec), rm, r, rbest
+    rec, rm, r, rbest = _analyze_orig(md, B, D, **kw); rec['n_img'] = float(getattr(md, 'n_img', 1.0)); rec['dead_orders_dropped'] = int(getattr(md, 'n_dead_dropped', 0)); return analyze_el(rec), rm, r, rbest

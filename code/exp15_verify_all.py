@@ -38,6 +38,7 @@ for pitch in [20, 22, 24, 26, 28, 32, 40]:
         segsE = [(i*pitch, i*pitch + pitch/2) for i in range(4)]
         md, B, D, tgt = build_1d(4*pitch, lamE, NAE, src, segsE, 0.05*pitch, spacing=pitch/8, focus=(0.0, 50.0, -50.0)); verify(f"EUV_p{pitch}_{sname}", RealModel(md), B, D)
 ann = SRC_DUV['annular']; qua = SRC_DUV['quasar']; cv = SRC_DUV['conv0.5']
-holes = lambda P, hw: (lambda a, b: (abs((a+P/2)%P-P/2) < hw) and (abs((b+P/2)%P-P/2) < hw))
-for name, L, tf, src, margin in [("contacts160_annular", (160,160), holes(160,35), ann, 7), ("contacts160_conv0.5", (160,160), holes(160,35), cv, 7), ("contacts120_annular", (120,120), holes(120,25), ann, 5), ("contacts120_quasar", (120,120), holes(120,25), qua, 5), ("contacts100_quasar", (100,100), holes(100,22), qua, 4.4)]:
+holes = lambda P, hw: rect_target((P, P), [(P/2 - hw, P/2 - hw, 2*hw, 2*hw)])
+Tj = rect_target((320, 320), [(130, 60, 60, 160), (0, 10, 320, 60)]); lineend = rect_target((320, 320), [(75, 30, 50, 180), (195, 270, 50, 200)])
+for name, L, tf, src, margin in [("contacts160_annular", (160,160), holes(160,35), ann, 7), ("contacts160_conv0.5", (160,160), holes(160,35), cv, 7), ("contacts120_annular", (120,120), holes(120,25), ann, 5), ("contacts120_quasar", (120,120), holes(120,25), qua, 5), ("contacts100_quasar", (100,100), holes(100,22), qua, 4.4), ("Tjunction320_annular", (320,320), Tj, ann, 6), ("Tjunction320_quasar", (320,320), Tj, qua, 6), ("lineend320_annular", (320,320), lineend, ann, 6)]:
     md, B, D, tgt = build_2d(L, lam, NA, src, tf, margin, spacing=16.0, fine=2.0); verify(name, RealModel(md), B, D)

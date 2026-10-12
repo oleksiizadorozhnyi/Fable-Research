@@ -72,10 +72,28 @@ def test_two_beam_closed_form():
     r = sdp_bound_real(RealModel(md), B, D); assert abs(r['t'] - two_beam_closed_form(tau, p)) < 2e-5, (r['t'], two_beam_closed_form(tau, p))
 def test_catalogue_and_defocus_medium():
     s, w = disk_source(0.7, NA, n=11); segs = [(0,50),(100,150),(200,250),(430,480)]
-    md1, B, D, _ = build_1d(600, lam, NA, (s, w), segs, 5, spacing=4.0, focus=(0.0, 80.0, -80.0), n_img=1.0)
-    md2, _, _, _ = build_1d(600, lam, NA, (s, w), segs, 5, spacing=4.0, focus=(0.0, 80.0, -80.0), n_img=1.44)
-    r1 = sdp_bound_real(RealModel(md1), B, D); r2 = sdp_bound_real(RealModel(md2), B, D); assert r2['t'] < r1['t']   # weaker defocus in water
+    md1, B, D, _ = build_1d(600, lam, NA, (s, w), segs, 5, spacing=4.0, focus=(0.0, 80.0, -80.0), n_img=1.44)
+    md2, _, _, _ = build_1d(600, lam, NA, (s, w), segs, 5, spacing=4.0, focus=(0.0, 80.0, -80.0), n_img=1.7)
+    r1 = sdp_bound_real(RealModel(md1), B, D); r2 = sdp_bound_real(RealModel(md2), B, D); assert r2['t'] < r1['t']   # weaker defocus at higher index
+    try: build_1d(600, lam, NA, (s, w), segs, 5, spacing=4.0, focus=(0.0, 80.0, -80.0), n_img=1.0); raise AssertionError("NA > n_img guard did not fire")
+    except ValueError: pass
     assert abs(sum(w) - len(w)) < 1e-12 and s.shape[1] == 2
+def test_samples_2d_exact():
+    from certlitho import _union_boundary_segments, exact_boundary_distance
+    Tj = rect_target((320, 320), [(130, 60, 60, 160), (0, 10, 320, 60)]); segs = _union_boundary_segments(Tj)
+    assert len(segs) == 8 and abs(sum(hi - lo for _, _, lo, hi, _ in segs) - 940.0) < 1e-9, (len(segs), sum(hi - lo for _, _, lo, hi, _ in segs))
+    for tau in (6.0, 7.0, 4.4):
+        x, B, D, tgt, sd = samples_2d((320, 320), Tj, tau, 16.0, fine=2.0); d = exact_boundary_distance(x, segs, (320, 320))
+        ring = d < tau + 1e-6; assert ring.sum() > 500 and abs(d[ring] - tau).max() < 1e-6 and d.min() >= tau - 1e-6
+        assert tgt[B].all() and not tgt[D].any() and len(B) > 100 and len(D) > 100
+    # periodic wrap: line-end cell with a rectangle crossing the cell boundary
+    le = rect_target((320, 320), [(75, 30, 50, 180), (195, 270, 50, 200)]); x, B, D, tgt, sd = samples_2d((320, 320), le, 6, 16.0, fine=2.0)
+    assert exact_boundary_distance(x, _union_boundary_segments(le), (320, 320)).min() >= 6 - 1e-6
+    # bound is a valid lower bound for random real masks on a contact array
+    holes = rect_target((160, 160), [(45, 45, 70, 70)]); s, w = annular_source(0.6, 0.9, NA, n=9)
+    md, B, D, _ = build_2d((160, 160), lam, NA, (s, w), holes, 7, spacing=16.0, fine=2.0); rm = RealModel(md)
+    r = sdp_bound_real(rm, B, D); rig, _, _ = rigorize_certificate(rm, r['mu'], r['lam']); rng = np.random.default_rng(0)
+    assert all(rm.ratio(rng.standard_normal(rm.F), B, D) >= rig - 1e-9 for _ in range(200))
 if __name__ == "__main__":
-    for f in [test_abbe_cutoff, test_certificate_and_rounding, test_pixel_vs_fourier, test_real_equals_complex_symmetric_source, test_ilt_gradient, test_toeplitz_necessity, test_bnb_consistency, test_vector_model_consistency, test_multifocus_metric, test_two_beam_closed_form, test_catalogue_and_defocus_medium]:
+    for f in [test_abbe_cutoff, test_certificate_and_rounding, test_pixel_vs_fourier, test_real_equals_complex_symmetric_source, test_ilt_gradient, test_toeplitz_necessity, test_bnb_consistency, test_vector_model_consistency, test_multifocus_metric, test_two_beam_closed_form, test_catalogue_and_defocus_medium, test_samples_2d_exact]:
         f(); print("PASS", f.__name__)

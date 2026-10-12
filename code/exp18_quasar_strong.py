@@ -1,7 +1,7 @@
 # Much stronger single-mask search for the unresolved quasar T-junction: many restarts, SLSQP polish of top candidates, basin hopping.
 from pipeline import *
 lam, NA = 193.0, 1.35; qua = SRC_DUV['quasar']
-Tj = lambda a, b: (abs(a-160) < 30 and 60 < b < 220) or (abs(b-40) < 30)
+Tj = rect_target((320, 320), [(130, 60, 60, 160), (0, 10, 320, 60)])
 md, B, D, tgt = build_2d((320,320), lam, NA, qua, Tj, 6, spacing=16.0, fine=2.0); rm = RealModel(md)
 r = sdp_bound_real(rm, B, D); rig, _, _ = rigorize_certificate(rm, r['mu'], r['lam']); print("bound", rig, flush=True)
 rng = np.random.default_rng(11); best = (np.inf, None); t0 = time.time()

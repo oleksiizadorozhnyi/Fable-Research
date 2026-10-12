@@ -3,8 +3,8 @@ from pipeline import *
 from scipy.optimize import minimize
 from scipy.special import logsumexp, softmax
 lam, NA = 193.0, 1.35; ann = SRC_DUV['annular']; qua = SRC_DUV['quasar']
-Tj = lambda a, b: (abs(a-160) < 30 and 60 < b < 220) or (abs(b-40) < 30)
-lineend = lambda a, b: (abs(a-100) < 25 and 30 < b < 210) or (abs(a-220) < 25 and (b < 150 or b > 270))
+Tj = rect_target((320, 320), [(130, 60, 60, 160), (0, 10, 320, 60)])
+lineend = rect_target((320, 320), [(75, 30, 50, 180), (195, 270, 50, 200)])
 out = []
 def log(*a): print(*a, flush=True)
 def refine_pair(rm, R0, B, D, iters=600):
