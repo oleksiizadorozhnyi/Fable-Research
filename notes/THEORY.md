@@ -163,3 +163,14 @@ forms Q, P are themselves floating-point images of exact complex exponentials wi
 safeguards are heuristic, not a proof: the certificate is exact in exact arithmetic and 'certified' in the manuscript
 means 'exact modulo double-precision rounding of order 1e-12 relative', many orders below the reported gains (≥ 6%).
 A directed-rounding (interval) implementation is future work.
+
+### Session-3 corrections (2026-10-12, code audit)
+- Lemma 8: the pixel-to-order map carries the half-pixel phase, M_k = sinc(k/N) e^{-iπk/N} DFT_k(m), for pixel n covering
+  [nL/N, (n+1)L/N); the earlier implementation modelled pixels centred at nL/N (N ≥ F bounds unaffected; N < F bounds change).
+- Model: orders that no source point brings into the pupil ("dead orders") are discarded from K so that every order in K
+  is constrained; F counts live orders only (bounds unchanged, reported ranks no longer inflated by the unconstrained block).
+- Two-dimensional sampling: targets are unions of axis-aligned rectangles; samples lie exactly on the offset contours at
+  distance τ (asserted), replacing the pixel-quantised distance transform whose rings were empty for τ not a multiple of
+  the raster step and biased by up to one raster step otherwise. All 2D numbers were regenerated.
+- Certified multi-exposure gain (Theorem 9 use): the reference is the ratio realized by the SDP ensemble (an upper bound
+  on t_R), not the rigorized lower bound, so gain = (L − t̄)/t̄ ≤ (L − t_R)/t_R is itself certified.

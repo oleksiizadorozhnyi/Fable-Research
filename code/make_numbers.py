@@ -57,7 +57,7 @@ def _blk_BB():
     conv_gains = []; conv_times = []
     for nm, r in best.items():
         conv = 'yes' if r['bnb_converged'] else f"no ({pct((r['bnb_U']-r['bnb_L'])/r['bnb_U'],2)} gap)"
-        valid = r['bnb_L'] > r['sdp_bound']
+        valid = r['bnb_L'] > r.get('sdp_ensemble_ratio', r['sdp_bound'])   # gain is certified against the realized multi-exposure ratio (upper bound on t_R)
         rows.append(f"{lab.get(nm, nm)} & {r['F']} & {f4(r['sdp_bound'])} & {f4(max(r['bnb_L'],0))} & {f4(r['bnb_U'])} & {r['bnb_nodes']:,} & {conv} & {pct(r['certified_gain']) if valid else 'none'}\\\\")
         if r['bnb_converged']: conv_gains.append(r['certified_gain']); conv_times.append(r['bnb_time'])
     open(P+'tab_bnb.tex','w').write(tabbody(rows))
@@ -123,7 +123,7 @@ def _blk_2D():
     open(P+'tab_2d.tex','w').write(tabbody(rows))
     cg = [ (min(d4[n]['best_feasible'], d13.get(n, {}).get('best_single', 9)) - d4[n]['rigorous'])/d4[n]['rigorous'] for n in d4 if n.startswith('contacts')]; m('contactsGapMax', pct(max(cg),2))
     def g320(n): b = min(d4[n]['best_feasible'], d13.get(n, {}).get('best_single', 9), (e18['best_single'] if (n=='Tjunction320_quasar' and e18) else 9)); return (b-d4[n]['rigorous'])/d4[n]['rigorous']
-    m('tjAnnGap', pct(g320('Tjunction320_annular'),2)); m('tjQuaGap', pct(g320('Tjunction320_quasar'),1)); m('leGap', pct(g320('lineend320_annular'),2)); m('tjAnnBound', f4(d4['Tjunction320_annular']['rigorous'])); m('tjQuaBound', f4(d4['Tjunction320_quasar']['rigorous'])); m('leBound', f4(d4['lineend320_annular']['rigorous']))
+    m('tjF', str(d4['Tjunction320_annular']['F'])); m('tjConstraints', f"{d4['Tjunction320_annular']['nB']+d4['Tjunction320_annular']['nD']:,}"); m('contactsRankMax', str(max(d4[n]['rank'] for n in d4 if n.startswith('contacts')))); m('tjAnnGap', pct(g320('Tjunction320_annular'),2)); m('tjQuaGap', pct(g320('Tjunction320_quasar'),1)); m('leGap', pct(g320('lineend320_annular'),2)); m('tjAnnBound', f4(d4['Tjunction320_annular']['rigorous'])); m('tjQuaBound', f4(d4['Tjunction320_quasar']['rigorous'])); m('leBound', f4(d4['lineend320_annular']['rigorous']))
     m('nullDimMax', str(max((r.get('cert_null_dim') or 0) for r in e4))); t61 = [r['sdp_time'] for r in e4 if r['F'] >= 50]; m('sdpTimeBigLo', f"{min(t61):.0f}"); m('sdpTimeBigHi', f"{max(t61):.0f}"); tsm = [r['sdp_time'] for r in e4 if r['F'] < 50]; m('sdpTimeSmallHi', f"{max(tsm):.1f}")
 _run('2D', _blk_2D)
 def _blk_expandeddataset():
@@ -149,6 +149,13 @@ def _blk_physics():
         px = e16['pixelation']; F = px[0]['F']; same = [r for r in px if r['N'] >= F]; coarse = [r for r in px if r['N'] < F]; m('pixSameMaxDev', f"{max(abs(r['bound']-r['fourier'])/r['fourier'] for r in same):.0e}".replace('e-0','\\times10^{-').replace('e-','\\times10^{-')+'}'); m('pixCoarse', "; ".join(f"{r['pixel_nm']:.0f}\\,nm: {pct(r['bound']/r['fourier']-1,0)}" for r in coarse))
     pass
 _run('physics', _blk_physics)
+def _count_viol():
+    n = 0
+    for obj in (e1, e2, e4, e17):
+        recs = obj if isinstance(obj, list) else [r for v in (obj or {}).values() for r in (v if isinstance(v, list) else [])]
+        n += sum(1 for r in recs if isinstance(r, dict) and (r.get('cert_violation') or (r.get('best_feasible') is not None and r.get('rigorous') is not None and r['best_feasible'] < r['rigorous']*(1-1e-6) - 1e-12)))
+    return n
+_nv = _count_viol(); m('certViolations', str(_nv)); print("certificate violations (feasible mask below its bound):", _nv)
 with open(P+'numbers.tex','w') as f:
     for k, v in M.items(): f.write(f"\\newcommand{{\\{k}}}{{{v}}}\n")
 print("macros:", len(M)); print("\n".join(f"{k}={v}" for k, v in list(M.items())[:12]))

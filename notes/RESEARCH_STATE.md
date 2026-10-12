@@ -101,3 +101,12 @@ Bug log additions (honesty record):
   written; table bodies ended with `\\` which, followed by `\bottomrule` after `\input`, produced "Misplaced \noalign".
   All three fixed (digit->word sanitizer, write moved to the end, last row without `\\` and `\input{..}\\` in main.tex).
 - run_all_par.sh now records per-script exit codes ("FAILED <name> rc=<n>") instead of the echo's own status.
+- CRITICAL (code audit, review_code.md item 1–2): samples_2d used a pixel-quantised distance transform; with τ = 7/5/4.4 nm
+  and a 2 nm raster the edge-offset rings were EMPTY (bright set = 9 interior grid points) and, for τ a multiple of the
+  raster, samples sat 1–2 nm closer to the edge than τ. Every 2D bound reported before this fix was for a weaker
+  constraint set (contacts160/annular: 0.385 as coded vs 0.806 at the true τ = 7 nm; contacts100/quasar 0.805 vs 0.978).
+  Fixed by exact geometric offset sampling on rectangle unions (rect_target, assert min distance ≥ τ); the clean
+  reproduction was restarted from scratch (tests → all experiments → verification → tables → figures).
+- Dead diffraction orders kept in K inflated reported ranks (T-junction: rank 6 reported, 2 live); now dropped.
+- Pixel-integrated relaxation lacked the half-pixel phase; SDP-B&B pruning test now requires LB > 1e-9; certified
+  multi-exposure gains now reference the realized ensemble ratio; every record carries n_img and a cert_violation flag.
