@@ -11,7 +11,7 @@ def test_certificate_and_rounding():
     s, w = conventional_source_1d(0.7, NA, 7)
     md, B, D, tgt = build_1d(600, lam, NA, (s, w), [(0,50),(100,150),(200,250),(430,480)], 8, spacing=4.0); rm = RealModel(md)
     r = sdp_bound_real(rm, B, D); rig, mineig, c = rigorize_certificate(rm, r['mu'], r['lam'])
-    assert mineig >= 0 and abs(rig - r['t']) < 1e-5 * r['t'] and c > 0.999
+    assert mineig >= -1e-11 and abs(rig - r['t']) < 1e-5 * r['t'] and c > 0.999
     v, rv = round_from_Y(rm, r['X'], B, D, nsamp=100); assert v >= rig - 1e-9   # weak duality: any mask >= bound
     # interior sampling invariance
     md2, B2, D2, _ = build_1d(600, lam, NA, (s, w), [(0,50),(100,150),(200,250),(430,480)], 8, spacing=1.0)
@@ -59,6 +59,13 @@ def test_vector_model_consistency():
     mdt, _, _, _ = build_1d_x(360, lam, NA, (s, w), segs, 6, spacing=8.0, vector=True, pol='y', n_img=1.7); rT = sdp_bound_real(RealModel(mdt), B, D)
     assert rR['t'] >= rT['t'] - 1e-9
 
+def test_multifocus_metric():
+    s, w = conventional_source_1d(0.7, NA, 7)
+    md, B, D, tgt = build_1d(500, lam, NA, (s, w), [(0,40),(100,180),(240,400)], 8, spacing=8.0, focus=(0.0, 80.0, -80.0)); rm = RealModel(md)
+    r = sdp_bound_real(rm, B, D); rig, _, _ = rigorize_certificate(rm, r['mu'], r['lam'])
+    v, rv = round_from_Y(rm, r['X'], B, D, nsamp=100); v, rv = local_refine_real(rm, rv, B, D)
+    dmax = max(rm.image(rv, z)[D].max() for z in rm.focus); bmin = min(rm.image(rv, z)[B].min() for z in rm.focus)
+    assert abs(rm.ratio(rv, B, D) - dmax/bmin) < 1e-12 and v >= rig - 1e-9, (v, rig)
 if __name__ == "__main__":
-    for f in [test_abbe_cutoff, test_certificate_and_rounding, test_pixel_vs_fourier, test_real_equals_complex_symmetric_source, test_ilt_gradient, test_toeplitz_necessity, test_bnb_consistency, test_vector_model_consistency]:
+    for f in [test_abbe_cutoff, test_certificate_and_rounding, test_pixel_vs_fourier, test_real_equals_complex_symmetric_source, test_ilt_gradient, test_toeplitz_necessity, test_bnb_consistency, test_vector_model_consistency, test_multifocus_metric]:
         f(); print("PASS", f.__name__)

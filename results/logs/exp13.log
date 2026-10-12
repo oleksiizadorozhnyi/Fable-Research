@@ -9,3 +9,4 @@ Tjunction320_quasar best single 0.41353 1433
 Tjunction320_quasar two-exposure 0.42631 1547
 {"name": "Tjunction320_quasar", "F": 61, "bound": 0.3892672137982688, "ipm_rank": 3, "ipm_eigs": [1.0648530438262302, 0.32659863058460825, 0.21696151888714674, 9.280507398819174e-10], "face_rank_trace": null, "best_single": 0.41353274560698106, "gap_single": 0.062336438694494, "two_exposure_ratio": 0.4263111931698437, "gap_two": 0.0951633686539354, "time": 1547.4943761825562}
 lineend320_annular SDP 0.51936 CLARABEL 297
+lineend320_annular face failed 'NoneType' object is not subscriptable

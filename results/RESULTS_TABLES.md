@@ -105,6 +105,12 @@ Theorem 4 numerics: necessity violations 0/2000; sufficiency failures 0/200.
 | dense90 | conv0.7 | 9 | 0.6428 | 0.4392 | 0.6428 |
 | dense90 | dipole0.8 | 9 | 0.4217 | 0.1582 | 0.4217 |
 
+### Table 8 — 320 nm 2D layouts: strong single-mask search, optimal-face rank, and two-exposure realization
+| layout | F | bound ρ | min face rank | best single mask ρ | single gap | two-exposure ρ | two-exposure gap |
+|---|---|---|---|---|---|---|---|
+| Tjunction320_annular | 61 | 0.4386 | None | 0.4413 | 0.61% | 0.4775 | 8.85% |
+| Tjunction320_quasar | 61 | 0.3893 | None | 0.4135 | 6.23% | 0.4263 | 9.52% |
+
 ### Table 9 — Rigorous branch-and-bound certification of the single-mask optimum (real masks) and certified multi-exposure gain
 | case | F | SDP multi-exposure bound | B&B certified single-mask lower bound L | best single mask U | B&B gap (U-L)/U | nodes | converged | time (s) | certified gain (L-bound)/bound |
 |---|---|---|---|---|---|---|---|---|---|
@@ -113,6 +119,8 @@ Theorem 4 numerics: necessity violations 0/2000; sufficiency failures 0/200.
 | trial110 | 5 | 0.3464 | 0.4033 | 0.4037 | 0.10% | 17413 | True | 0.3 | 16.44% |
 | trial50 | 5 | 0.3141 | 0.3343 | 0.3347 | 0.10% | 28517 | True | 0.5 | 6.45% |
 | mixed_coh | 7 | 0.4211 | 0.4667 | 0.4787 | 2.51% | 6002541 | False | 288.6 | 10.83% |
+| isodense_coh | 9 | 0.3625 | 0.0650 | 0.4741 | 86.29% | 6005751 | False | 330.7 | -82.07% |
+| mixed_conv0.7_PW80_edgeonly | 11 | 0.8691 | -0.0000 | 0.9568 | 100.00% | 6007797 | False | 182.5 | -100.00% |
 
 ### Independent certificate verification (exp15): 136 instances recomputed; 50-digit Cholesky of the reduced certificate matrix succeeded on 134; degenerate (S≈0, bound=1, uniform certificate) on ['EUV_p20_conv0.9', 'EUV_p20_dipole0.8']; min rigorization scale c = 0.8354; CLARABEL/SCS agreement: median |Δt| = 4.5e-09, instances with |Δt|>1e-5: random_trial16 (CLARABEL 0.0015, SCS 0.0002), random_trial75 (CLARABEL 0.0034, SCS 0.0020), random_trial87 (CLARABEL 0.0013, SCS 0.0013), random_trial103 (CLARABEL 0.1419, SCS 0.0004), random_trial105 (CLARABEL 0.0054, SCS -0.0035), random_trial119 (CLARABEL 0.0063, SCS 0.0001)
 
@@ -133,3 +141,39 @@ Theorem 4 numerics: necessity violations 0/2000; sufficiency failures 0/200.
 ### Aberration sensitivity (iso-dense, σ=0.7): Z5 0.0λ: 0.4691; Z5 0.02λ: 0.4697; Z5 0.05λ: 0.4733; Z5 0.1λ: 0.4861; Z7 0.0λ: 0.4691; Z7 0.02λ: 0.4692; Z7 0.05λ: 0.4703; Z7 0.1λ: 0.4796; Z9 0.0λ: 0.4691; Z9 0.02λ: 0.4702; Z9 0.05λ: 0.4765; Z9 0.1λ: 0.5013
 
 ### Pixelation (iso-dense, σ=0.7, F=15): 4 nm pixels (N=150): 0.4691; 10 nm pixels (N=60): 0.4691; 20 nm pixels (N=30): 0.4691; 40 nm pixels (N=15): 0.4691; 50 nm pixels (N=12): 0.5407; 67 nm pixels (N=9): 0.6864 (Fourier 0.4691)
+
+### Random 2D layouts (n=40; cells 200/240 nm; annular/quasar/conv0.5; τ=12 nm): gap ≤1e-3: 45.0%; ≤1%: 52.5%; ≤5%: 62.5%; median 7.7e-03; max 0.265; F range 13–37; median SDP time 3.2 s
+
+### Table 12 — Adversarial 1D targets
+| target | source | F | bound ρ | max EL | best single ρ | gap | rank |
+|---|---|---|---|---|---|---|---|
+| nearcutoff_mixed_p88_p130 | coh | 7 | 0.5100 | 0.325 | 0.5720 | 12.16% | 3 |
+| nearcutoff_mixed_p88_p130 | conv0.7 | 11 | 0.6578 | 0.206 | 0.6727 | 2.26% | 2 |
+| nearcutoff_mixed_p88_p130 | dipole0.8 | 11 | 0.6994 | 0.177 | 0.6994 | 0.00% | 7 |
+| sraf_like_narrow_space | coh | 7 | 0.2426 | 0.610 | 0.2426 | 0.00% | 1 |
+| sraf_like_narrow_space | conv0.7 | 11 | 0.5290 | 0.308 | 0.5294 | 0.07% | 2 |
+| sraf_like_narrow_space | dipole0.8 | 13 | 0.2426 | 0.610 | 0.2426 | 0.00% | 1 |
+| extreme_duty_5pct | coh | 5 | 0.7951 | 0.114 | 0.7951 | 0.00% | 1 |
+| extreme_duty_5pct | conv0.7 | 9 | 0.8014 | 0.110 | 0.8014 | 0.00% | 2 |
+| extreme_duty_5pct | dipole0.8 | 11 | 0.7038 | 0.174 | 0.7038 | 0.00% | 5 |
+| extreme_duty_95pct | coh | 5 | 0.0006 | 0.999 | 0.0000 | -100.00% | 3 |
+| extreme_duty_95pct | conv0.7 | 9 | 0.0734 | 0.863 | 0.0734 | 0.00% | 1 |
+| extreme_duty_95pct | dipole0.8 | 11 | 0.0000 | 1.000 | 0.0000 | 46.22% | 7 |
+| alternating_widths | coh | 9 | 0.5244 | 0.312 | 0.5989 | 14.22% | 4 |
+| alternating_widths | conv0.7 | 15 | 0.6826 | 0.189 | 0.6830 | 0.06% | 2 |
+| alternating_widths | dipole0.8 | 15 | 0.6798 | 0.191 | 0.6798 | 0.00% | 7 |
+| three_pitches | coh | 11 | 0.3853 | 0.444 | 0.5259 | 36.50% | 5 |
+| three_pitches | conv0.7 | 17 | 0.4973 | 0.336 | 0.5410 | 8.78% | 3 |
+| three_pitches | dipole0.8 | 19 | 0.3853 | 0.444 | 0.3855 | 0.05% | 7 |
+
+### Table 13 — EUV 2D contact arrays (13.5 nm, NA 0.33, ±40 nm focus, τ = 0.1 pitch)
+| pitch | k1 | source | F | bound ρ | max EL | best single ρ | gap | rank |
+|---|---|---|---|---|---|---|---|---|
+| 44 | 0.538 | annular | 13 | 0.4303 | 0.398 | 0.4303 | 0.00% | 1 |
+| 44 | 0.538 | quasar | 13 | 0.4168 | 0.412 | 0.4168 | 0.00% | 5 |
+| 40 | 0.489 | annular | 9 | 0.4786 | 0.353 | 0.4786 | 0.00% | 1 |
+| 40 | 0.489 | quasar | 9 | 0.4194 | 0.409 | 0.4194 | 0.00% | 1 |
+| 36 | 0.440 | annular | 9 | 0.5690 | 0.275 | 0.5690 | 0.00% | 1 |
+| 36 | 0.440 | quasar | 9 | 0.4258 | 0.403 | 0.4258 | 0.00% | 1 |
+| 32 | 0.391 | annular | 9 | 0.7681 | 0.131 | 0.7569 | -1.47% | 5 |
+| 32 | 0.391 | quasar | 9 | 0.5782 | 0.267 | 0.5673 | -1.88% | 1 |

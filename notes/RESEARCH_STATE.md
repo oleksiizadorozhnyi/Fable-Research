@@ -70,3 +70,13 @@ Continuation instruction (if resumed): remaining open items are (1) rigorize Las
 - Found that results/exp9_outlier_pw.json had been rebuilt from the STALE pre-fix log (exp9.log, 21:30) instead of the
   rerun log (exp9_outlier_pw.log, 22:25-22:37). The manuscript's "7.8–16.2% certified gains on four random targets"
   therefore referred to pre-fix instances. Rebuilt from the correct log; numbers re-derived below and in the manuscript.
+- 2026-10-12: BUG (multi-focus metric). RealModel.ratio/Model.ratio and the L-BFGS surrogate evaluated the ratio PER
+  FOCUS (max over z of max_d I/min_b I), i.e. allowed a different dose at each focus, while the SDP and the SLSQP polish
+  use the common-dose ratio max_{d,z} I / min_{b,z} I. Detected by "feasible masks" below certified bounds (EUV 32 nm
+  contacts, −1.5/−1.9%). Certified bounds unaffected; all multi-focus "best single mask" values (PW80 rows, EUV Tables
+  5/13, exp11b/exp14 PW) were optimistic and are recomputed by the clean rerun. Fixed in certlitho.py and bnb_cert.py;
+  regression test test_multifocus_metric added.
+- 2026-10-12: BUG (rigorization). The null-space-projected certificate check could accept an invalid certificate when
+  the weighted bright matrix did not vanish on the near-null space of the weighted dark matrix (95%-duty coherent case:
+  reported 6e-4, true bound ≈ 1.5e-5). Replaced by a full-space eigenvalue test with relative tolerance 1e-11 (bisection
+  drives c -> 0 when needed). All certificates recomputed by the clean rerun (exp15).

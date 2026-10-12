@@ -83,10 +83,9 @@ class Model:
         return np.real(sum(M[i] * np.exp(2j * np.pi * (self.k[i, 0] * gx + self.k[i, 1] * gy)) for i in range(self.F)))
 
     def ratio(self, M, B, D):
-        worst = 0.0
-        for z in self.focus:
-            I = self.image(M, z); worst = max(worst, I[D].max() / max(I[B].min(), 1e-300))
-        return worst
+        """Common-dose dark/bright ratio over the whole focus set: max_{(d,z)} I / min_{(b,z)} I."""
+        dmax = max(self.image(M, z)[D].max() for z in self.focus); bmin = min(self.image(M, z)[B].min() for z in self.focus)
+        return dmax / bmin if bmin > 0 else np.inf
 
 # ----------------------------------------------------------------------------- SDP relaxation
 def sdp_bound(model, B, D, real_mask=True, solver="CLARABEL", verbose=False, extra_cons=None):
@@ -333,10 +332,8 @@ class RealModel:
     def image(self, r, z=0.0):
         fld = self.C[z] @ r; return np.einsum('s,sx->x', self.w, np.abs(fld)**2)
     def ratio(self, r, B, D):
-        worst = 0.0
-        for z in self.focus:
-            I = self.image(r, z); worst = max(worst, I[D].max()/I[B].min() if I[B].min() > 0 else np.inf)
-        return worst
+        dmax = max(self.image(r, z)[D].max() for z in self.focus); bmin = min(self.image(r, z)[B].min() for z in self.focus)
+        return dmax / bmin if bmin > 0 else np.inf
     def to_orders(self, r): return self.U @ r
     def from_orders(self, M): return np.real(self.U.conj().T @ M)
 
@@ -382,15 +379,17 @@ def local_refine_real(rm, r0, B, D, iters=400, beta=40.0):
     from scipy.optimize import minimize
     from scipy.special import logsumexp, softmax
     def fg(r):
-        f = 0.0; g = np.zeros_like(r)
+        lD, dD, lB, dB = [], [], [], []
         for z in rm.focus:
             C = rm.C[z]; fld = C @ r
             I = np.einsum('s,sx->x', rm.w, np.abs(fld)**2) + 1e-300
             G = 2*np.einsum('s,sx,sxk->xk', rm.w, fld.conj(), C).real
             lI = np.log(I); dl = G / I[:, None]
-            pD = softmax(beta*lI[D]); pB = softmax(-beta*lI[B])
-            f += logsumexp(beta*lI[D])/beta + logsumexp(-beta*lI[B])/beta
-            g += pD @ dl[D] - pB @ dl[B]
+            lD.append(lI[D]); dD.append(dl[D]); lB.append(lI[B]); dB.append(dl[B])
+        lD = np.concatenate(lD); dD = np.concatenate(dD); lB = np.concatenate(lB); dB = np.concatenate(dB)
+        pD = softmax(beta*lD); pB = softmax(-beta*lB)
+        f = logsumexp(beta*lD)/beta + logsumexp(-beta*lB)/beta     # = log(max dark) - log(min bright), smoothed, common dose
+        g = pD @ dD - pB @ dB
         return f, g
     res = minimize(fg, r0, jac=True, method='L-BFGS-B', options=dict(maxiter=iters))
     res2 = minimize(fg, res.x, jac=True, method='L-BFGS-B', options=dict(maxiter=iters))
@@ -741,3 +740,28 @@ def sdp_bound_pixel_int(model, N, B, D, nonneg=False, box=None, solver="CLARABEL
         except Exception: pass
     ev = np.linalg.eigvalsh(X.value)[::-1]
     return dict(t=float(t.value), status=prob.status, rank_eps=int(np.sum(ev > 1e-6*ev[0])))
+
+# ----------------------------------------------------------------------------- rigorous certificate, full-space version (overrides; session 2 fix)
+def rigorize_certificate(model, mu, lamb, tol_rel=1e-11, safety=None):
+    """Largest c<=1 such that S_c = SD - c*SB is PSD on the FULL space up to a relative eigenvalue tolerance:
+       lambda_min(S_c) >= -tol_rel*||S_c||_2  (floating-point images of exact quantities carry ~1e-16 relative error).
+       No null-space projection: if SD has a null direction on which SB > 0, bisection drives c -> 0 (true bound 0).
+       Returns (bound = c*sum lam / sum mu, lambda_min(S_c)/||S_c||, c). Diagnostics stored on the function object."""
+    F = model.F
+    SD = np.zeros((F, F), complex); smu = 0.0
+    for (z, ix), v in mu.items(): SD += v * model.Q(ix, z); smu += v
+    SB = np.zeros((F, F), complex); slam = 0.0
+    for (z, ix), v in lamb.items(): SB += v * model.Q(ix, z); slam += v
+    SD /= smu; SB /= smu; slam /= smu
+    SD = 0.5*(SD+SD.conj().T); SB = 0.5*(SB+SB.conj().T)
+    def rel_mineig(c):
+        S = SD - c*SB; n = np.linalg.norm(S, 2)
+        return (np.linalg.eigvalsh(S).min()/n) if n > 0 else 0.0
+    rigorize_certificate.last_null_dim = 0; rigorize_certificate.last_resid_null = 0.0
+    if rel_mineig(1.0) >= -tol_rel: return slam, rel_mineig(1.0), 1.0
+    lo, hi = 0.0, 1.0
+    for _ in range(60):
+        mid = 0.5*(lo+hi)
+        if rel_mineig(mid) >= -tol_rel: lo = mid
+        else: hi = mid
+    return lo*slam, rel_mineig(lo), lo

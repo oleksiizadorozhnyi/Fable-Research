@@ -56,7 +56,7 @@ if e10:
 e13 = load('exp13_2d_strong.json')
 if e13:
     md.append("\n### Table 8 — 320 nm 2D layouts: strong single-mask search, optimal-face rank, and two-exposure realization\n| layout | F | bound ρ | min face rank | best single mask ρ | single gap | two-exposure ρ | two-exposure gap |\n|---|---|---|---|---|---|---|---|")
-    for r in e13: md.append(f"| {r['name']} | {r['F']} | {r['bound']:.4f} | {r['min_face_rank']} | {r['best_single']:.4f} | {r['gap_single']:.2%} | {r['two_exposure_ratio']:.4f} | {r['gap_two']:.2%} |")
+    for r in e13: md.append(f"| {r['name']} | {r['F']} | {r['bound']:.4f} | {r.get('face_rank_trace', r.get('min_face_rank'))} | {r['best_single']:.4f} | {r['gap_single']:.2%} | {r['two_exposure_ratio']:.4f} | {r['gap_two']:.2%} |")
 e14 = load('exp14_bnb.json')
 if e14:
     md.append("\n### Table 9 — Rigorous branch-and-bound certification of the single-mask optimum (real masks) and certified multi-exposure gain\n| case | F | SDP multi-exposure bound | B&B certified single-mask lower bound L | best single mask U | B&B gap (U-L)/U | nodes | converged | time (s) | certified gain (L-bound)/bound |\n|---|---|---|---|---|---|---|---|---|---|")

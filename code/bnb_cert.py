@@ -17,15 +17,15 @@ def bnb_single_mask(rm, B, D, tol=1e-3, max_nodes=2_000_000, batch=4096, verbose
     absQD = [np.abs(q) for q in QD]; absQB = [np.abs(q) for q in QB]
     safe = 1 + 1e-9
     def bounds(C, H):   # C,H: (n,F) centers/half-widths  -> LB (n,), ratio at centers (n,)
-        n = C.shape[0]; LB = np.zeros(n); UBc = np.zeros(n)
+        n = C.shape[0]; dlo = np.zeros(n); bhi = np.full(n, np.inf); dc = np.zeros(n); bc = np.full(n, np.inf)
         for z in range(len(zs)):
             qc_d = np.einsum('nf,dfg,ng->nd', C, QD[z], C); qc_b = np.einsum('nf,bfg,ng->nb', C, QB[z], C)
             Qc_d = np.einsum('dfg,ng->ndf', QD[z], C); Qc_b = np.einsum('bfg,ng->nbf', QB[z], C)
             e1_d = 2*np.einsum('ndf,nf->nd', np.abs(Qc_d), H); e1_b = 2*np.einsum('nbf,nf->nb', np.abs(Qc_b), H)
             e2_b = np.einsum('nf,bfg,ng->nb', H, absQB[z], H)
             d_lo = np.maximum(qc_d - safe*e1_d, 0.0); b_hi = qc_b + safe*(e1_b + e2_b)
-            lb = d_lo.max(1) / np.maximum(b_hi.min(1), 1e-300)
-            LB = np.maximum(LB, lb); UBc = np.maximum(UBc, qc_d.max(1)/np.maximum(qc_b.min(1), 1e-300))
+            dlo = np.maximum(dlo, d_lo.max(1)); bhi = np.minimum(bhi, b_hi.min(1)); dc = np.maximum(dc, qc_d.max(1)); bc = np.minimum(bc, qc_b.min(1))
+        LB = dlo / np.maximum(bhi, 1e-300); UBc = dc / np.maximum(bc, 1e-300)   # common-dose ratio across the focus set
         return LB - 1e-12, UBc
     # initial faces
     C = np.zeros((F, F)); H = np.ones((F, F))

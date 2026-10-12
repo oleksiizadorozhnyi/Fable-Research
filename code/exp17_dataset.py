@@ -15,7 +15,7 @@ for trial in range(40):
     try:
         md, B, D, tgt = build_2d((Lc, Lc), lam, NA, srcs2[sname], tf, 12, spacing=16.0, fine=2.0)
         if len(B) < 4 or len(D) < 4: continue
-        rec, rm, r, rb = analyze(md, B, D, nround=150, nstart=6, polish=(md.F <= 25))
+        rec, rm, r, rb = analyze(md, B, D, nround=150, nstart=4, polish=(md.F <= 21))
         rec.update(trial=trial, L=Lc, src=sname, rects=[[float(v) for v in rr] for rr in rects]); out['random2d'].append(rec); print(json.dumps({k: rec[k] for k in ['trial','src','F','nB','nD','rigorous','best_feasible','gap_rel','rank','sdp_time']}), flush=True); save()
     except Exception as e: print("fail2d", trial, e, flush=True)
 # (b) adversarial 1D

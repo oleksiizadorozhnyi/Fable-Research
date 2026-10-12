@@ -17,7 +17,7 @@ def refine_pair(rm, R0, B, D, iters=600):
                 G = 2*np.einsum('s,sx,sxk->xk', rm.w, flds[j].conj(), C).real/I[:, None]; g[:, j] += pD @ G[D] - pB @ G[B]
         return f, g.ravel()
     res = minimize(fg, R0.ravel(), jac=True, method='L-BFGS-B', options=dict(maxiter=iters)); R = res.x.reshape(rm.F, 2)
-    I = sum(rm.image(R[:, j]) for j in range(2)); return I[D].max()/I[B].min(), R
+    dm = max(sum(rm.image(R[:, j], z) for j in range(2))[D].max() for z in rm.focus); bm = min(sum(rm.image(R[:, j], z) for j in range(2))[B].min() for z in rm.focus); return dm/bm, R
 for name, tf, src in [("Tjunction320_annular", Tj, ann), ("Tjunction320_quasar", Tj, qua), ("lineend320_annular", lineend, ann)]:
     t0 = time.time(); md, B, D, tgt = build_2d((320,320), lam, NA, src, tf, 14, spacing=16.0, fine=2.0); rm = RealModel(md)
     r = sdp_bound_real(rm, B, D); rig, me, c = rigorize_certificate(rm, r['mu'], r['lam']); log(name, "SDP", round(r['t'],5), r['solver'], round(time.time()-t0))
