@@ -2098,5 +2098,50 @@
   "resid_null": 0.0,
   "solver_diff": 1.2196976761913447e-10,
   "rel_gap_t_vs_rigorous": 1.1349938754711362e-09
+ },
+ {
+  "name": "Tjunction320_annular",
+  "F": 57,
+  "t_clarabel": 0.8035298939461368,
+  "t_scs": 0.8035298931350364,
+  "rigorous": 0.8035298932711502,
+  "c": 0.9999999992362963,
+  "rel_mineig": 1.0000004032338987e-10,
+  "cholesky50": true,
+  "degenerate": false,
+  "null_dim": 0,
+  "resid_null": 0.0,
+  "solver_diff": 8.111004090594065e-10,
+  "rel_gap_t_vs_rigorous": 8.40026770922351e-10
+ },
+ {
+  "name": "Tjunction320_quasar",
+  "F": 45,
+  "t_clarabel": 0.7827065208646435,
+  "t_scs": 0.7827065132173007,
+  "rigorous": 0.7827063218814571,
+  "c": 0.9999997576001899,
+  "rel_mineig": 1.0000014750205442e-10,
+  "cholesky50": true,
+  "degenerate": false,
+  "null_dim": 0,
+  "resid_null": 0.0,
+  "solver_diff": 7.647342870065188e-09,
+  "rel_gap_t_vs_rigorous": 2.5422451605956683e-07
+ },
+ {
+  "name": "lineend320_annular",
+  "F": 57,
+  "t_clarabel": 0.8665270209884386,
+  "t_scs": 0.8665270212351671,
+  "rigorous": 0.8665270178114451,
+  "c": 0.9999999996315737,
+  "rel_mineig": 1.0000006040050154e-10,
+  "cholesky50": true,
+  "degenerate": false,
+  "null_dim": 0,
+  "resid_null": 0.0,
+  "solver_diff": 2.467285264984298e-10,
+  "rel_gap_t_vs_rigorous": 3.666352426578485e-09
  }
 ]

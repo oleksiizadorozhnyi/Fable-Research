@@ -57,3 +57,6 @@ FAILED exp15_verify_all rc=1
 === DONE WITH FAILURES Mon Oct 12 16:51:25 UTC 2026
 === START exp19_bnb_sdp (rerun after fix) Mon Oct 12 16:53:50 UTC 2026
 === START exp15_verify_all (rerun after fix) Mon Oct 12 16:53:50 UTC 2026
+=== END exp15_verify_all (rerun) Mon Oct 12 17:20:24 UTC 2026 exit=0
+=== END exp19_bnb_sdp (rerun) Mon Oct 12 18:13:31 UTC 2026 exit=0
+=== START exp19_bnb_sdp (rerun with targets between bound and incumbent) Mon Oct 12 18:14:50 UTC 2026

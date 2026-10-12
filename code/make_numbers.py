@@ -147,7 +147,7 @@ def _blk_verification():
     global M
     if e15:
         d = [r['solver_diff'] for r in e15 if r['solver_diff'] is not None]; m('verN', str(len(e15))); m('verChol', str(sum(1 for r in e15 if r['cholesky50']))); m('verDeg', str(sum(1 for r in e15 if r.get('degenerate')))); m('verFail', str(sum(1 for r in e15 if r['cholesky50'] is False)))
-        m('verKappaMin', f"{min(r['c'] for r in e15):.3f}"); m('verKappaBelow', str(sum(1 for r in e15 if r['c'] < 0.9999))); m('verSolverMedian', f"{np.median(d):.1e}".replace('e-0','\\times10^{-').replace('e-','\\times10^{-')+'}'); bigd = [r for r in e15 if r['solver_diff'] is not None and r['solver_diff']>1e-5]; m('verBigDiffN', str(len(bigd))); m('verBigDiffMax', f"{max((r['solver_diff'] for r in bigd), default=0):.2f}"); m('verBigDiffBoundMax', f"{max((r['rigorous'] for r in bigd), default=0):.3f}")
+        nde = [r for r in e15 if r.get('rigorous', 0) >= 1e-3]; m('verKappaMin', f"{min(r['c'] for r in nde):.3f}"); m('verKappaBelow', str(sum(1 for r in nde if r['c'] < 0.9999))); m('verNonDegN', str(len(nde))); dg = [r for r in e15 if r.get('rigorous', 0) < 1e-3]; m('verDegKappa', f"{min((r['c'] for r in dg), default=1):.0e}".replace('e-0','\\times10^{-').replace('e-','\\times10^{-')+'}'); m('verSolverMedian', f"{np.median(d):.1e}".replace('e-0','\\times10^{-').replace('e-','\\times10^{-')+'}'); bigd = [r for r in e15 if r['solver_diff'] is not None and r['solver_diff']>1e-5]; m('verBigDiffN', str(len(bigd))); m('verBigDiffMax', f"{max((r['solver_diff'] for r in bigd), default=0):.2f}"); m('verBigDiffBoundMax', f"{max((r['rigorous'] for r in bigd), default=0):.3f}")
 _run('verification', _blk_verification)
 def _blk_physics():
     global M

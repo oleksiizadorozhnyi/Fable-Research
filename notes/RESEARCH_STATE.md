@@ -116,3 +116,10 @@ Bug log additions (honesty record):
   1e-15; the per-source SMO relaxation keeps the raw channels); (ii) numpy's stacked (S,nx,F)@(F,) matmul and the
   three-operand gradient einsum were 40x/15x slower than the 2-D BLAS forms now used. Ratio evaluation 55x faster.
   exp17 reduced from 40 to 24 random 2D layouts (x3 sources). Reproduction restarted 12:30 UTC.
+- Final clean reproduction completed 16:51 UTC (all scripts exit 0 except exp15/exp19, re-run after two script bugs:
+  a duplicate keyword in exp19 and an uncaught solver failure in exp15 on the near-degenerate random instance). exp15:
+  143 certificates, 142 pass the 50-digit Cholesky, 1 degenerate (random trial 16, bound ~ 0). exp19 targets were still
+  the old-instance values (below the new SDP bounds) → re-run with targets between bound and incumbent.
+- Random trial 16 is near-degenerate (certified bound 4e-5; a phase-edge-like mask reaches rho = 0.018): CLARABEL's
+  optimum (0.071) is unreliable there and its dual is scaled to 5e-4 by the rigorization; reported separately from the
+  relative-gap statistics (108 non-degenerate instances).

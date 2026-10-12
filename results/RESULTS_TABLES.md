@@ -127,7 +127,7 @@ Theorem 4 numerics: necessity violations 0/2000; sufficiency failures 0/200.
 | isodense_coh | 9 | 0.5359 | 0.1496 | 0.6383 | 76.56% | 6005751 | False | 590.6 | -72.08% |
 | mixed_conv0.7_PW80_edgeonly | 11 | 0.8362 | -0.0000 | 0.8467 | 100.00% | 6007797 | False | 176.3 | -100.00% |
 
-### Independent certificate verification (exp15): 14 instances recomputed; 50-digit Cholesky of the reduced certificate matrix succeeded on 14; degenerate (S≈0, bound=1, uniform certificate) on []; min rigorization scale c = 1.0000; CLARABEL/SCS agreement: median |Δt| = 1.2e-09, instances with |Δt|>1e-5: 
+### Independent certificate verification (exp15): 143 instances recomputed; 50-digit Cholesky of the reduced certificate matrix succeeded on 142; degenerate (S≈0, bound=1, uniform certificate) on ['EUV_p20_conv0.9']; min rigorization scale c = 0.0005; CLARABEL/SCS agreement: median |Δt| = 4.3e-09, instances with |Δt|>1e-5: random_trial75 (CLARABEL 0.0312, SCS 0.0086), random_trial111 (CLARABEL 0.1082, SCS 0.1082)
 
 ### Table 10 — Vector (high-NA, n_resist=1.7) vs scalar bounds, 1D
 | case | source | scalar bound | scalar gap | TE bound | TE gap | TM bound | TM gap | unpol bound | unpol gap |
