@@ -9,3 +9,4 @@ PASS test_vector_model_consistency
 PASS test_multifocus_metric
 PASS test_two_beam_closed_form
 PASS test_catalogue_and_defocus_medium
+PASS test_samples_2d_exact

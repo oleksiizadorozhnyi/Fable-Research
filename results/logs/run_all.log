@@ -1,11 +1,5 @@
-=== tests passed Mon Oct 12 07:22:18 UTC 2026
-=== START exp7_lasserre Mon Oct 12 07:22:18 UTC 2026
-=== START exp4_2d Mon Oct 12 07:22:18 UTC 2026
-=== START exp1_1d_features Mon Oct 12 07:22:18 UTC 2026
-=== START exp17_dataset Mon Oct 12 07:22:18 UTC 2026
-=== END exp1_1d_features Mon Oct 12 07:27:49 UTC 2026 exit=1
-FAILED exp1_1d_features rc=1
-=== START exp8_robustness Mon Oct 12 07:27:49 UTC 2026
-=== END exp8_robustness Mon Oct 12 07:29:16 UTC 2026 exit=0
-=== START exp5_smo_euv_toeplitz Mon Oct 12 07:29:16 UTC 2026
-=== START exp1_1d_features (manual rerun after signature fix) Mon Oct 12 07:38:36 UTC 2026
+=== tests passed Mon Oct 12 07:58:23 UTC 2026
+=== START exp2_random_tightness Mon Oct 12 07:58:23 UTC 2026
+=== START exp4_2d Mon Oct 12 07:58:23 UTC 2026
+=== START exp1_1d_features Mon Oct 12 07:58:23 UTC 2026
+=== START exp17_dataset Mon Oct 12 07:58:23 UTC 2026
