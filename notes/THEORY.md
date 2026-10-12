@@ -174,3 +174,19 @@ A directed-rounding (interval) implementation is future work.
   the raster step and biased by up to one raster step otherwise. All 2D numbers were regenerated.
 - Certified multi-exposure gain (Theorem 9 use): the reference is the ratio realized by the SDP ensemble (an upper bound
   on t_R), not the rigorized lower bound, so gain = (L − t̄)/t̄ ≤ (L − t_R)/t_R is itself certified.
+
+### Referee-driven corrections (2026-10-12, major revision)
+- Theorem 3: the attainment argument via boundedness of Tr X was wrong (bright constraints are lower bounds: X_n =
+  diag(1/n, n) with Q_d = diag(1,0), Q_b = diag(0,1) is a feasible minimizing sequence with unbounded trace). Replaced by
+  the Attainment Lemma: reduce to N^⊥ (N = common dark null space); bright forms vanishing on N give a reduced SDP whose
+  dual is strictly feasible, hence attained (Vandenberghe–Boyd 1996); the others are satisfied by adding c(I−P).
+- Single-mask attainment: ρ* IS attained (generic large component in N makes the B_N bright values large; the reduced
+  ratio is lower semicontinuous on the compact sphere of N^⊥). The remark claiming possible non-attainment was wrong.
+- Theorem 4: {T ≻ 0} ⊂ C_+ ⊂ {T ⪰ 0} = measures, both strict (point mass M_0 = M_±1 = a is not a bounded mask);
+  cl(C_+) = {T ⪰ 0}; same optimal value for the nonnegative-mask problem and its measure relaxation.
+- Proposition 5: the radial condition L(NA + max|s|) < λ is sufficient, not necessary (2D sources for 1D masks:
+  exact passing condition |k/L + s_x/λ| ≤ sqrt(NA² − s_y²)/λ; exact criterion and the sufficient condition
+  L max_j(|s_jx| + sqrt(NA² − s_jy²)) < λ, equal to the classical disk cutoff).
+- K = −K is enforced: an order is dropped only when neither it nor its mirror is ever collected.
+- Certificates: exact 50-digit rebuild from the model equations (exp21) replaces the "assembled from rounded
+  coefficients" check; wording "safe against round-off" removed.
