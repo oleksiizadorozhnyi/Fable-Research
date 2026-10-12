@@ -572,7 +572,21 @@ def build_1d(L, lam, NA, src, segs, margin, spacing=4.0, focus=(0.0,)):
 
 
 # ----------------------------------------------------------------------------- exact edge-offset sampling (2D, periodic)
-def samples_2d(L, target_fn, margin, spacing, fine=1.0, band=0.6):
+def boundary_corners(segs, L):
+    """Vertices of the union boundary: segment endpoints at which the boundary turns (an endpoint shared by two collinear
+       kept segments, e.g. an over-split straight edge, is not a corner). Returns an (m,2) array in [0,Lx)x[0,Ly)."""
+    Lx, Ly = L; ends = {}
+    for o, c, lo, hi, sgn in segs:
+        for t in (lo, hi):
+            p = ((c % Lx, t % Ly) if o == 'v' else (t % Lx, c % Ly)); key = (round(p[0], 6), round(p[1], 6))
+            ends.setdefault(key, []).append((o, round(c % (Lx if o == 'v' else Ly), 6), sgn))
+    out = []
+    for key, inc in ends.items():
+        collinear = any(sum(1 for q in inc if q == a) >= 2 for a in set(inc))
+        if not collinear: out.append(key)
+    return np.array(out, float).reshape(-1, 2)
+
+def samples_2d(L, target_fn, margin, spacing, fine=1.0, band=0.6, corner_exclusion=0.0):
     """2D periodic target given by target_fn(x,y)->bool. Signed distance computed on a fine grid (periodic via tiling);
        sample points: (i) all fine-grid points whose distance to the target boundary lies in [margin, margin+band)
        (offset contours, both sides), (ii) a coarse interior grid with distance >= margin. Returns (x, B, D, tgt, sd_grid)."""
@@ -890,8 +904,8 @@ def two_beam_closed_form(tau, pitch): return (1 - np.sin(2 * np.pi * tau / pitch
 def build_1d(L, lam, NA, src, segs, margin, spacing=4.0, focus=(0.0,), n_img=1.0, aberr=None):
     s, w = src; x, B, D, tgt = samples_1d(L, segs, margin, spacing)
     return Model(L, lam, NA, s, w, nx=len(x), focus=focus, xs=x, n_img=n_img, aberr=aberr), B, D, tgt
-def build_2d(L, lam, NA, src, target_fn, margin, spacing=10.0, fine=1.0, focus=(0.0,), n_img=1.0, aberr=None):
-    s, w = src; x, B, D, tgt, sd = samples_2d(L, target_fn, margin, spacing, fine=fine)
+def build_2d(L, lam, NA, src, target_fn, margin, spacing=10.0, fine=1.0, focus=(0.0,), n_img=1.0, aberr=None, corner_exclusion=0.0):
+    s, w = src; x, B, D, tgt, sd = samples_2d(L, target_fn, margin, spacing, fine=fine, corner_exclusion=corner_exclusion)
     return Model(L, lam, NA, s, w, nx=None, focus=focus, dim=2, xs=x, n_img=n_img, aberr=aberr), B, D, tgt
 
 class ModelX(Model):
@@ -975,7 +989,21 @@ def exact_boundary_distance(pts, segs, L):
                 d = np.minimum(d, np.hypot(dx, dy))
     return d
 
-def samples_2d(L, target_fn, margin, spacing, fine=1.0, band=0.6):
+def boundary_corners(segs, L):
+    """Vertices of the union boundary: segment endpoints at which the boundary turns (an endpoint shared by two collinear
+       kept segments, e.g. an over-split straight edge, is not a corner). Returns an (m,2) array in [0,Lx)x[0,Ly)."""
+    Lx, Ly = L; ends = {}
+    for o, c, lo, hi, sgn in segs:
+        for t in (lo, hi):
+            p = ((c % Lx, t % Ly) if o == 'v' else (t % Lx, c % Ly)); key = (round(p[0], 6), round(p[1], 6))
+            ends.setdefault(key, []).append((o, round(c % (Lx if o == 'v' else Ly), 6), sgn))
+    out = []
+    for key, inc in ends.items():
+        collinear = any(sum(1 for q in inc if q == a) >= 2 for a in set(inc))
+        if not collinear: out.append(key)
+    return np.array(out, float).reshape(-1, 2)
+
+def samples_2d(L, target_fn, margin, spacing, fine=1.0, band=0.6, corner_exclusion=0.0):
     """2D periodic target as a union of rectangles (rect_target). Sample points: (i) the offset contours at EXACT distance
        `margin` on both sides of every boundary segment (points every `fine` nm along the contour, plus the circular arcs
        around convex corners), (ii) a coarse interior grid (step `spacing`) at distance > margin. Every returned point is
@@ -996,6 +1024,12 @@ def samples_2d(L, target_fn, margin, spacing, fine=1.0, band=0.6):
     cand = np.array(cand); cand[:, 0] %= Lx; cand[:, 1] %= Ly
     cand = np.unique(np.round(cand, 6), axis=0)
     d = exact_boundary_distance(cand, segs, (Lx, Ly)); keep = d >= tau - 1e-7
+    if corner_exclusion > 0:                        # drop offset points whose foot point lies within corner_exclusion of a corner
+        V = boundary_corners(segs, (Lx, Ly)); dv = np.full(len(cand), np.inf)
+        for v in V:
+            for i in (-1, 0, 1):
+                for j in (-1, 0, 1): dv = np.minimum(dv, np.hypot(cand[:, 0] + i * Lx - v[0], cand[:, 1] + j * Ly - v[1]))
+        keep &= dv >= np.hypot(corner_exclusion, tau) - 1e-9
     ring = cand[keep]; tg = np.array([bool(target_fn(a, b)) for a, b in ring])
     pts = [tuple(p) for p in ring]; tgl = list(tg)
     grid = np.array([(a, b) for a in np.arange(0, Lx, spacing) for b in np.arange(0, Ly, spacing)]) if spacing < max(Lx, Ly) else np.zeros((0, 2))
