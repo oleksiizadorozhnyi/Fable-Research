@@ -10,7 +10,7 @@ cases.append(("mixed_coh", 500, [(0,40),(100,180),(240,400)], SRC_DUV['coh'], TA
 cases.append(("isodense_coh", 600, [(0,50),(100,150),(200,250),(430,480)], SRC_DUV['coh'], TAU_DUV, 4.0, (0.0,)))
 cases.append(("mixed_conv0.7_PW80_edgeonly", 500, [(0,40),(100,180),(240,400)], SRC_DUV['conv0.7'], TAU_DUV, 1e9, (0.0, 80.0, -80.0)))
 for name, L, segs, src, margin, spacing, focus in cases:
-    md, B, D, tgt = build_1d(L, lam, NA, src, segs, margin, spacing=spacing, focus=focus); rm = RealModel(md)
+    md, B, D, tgt = build_1d(L, lam, NA, src, segs, margin, spacing=spacing, focus=focus, n_img=NIMG_DUV if len(focus) > 1 else 1.0); rm = RealModel(md)
     r = sdp_bound_real(rm, B, D); rig, _, _ = rigorize_certificate(rm, r['mu'], r['lam'])
     v, rb = strong_primal(rm, B, D, [r['X']], nround=300, nstart=20)
     res = bnb_single_mask(rm, B, D, tol=1e-3, max_nodes=6_000_000, U0=v)

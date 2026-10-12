@@ -22,13 +22,16 @@ def verify(name, rm, B, D):
 conv = SRC_DUV['conv0.7']; dip = SRC_DUV['dipole0.8']; coh = SRC_DUV['coh']
 for nm, src in [("coh",coh),("conv0.7",conv),("dipole0.8",dip)]:
     for cn, L, segs in [("isodense", 600, [(0,50),(100,150),(200,250),(430,480)]), ("mixed", 500, [(0,40),(100,180),(240,400)])]:
-        md, B, D, tgt = build_1d(L, lam, NA, src, segs, 8, spacing=4.0); verify(f"{cn}_{nm}", RealModel(md), B, D)
+        md, B, D, tgt = build_1d(L, lam, NA, src, segs, TAU_DUV, spacing=4.0); verify(f"{cn}_{nm}", RealModel(md), B, D)
 for nm, src in [("conv0.7",conv),("dipole0.8",dip)]:
-    md, B, D, tgt = build_1d(600, lam, NA, src, [(0,50),(100,150),(200,250),(430,480)], 8, spacing=4.0, focus=(0.0,80.0,-80.0)); verify(f"isodense_{nm}_PW80", RealModel(md), B, D)
+    md, B, D, tgt = build_1d(600, lam, NA, src, [(0,50),(100,150),(200,250),(430,480)], TAU_DUV, spacing=4.0, focus=(0.0,80.0,-80.0), n_img=NIMG_DUV); verify(f"isodense_{nm}_PW80", RealModel(md), B, D)
+md, B, D, tgt = build_1d(500, lam, NA, conv, [(0,40),(100,180),(240,400)], TAU_DUV, spacing=4.0, focus=(0.0,80.0,-80.0), n_img=NIMG_DUV); verify("mixed_conv0.7_PW80", RealModel(md), B, D)
+for nm, src in [("conv0.7",conv),("dipole0.8",dip),("coh",coh)]:
+    md, B, D, tgt = build_1d(360, lam, NA, src, [(0,45),(90,135),(180,225),(270,315)], 4.5, spacing=4.0); verify(f"dense90_{nm}", RealModel(md), B, D)
 e2 = json.load(open('/home/user/Fable-Research/results/exp2_random_tightness.json'))
 srcs = {"coh": coh, "conv0.5": SRC_DUV['conv0.5'], "conv0.9": SRC_DUV['conv0.9'], "dipole0.7": SRC_DUV['dipole0.7']}
 for rec0 in e2:
-    md, B, D, tgt = build_1d(rec0['L'], lam, NA, srcs[rec0['src']], rec0['segs'], 10, spacing=5.0); verify(f"random_trial{rec0['trial']}", RealModel(md), B, D)
+    md, B, D, tgt = build_1d(rec0['L'], lam, NA, srcs[rec0['src']], rec0['segs'], TAU_DUV, spacing=5.0); verify(f"random_trial{rec0['trial']}", RealModel(md), B, D)
 lamE, NAE = 13.5, 0.33
 for pitch in [20, 22, 24, 26, 28, 32, 40]:
     for sname, src in {"conv0.9": SRC_EUV['conv0.9'], "dipole0.8": SRC_EUV['dipole0.8']}.items():
