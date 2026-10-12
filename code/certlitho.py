@@ -895,7 +895,7 @@ class Model(Model):
             ph = 2 * np.pi * n_img * z / lam * (np.sqrt(arg) - 1)
             if self.aberr: ph = ph + np.stack([zernike_phase(gi, lam, NA, self.aberr) for gi in g])
             self.P[z] = inside * np.exp(1j * ph)                                       # (S, F) pupil vectors per source point
-            if not compress: self.C[z] = E[None, :, :] * self.P[z][:, None, :]           # (S, nx, F) per-source channels
+            if not compress and not getattr(self, '_defer_channels', False): self.C[z] = E[None, :, :] * self.P[z][:, None, :]   # (S, nx, F) per-source channels (SMO only)
         if compress: compress_channels(self, E=E)
 
 def disk_source(sigma, NA, n=21, sigma_in=0.0):
@@ -936,11 +936,9 @@ class ModelX(Model):
        Mask-side polarization p (x, y, unpolarized = average of x and y, TE/TM = azimuthal/radial per source point) is rotated
        by the minimal rotation taking z to the propagation direction (Rodrigues); optional obliquity amplitude 1/sqrt(gamma)."""
     def __init__(self, L, lam, NA, src_pts, src_w, nx, focus=(0.0,), dim=1, xs=None, aberr=None, vector=False, pol='unpol', n_img=1.0, obliquity=True, compress=True):
-        self.vector = vector; self.pol = pol; self.obliquity = obliquity
-        super().__init__(L, lam, NA, src_pts, src_w, nx, focus, dim, xs, n_img=n_img, aberr=aberr, compress=False)
-        if not vector:
-            if compress: compress_channels(self)
-            return
+        self.vector = vector; self.pol = pol; self.obliquity = obliquity; self._defer_channels = vector
+        super().__init__(L, lam, NA, src_pts, src_w, nx, focus, dim, xs, n_img=n_img, aberr=aberr, compress=(compress and not vector))
+        if not vector: return
         E = np.exp(2j * np.pi * (self.x @ self.f.T)); self.P = {}; Pz = {z: [] for z in self.focus}; ws = []
         for s, wsrc in zip(self.src, self.w):
             g = self.f2 + s / lam; gn = np.linalg.norm(g, axis=1); inside = (gn * lam <= NA + 1e-12)
