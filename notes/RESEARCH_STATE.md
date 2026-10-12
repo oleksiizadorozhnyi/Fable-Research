@@ -110,3 +110,9 @@ Bug log additions (honesty record):
 - Dead diffraction orders kept in K inflated reported ranks (T-junction: rank 6 reported, 2 live); now dropped.
 - Pixel-integrated relaxation lacked the half-pixel phase; SDP-B&B pruning test now requires LB > 1e-9; certified
   multi-exposure gains now reference the realized ensemble ratio; every record carries n_img and a cert_violation flag.
+- Performance (same session): after the sampling fix the 2D experiments became 10–50x more expensive (the T-junction took
+  > 2 h for one SDP + primal). Two causes, both fixed without changing any number: (i) the refined 2D source quadratures
+  (220–350 points) are now compressed exactly into <= F coherent channels by the TCC eigendecomposition (images agree to
+  1e-15; the per-source SMO relaxation keeps the raw channels); (ii) numpy's stacked (S,nx,F)@(F,) matmul and the
+  three-operand gradient einsum were 40x/15x slower than the 2-D BLAS forms now used. Ratio evaluation 55x faster.
+  exp17 reduced from 40 to 24 random 2D layouts (x3 sources). Reproduction restarted 12:30 UTC.
