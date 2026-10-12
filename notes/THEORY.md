@@ -46,8 +46,14 @@ Hermitian operator to an invariant real form gives a real symmetric operator; sp
 
 **Theorem 3 (relaxation = unlimited multiple exposure).** For 𝓜 ∈ {𝓜_ℂ, 𝓜_ℝ}: t_R(𝓜) = inf_r ρ*(ME_r) = ρ*(ME_F),
 i.e. the SDP relaxation value is exactly the optimal ratio achievable by incoherently superposing images of (at most
-F) masks of the class. Moreover ρ*(𝓜) = t_R(𝓜) iff (R) has an optimal solution of rank one; an extreme optimal
-solution has rank r with r(r+1)/2 ≤ |D×Z| + |B×Z| + 1 (Pataki), so at most that many exposures ever help.
+F) masks of the class. Moreover, if (R) has a rank-one optimal solution then ρ*(𝓜) = t_R(𝓜) and the infimum in (P_𝓜) is attained;
+conversely, if ρ*(𝓜) = t_R(𝓜) is attained by some mask then (R) has a rank-one optimal solution. (Attainment is not
+automatic: ρ is scale-invariant and continuous on the unit sphere away from {min_B I = 0}, and the infimum can be
+approached by masks whose bright and dark intensities vanish together; in that case ρ* is still certified by Theorem 1.)
+Writing the inequalities of (R) with slack variables, (R) is a standard-form SDP with m = |D×Z| + |B×Z| equality
+constraints and block-diagonal cone (X, slacks, t = t⁺ − t⁻); Pataki's theorem gives an optimal extreme solution whose
+blocks satisfy Σ_blocks r_b(r_b+1)/2 ≤ m, hence rank(X) = r with r(r+1)/2 ≤ |D×Z| + |B×Z|: at most that many
+exposures are ever needed to attain t_R.
 Proof. X ⪰ 0 ⇔ X = Σ_{i=1}^{r} M_i M_i^H (r ≤ F), and Tr(Q X) = Σ_i M_i^H Q M_i = summed image. Hence feasible X of
 (R) ↔ exposure ensembles (M_i) with summed-image constraints; objectives coincide. For 𝓜_ℝ use Lemma 2 to choose
 M_i ∈ V_ℝ. Rank-one optimum ↔ a single mask attaining t_R; conversely any single optimal mask gives a rank-one
@@ -58,11 +64,15 @@ coefficient vector of some nonnegative measure on the circle iff the Toeplitz ma
 (Carathéodory–Toeplitz). If T(M) ≻ 0 the measure may be taken to be a bounded nonnegative function (a strictly
 positive trigonometric polynomial of degree Kmax, by the Fejér–Riesz theorem), hence a legitimate mask. Consequently the
 closure of 𝓜_+ equals {M : T(M) ⪰ 0}, and (P_{𝓜_+}) is a QCQP over an SDP-representable cone.
-Proof sketch. Carathéodory–Toeplitz: a finite sequence is a truncated trigonometric moment sequence of a nonneg
-measure iff its Toeplitz matrix is PSD. Riesz–Fejér: a nonneg trig polynomial is |h(e^{iθ})|²; with T(M) ≻ 0 the
-sequence extends to a positive-definite function with strictly positive density (take the Toeplitz Gaussian/maximum-
-entropy extension, whose spectral density is positive and bounded). ∎  [Open proof obligation: boundedness statement
-to be checked against a reference; the SDP-cone statement for closures is standard.]
+Proof. (Necessity) For m ≥ 0 and any v ∈ ℂ^{Kmax+1}, v^H T(M) v = (1/|Λ|)∫ m(x) |Σ_a v_a e^{2πi a x/L}|² dx ≥ 0.
+(Sufficiency, T(M) ⪰ 0) Carathéodory–Toeplitz [Grenander–Szegő, Ch. 1–2]: a finite sequence with PSD Toeplitz matrix
+is the truncated moment sequence of a nonnegative measure on the circle; such measures are weak-* limits of bounded
+nonnegative functions (Fejér means), so M lies in the closure of 𝓜_+. (Interior, T(M) ≻ 0) The Levinson–Durbin
+recursion yields the maximum-entropy autoregressive extension: a polynomial a(z) = 1 + a_1 z + … + a_{Kmax} z^{Kmax}
+with all zeros in |z| > 1 and σ² > 0 such that f(θ) = σ²/|a(e^{iθ})|² has Fourier coefficients M_0..M_{Kmax} (Burg;
+Grenander–Szegő §5). Since a has no zeros on the unit circle, f is continuous, bounded and bounded away from zero;
+scaled by its maximum it is an admissible mask with |m| ≤ 1. Hence int{T ⪰ 0} ⊂ 𝓜_+ ⊂ {T ⪰ 0}, and the closure of
+𝓜_+ is {T(M) ⪰ 0}, an SDP-representable cone. ∎
 Note. In d = 2 the block-Toeplitz PSD condition is necessary but not sufficient (no 2D Fejér–Riesz); it still gives
 a valid relaxation.
 
