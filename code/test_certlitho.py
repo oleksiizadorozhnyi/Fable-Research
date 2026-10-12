@@ -61,7 +61,7 @@ def test_vector_model_consistency():
 
 def test_multifocus_metric():
     s, w = conventional_source_1d(0.7, NA, 7)
-    md, B, D, tgt = build_1d(500, lam, NA, (s, w), [(0,40),(100,180),(240,400)], 8, spacing=8.0, focus=(0.0, 80.0, -80.0)); rm = RealModel(md)
+    md, B, D, tgt = build_1d(500, lam, NA, (s, w), [(0,40),(100,180),(240,400)], 8, spacing=8.0, focus=(0.0, 80.0, -80.0), n_img=1.44); rm = RealModel(md)
     r = sdp_bound_real(rm, B, D); rig, _, _ = rigorize_certificate(rm, r['mu'], r['lam'])
     v, rv = round_from_Y(rm, r['X'], B, D, nsamp=100); v, rv = local_refine_real(rm, rv, B, D)
     dmax = max(rm.image(rv, z)[D].max() for z in rm.focus); bmin = min(rm.image(rv, z)[B].min() for z in rm.focus)
