@@ -59,3 +59,20 @@ Status: new measurements within a simplified (scalar, thin-mask, periodic) model
 - NEW in this session: rigorous branch-and-bound certification of the single-mask optimum (sphere/box covering with
   PSD-form interval bounds) — B&B for mask design exists (Liu–Zakhor, combinatorial binary); a rigorous continuous
   single-mask certificate used to separate single- from multi-exposure optima was not found in the literature reviewed.
+
+## Session-3 calibration (2026-10-12, after the independent prior-art review in notes/review_priorart.md)
+Verdicts per claim (search-scoped: titles, abstracts, patent texts; SPIE full texts not accessible):
+- C1 (Shor lifting + dual certificates for Hopkins/Abbe synthesis): no hit. Nearest: IBM wavefront optimization (same
+  diffraction-order QCQP, solved by eigen-subspace / partition search, no bound); Nouralishahi–Wu–Vandenberghe 2008 (SDP
+  for model calibration); Nonaka et al. 2025 (0–1 QCQP, Lagrangian heuristic); Kohira/Matsui/LRSDP (PSD relaxation for
+  multiple-patterning assignment). The relaxation itself is textbook; the contribution is its application, the
+  verification protocol, and the structural theorems.
+- C2 (relaxation = unlimited incoherent multi-exposure; Pataki rank bound on useful exposures): elementary mathematics,
+  not found in the lithography literature, where multiple exposure is optimized directly (US 8,495,528).
+- C3 (Carathéodory–Toeplitz cone for nonnegative 1D masks): standard in filter design (Davidson–Luo–Sturm 2002,
+  Dumitrescu 2007); not found as a realizability constraint in lithography.
+- C4 (interval / SDP-bounded branch-and-bound certificate of the continuous single-mask optimum, used to separate
+  single- from multi-exposure optima): B&B for binary masks exists (Liu–Zakhor, combinatorial) and SDP-bounded B&B for
+  nonconvex QPs is established (Burer–Vandenbussche 2008); the application and the separation result were not found.
+Wording adopted in the manuscript: "to our knowledge", "not found in the literature reviewed", with nearest neighbours
+named in the same sentence; no use of "first" or "new algorithm".
