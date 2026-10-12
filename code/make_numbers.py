@@ -30,7 +30,7 @@ def _blk_Table11Dlibrary():
     global M
     names = {'isodense_coh': 'iso-dense, coherent', 'mixed_coh': 'mixed, coherent', 'isodense_conv0.7': 'iso-dense, $\\sigma=0.7$', 'mixed_conv0.7': 'mixed, $\\sigma=0.7$', 'isodense_dipole0.8': 'iso-dense, dipole 0.8', 'mixed_dipole0.8': 'mixed, dipole 0.8',
              'isodense_conv0.7_PW80': 'iso-dense, $\\sigma=0.7$, $\\pm\\SI{80}{nm}$', 'mixed_conv0.7_PW80': 'mixed, $\\sigma=0.7$, $\\pm\\SI{80}{nm}$', 'isodense_dipole0.8_PW80': 'iso-dense, dipole 0.8, $\\pm\\SI{80}{nm}$', 'dense90_conv0.7': 'dense 90, $\\sigma=0.7$', 'dense90_dipole0.8': 'dense 90, dipole 0.8', 'dense90_coh': 'dense 90, coherent'}
-    for r in e1: rows.append(f"{names.get(r['name'], r['name'])} & {r['F']} & {len(r['focus'])} & {f4(r['rigorous'])} & {elf(r['rigorous']):.3f} & {f4(r['best_feasible'])} & {gapstr(r)}\\\\")
+    for r in e1: rows.append(f"{names.get(r['name'], r['name'])} & {r['F']} & {len(r['focus'])} & {f4(r['rigorous'])} & {elf(r['rigorous']):.3f} & {f4(r['best_feasible'])} & {elf(r['best_feasible']):.3f} & {gapstr(r)}\\\\")
     open(P+'tab_1d.tex','w').write(tabbody(rows))
     d1 = {r['name']: r for r in e1}
     m('isoCohGap', pct(d1['isodense_coh']['gap_rel'])); m('mixCohGap', pct(d1['mixed_coh']['gap_rel'])); m('isoConvGap', pct(d1['isodense_conv0.7']['gap_rel'])); m('mixConvGap', pct(d1['mixed_conv0.7']['gap_rel']))
@@ -84,13 +84,15 @@ def _blk_BB():
 _run('B&B', _blk_BB)
 def _blk_PSMvsbinaryILT():
     global M
-    rows = []
+    rows = []; e22 = {r['name']: r for r in (L('exp22_psm_penalty.json') or [])}
+    plo, phi, ilo, ihi = [], [], [], []
     for r3, rb in zip(e3, e3b):
-        pen = r3['t_pixel_nonneg_DNN']/r3['t_fourier_psm'] - 1
-        rows.append(f"{r3['name'].replace('dense120','dense 120')} & {f4(r3['t_fourier_psm'])} & {f4(r3['t_pixel_nonneg_DNN'])} & {pct(pen,0)} & {rb['ilt_psm_best']:.3f} & {rb['ilt_binary_best']:.3f} & {rb['ilt_psm_best_refined_on_ratio']:.4f}\\\\")
+        q = e22[r3['name']]; ilt = rb['ilt_psm_best']; lo = ilt/q['U_R'] - 1; hi = ilt/q['L_R'] - 1
+        plo.append(q['penalty_lo']); phi.append(q['penalty_hi']); ilo.append(lo); ihi.append(hi)
+        rows.append(f"{r3['name'].replace('dense120','dense 120').replace('isodense','iso-dense')} & {f4(q['L_R'])} & {f4(q['U_R'])} & {f4(q['L_plus'])} & {f4(q['U_plus'])} & [{pct(q['penalty_lo'])}, {pct(q['penalty_hi'])}] & {ilt:.4f} & [{pct(lo)}, {pct(hi)}]\\\\")
     open(P+'tab_psm.tex','w').write(tabbody(rows))
-    pens = [r3['t_pixel_nonneg_DNN']/r3['t_fourier_psm']-1 for r3 in e3]; m('binPenLo', pct(min(pens),0)); m('binPenHi', pct(max(pens),0))
-    iltp = [rb['ilt_psm_best']/rb['certified_bound']-1 for rb in e3b]; iltb = [rb['ilt_binary_best']/rb['certified_bound']-1 for rb in e3b]; m('iltPsmLo', pct(min(iltp),0)); m('iltPsmHi', pct(max(iltp),0)); m('iltBinHi', pct(max(iltb),0))
+    m('binPenLo', pct(min(plo),1)); m('binPenHi', pct(max(plo),1)); m('binPenHiLo', pct(min(phi),1)); m('binPenHiHi', pct(max(phi),1))
+    m('iltPsmLo', pct(min(ilo),0)); m('iltPsmHi', pct(max(ihi),0)); iltb = [rb['ilt_binary_best']/rb['certified_bound']-1 for rb in e3b]; m('iltBinHi', pct(max(iltb),0))
     m('pixFourierAgree', f"{max(abs(r3['t_fourier_psm']-r3['t_pixel_psm'])/r3['t_fourier_psm'] for r3 in e3):.0e}".replace('e-0','\\times10^{-').replace('e-','\\times10^{-')+'}')
 _run('PSM vs binary, ILT', _blk_PSMvsbinaryILT)
 def _blk_SMO():
@@ -100,17 +102,17 @@ _run('SMO', _blk_SMO)
 def _blk_EUV1D():
     global M
     rows = []
-    for r in e5['euv_pw']: rows.append(f"{r['pitch']} & {r['k1']:.3f} & {r['src']} & {r['F']} & {f4(r['rigorous'])} & {elf(r['rigorous']):.3f} & {f4(r['best_feasible'])} & {gapstr(r)}\\\\")
+    for r in e5['euv_pw']: rows.append(f"{r['pitch']} & {r['k1']:.3f} & {r['src']} & {r['F']} & {f4(r['rigorous'])} & {elf(r['rigorous']):.3f} & {f4(r['best_feasible'])} & {elf(r['best_feasible']):.3f} & {gapstr(r)}\\\\")
     open(P+'tab_euv.tex','w').write(tabbody(rows))
     eu = {(r['pitch'], r['src']): r for r in e5['euv_pw']}
-    m('euvTwentyTwoConvEL', f"{elf(eu[(22,'conv0.9')]['rigorous']):.2f}"); m('euvTwentyTwoDipBound', f4(eu[(22,'dipole0.8')]['rigorous'])); m('euvN', str(len(e5['euv_pw']))); m('euvMaxGap', pct(max((r.get('gap_rel') or 0) for r in e5['euv_pw']),2))
+    m('euvTwentyTwoConvEL', f"{elf(eu[(22,'conv0.9')]['rigorous']):.2f}"); m('euvTwentyTwoConvELBest', f"{elf(eu[(22,'conv0.9')]['best_feasible']):.3f}"); m('euvTwentyTwoDipBound', f4(eu[(22,'dipole0.8')]['rigorous'])); m('euvN', str(len(e5['euv_pw']))); m('euvMaxGap', pct(max((r.get('gap_rel') or 0) for r in e5['euv_pw']),2))
     m('thmFourNec', str(e5['theorem4']['necessity_violations'])); m('thmFourNecN', str(e5['theorem4']['necessity_trials'])); m('thmFourSuf', str(e5['theorem4']['sufficiency_failures'])); m('thmFourSufN', str(e5['theorem4']['sufficiency_tested']))
 _run('EUV 1D', _blk_EUV1D)
 def _blk_robustness():
     global M
     sp = [r['bound'] for r in e8['sampling']]; m('spacingMin', f"{min(sp):.5f}"); m('spacingMax', f"{max(sp):.5f}")
     mg = e8['margin']; m('marginList', ", ".join(f"$\\tau={r['margin']}$\\,nm: {elf(r['bound']):.2f}" for r in mg))
-    q = e8['source_quadrature_and_solvers']; m('quadList', ", ".join(f"{r.get('nsrc')} pts: {r['clarabel']:.4f}" for r in q)); m('quadLastTwoDiff', pct(abs(q[-1]['clarabel']-q[-2]['clarabel'])/q[-1]['clarabel'],1)); m('quadSolverDiffMax', f"{max(r['diff'] for r in q):.0e}".replace('e-0','\\times10^{-').replace('e-','\\times10^{-')+'}')
+    q = e8['source_quadrature_and_solvers']; m('quadList', ", ".join(f"${r.get('grid')}^2$ grid ({r.get('nsrc'):,} pts): {r['clarabel']:.5f}" for r in q)); m('quadLastTwoDiff', pct(abs(q[-1]['clarabel']-q[-2]['clarabel'])/q[-1]['clarabel'],2)); _q = [r for r in q if r.get('grid') == 401]; m('quadRefDiff', pct(abs(_q[0]['clarabel']-q[-1]['clarabel'])/q[-1]['clarabel'],3) if _q else 'n/a'); m('quadNconv', f"{(_q[0]['nsrc'] if _q else 0):,}"); m('quadSolverDiffMax', f"{max(r['diff'] for r in q):.0e}".replace('e-0','\\times10^{-').replace('e-','\\times10^{-')+'}')
 _run('robustness', _blk_robustness)
 def _blk_Rayleighcomplex():
     global M
@@ -128,7 +130,7 @@ def _blk_2D():
         if nm in d13: bst = min(bst, d13[nm]['best_single']); tag = ' (strong)'
         if nm == 'Tjunction320_quasar' and e18: bst = min(bst, e18['best_single']); tag = ' (strong)'
         gap = (bst - r['rigorous'])/r['rigorous']
-        rows.append(f"{lab2.get(nm, nm)}{tag} & {r['F']} & {f4(r['rigorous'])} & {elf(r['rigorous']):.3f} & {f4(bst)} & {pct(gap,2)} & {r['sdp_time']:.1f}\\\\")
+        rows.append(f"{lab2.get(nm, nm)}{tag} & {r['F']} & {f4(r['rigorous'])} & {elf(r['rigorous']):.3f} & {f4(bst)} & {elf(bst):.3f} & {pct(gap,2)} & {r['sdp_time']:.1f}\\\\")
         m('twoD'+nm.replace('_','').replace('.',''), f"{gap:.4f}")
     open(P+'tab_2d.tex','w').write(tabbody(rows))
     cg = [ (min(d4[n]['best_feasible'], d13.get(n, {}).get('best_single', 9)) - d4[n]['rigorous'])/d4[n]['rigorous'] for n in d4 if n.startswith('contacts')]; m('contactsGapMax', pct(max(cg),2))
@@ -173,6 +175,14 @@ def _blk_corner():
     m('cornerElGainLo', f"{min(ratios):.1f}"); m('cornerElGainHi', f"{max(ratios):.1f}"); m('cornerN', str(len(by)))
     c160 = by['contacts160_annular']; m('cornerContactsOneSixtyEL', f"{el_full(c160[0.0]['rigorous']):.2f}"); m('cornerContactsOneSixtyELQuarter', f"{el_full(c160[0.25]['rigorous']):.2f}")
 _run('corner exclusion', _blk_corner)
+def _blk_exact():
+    global M
+    e21 = L('exp21_exact_verify.json') or []
+    pd_ = [r for r in e21 if r['status'].startswith('PD')]; zero = [r for r in e21 if r['status'].startswith('zero')]; fail = [r for r in e21 if r['status'] == 'FAILED']
+    lm = [r['lambda_min_50digit'] for r in pd_ if r.get('lambda_min_50digit') is not None]
+    fmt = lambda v: f"{v:.0e}".replace('e-0','\\times10^{-').replace('e-','\\times10^{-')+'}'
+    m('exactN', str(len(e21))); m('exactPD', str(len(pd_))); m('exactZero', str(len(zero))); m('exactFail', str(len(fail))); m('exactLminLo', fmt(min(lm)) if lm else 'n/a'); m('exactLminHi', fmt(max(lm)) if lm else 'n/a')
+_run('exact verification', _blk_exact)
 def _count_viol():
     n = 0
     for obj in (e1, e2, e4, e17):

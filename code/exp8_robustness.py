@@ -18,7 +18,7 @@ for margin in [2, 2.5, 4, 5, 8, 12, 16, 20]:
 out['margin'] = res
 # (c) solver cross-check (CLARABEL vs SCS) on 5 instances; (d) number of source points (quadrature) convergence
 res = []
-for nsrc in [7, 11, 15, 21, 31, 41]:
+for nsrc in [21, 41, 61, 101, 201, 401, 801]:
     s2, w2 = disk_source(0.7, NA, n=nsrc); md, B, D, tgt = build_1d(L, lam, NA, (s2, w2), segs, TAU_DUV, spacing=4.0); rm = RealModel(md)
     rc = sdp_bound_real(rm, B, D, solvers=("CLARABEL",)); rs = sdp_bound_real(rm, B, D, solvers=("SCS",))
     res.append(dict(nsrc=len(w2), grid=nsrc, F=rm.F, clarabel=rc['t'], scs=rs['t'], diff=abs(rc['t']-rs['t']))); print(json.dumps(res[-1]), flush=True)

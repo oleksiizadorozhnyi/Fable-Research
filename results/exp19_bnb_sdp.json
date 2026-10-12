@@ -3,45 +3,30 @@
   "name": "isodense_coh",
   "F": 9,
   "sdp_bound": 0.5358712761823466,
-  "certified_gain_if_ok": -0.2535520790558519,
+  "certified_gain_if_ok": 0.04502708932180733,
   "certified": false,
   "nodes": 6000,
-  "open": 4945,
+  "open": 4993,
   "failed": 0,
-  "time": 1443.5721685886383,
+  "time": 1480.5019030570984,
   "n_pairs": 36,
   "nD": 9,
   "nB": 4,
-  "T": 0.4
+  "T": 0.56
  },
  {
   "name": "mixed_conv0.7_PW80_edgeonly",
   "F": 11,
   "sdp_bound": 0.8361840332797126,
-  "certified_gain_if_ok": 0.07631808810075702,
+  "certified_gain_if_ok": 0.004563548894039821,
   "certified": false,
   "nodes": 6000,
-  "open": 5735,
+  "open": 4661,
   "failed": 0,
-  "time": 2430.671267747879,
+  "time": 2598.8276567459106,
   "n_pairs": 108,
   "nD": 12,
   "nB": 9,
-  "T": 0.9
- },
- {
-  "name": "mixed_coh",
-  "F": 7,
-  "sdp_bound": 0.5875386935924869,
-  "certified_gain_if_ok": -0.21707284130114995,
-  "certified": false,
-  "nodes": 6000,
-  "open": 5603,
-  "failed": 0,
-  "time": 905.1985409259796,
-  "n_pairs": 24,
-  "nD": 8,
-  "nB": 3,
-  "T": 0.46
+  "T": 0.84
  }
 ]

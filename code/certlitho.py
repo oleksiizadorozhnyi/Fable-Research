@@ -832,27 +832,25 @@ def certificate_matrix_projected(model, mu, lamb, c):
 #    medium of index n_img:  phi = 2 pi n_img z / lambda * ( sqrt(1 - (|g| lambda / n_img)^2) - 1 ).
 # 3) Area-weighted quadratures for disk / annular / finite-pole dipole / quasar illuminators.
 
-def compress_channels(model, tol=1e-14):
-    """Exact coherent-mode (TCC eigen) compression of the source sum. For each focus z the channel matrix C_z (S, nx, F)
-       has rows E_x * P_s with E_x the Fourier phases and P_s the pupil/defocus vector of source point s, so
+def compress_channels(model, tol=1e-14, E=None):
+    """Exact coherent-mode (TCC eigen) compression of the source sum. For each focus z the channel vectors are E_x * P_s
+       (E_x Fourier phases, P_s the pupil/defocus vector of source point s), so
        I(x) = sum_s w_s |(E_x*M)^T P_s|^2 = u^T T_z conj(u),  T_z = sum_s w_s P_s P_s^H  (F x F, PSD, rank <= F).
        With T_z = sum_j lam_j v_j v_j^H the image is sum_j lam_j |(E_x*M)^T v_j|^2: at most F channels replace S source
-       points, exactly (up to rounding). Channels with lam_j <= tol*max(lam) are dropped. Keeps the original per-source
-       channels in model.C_src / model.w_src (needed by the per-source SMO relaxation)."""
-    if getattr(model, 'compressed', False) or len(model.w) <= model.F: model.compressed = getattr(model, 'compressed', False); return model
-    model.C_src, model.w_src = model.C, model.w
-    E = np.exp(2j * np.pi * (model.x @ model.f.T))                           # (nx, F) Fourier phases
-    newC = {}; J = 0
+       points, exactly (up to rounding). Uses model.P[z] (S, F) when present (never forms per-source channel arrays),
+       else the per-source channels model.C[z]. Keeps model.w_src (needed by the per-source SMO relaxation)."""
+    if getattr(model, 'compressed', False): return model
+    if E is None: E = np.exp(2j * np.pi * (model.x @ model.f.T))
+    model.w_src = model.w; newC = {}; J = 0
     for z in model.focus:
-        P = model.C[z][:, 0, :] / E[0][None, :]                               # (S, F): per-channel pupil vectors (E_x divides out)
-        T = (P.T * model.w) @ P.conj()                                        # T[k,k'] = sum_s w_s P_s(k) conj(P_s(k'))
-        T = 0.5 * (T + T.conj().T); lam_, V = np.linalg.eigh(T); keep = lam_ > tol * max(lam_.max(), 1e-300)
-        modes = (V[:, keep] * np.sqrt(lam_[keep])).T                          # (J, F): virtual pupil vectors sqrt(lam_j) v_j
-        newC[z] = E[None, :, :] * modes[:, None, :]                           # u^T T conj(u) = sum_j lam_j |u^T v_j|^2, u = E_x * M
-        J = max(J, modes.shape[0])
-    # pad to a common channel count so that a single weight vector applies to every focus
+        P = model.P[z] if getattr(model, 'P', None) and z in model.P else model.C[z][:, 0, :] / E[0][None, :]
+        T = (P.T * model.w) @ P.conj(); T = 0.5 * (T + T.conj().T)
+        lam_, V = np.linalg.eigh(T); keep = lam_ > tol * max(lam_.max(), 1e-300)
+        modes = (V[:, keep] * np.sqrt(lam_[keep])).T
+        newC[z] = E[None, :, :] * modes[:, None, :]; J = max(J, modes.shape[0])
     for z in model.focus:
         if newC[z].shape[0] < J: newC[z] = np.concatenate([newC[z], np.zeros((J - newC[z].shape[0],) + newC[z].shape[1:], complex)])
+    if hasattr(model, 'C') and model.C: model.C_src = model.C
     model.C = newC; model.w = np.ones(J); model.compressed = True; model.n_channels = J
     return model
 
@@ -888,17 +886,17 @@ class Model(Model):
             gx = np.arange(nx[0]) * self.L[0] / nx[0]; gy = np.arange(nx[1]) * self.L[1] / nx[1]; self.x = np.array([(a, b) for a in gx for b in gy])
         self.nx = len(self.x)
         E = np.exp(2j * np.pi * (self.x @ self.f.T))
-        self.C = {}
-        for z in self.focus:
-            Cz = []
-            for s in self.src:
-                g = self.f2 + s / lam; gn = np.linalg.norm(g, axis=1); inside = (gn * lam <= NA + 1e-12)
-                arg = np.clip(1 - (gn * lam / n_img) ** 2, 0.0, None)
-                ph = 2 * np.pi * n_img * z / lam * (np.sqrt(arg) - 1) + zernike_phase(g, lam, NA, self.aberr)
-                Cz.append(E * (inside * np.exp(1j * ph))[None, :])
-            self.C[z] = np.stack(Cz)
         self.flip = np.array([self.kindex[tuple(-kk)] for kk in self.k])
-        if compress: compress_channels(self)
+        self.C = {}; self.P = {}
+        for z in self.focus:
+            g = self.f2[None, :, :] + self.src[:, None, :] / lam                      # (S, F, 2)
+            gn = np.linalg.norm(g, axis=2); inside = (gn * lam <= NA + 1e-12)
+            arg = np.clip(1 - (gn * lam / n_img) ** 2, 0.0, None)
+            ph = 2 * np.pi * n_img * z / lam * (np.sqrt(arg) - 1)
+            if self.aberr: ph = ph + np.stack([zernike_phase(gi, lam, NA, self.aberr) for gi in g])
+            self.P[z] = inside * np.exp(1j * ph)                                       # (S, F) pupil vectors per source point
+            if not compress: self.C[z] = E[None, :, :] * self.P[z][:, None, :]           # (S, nx, F) per-source channels
+        if compress: compress_channels(self, E=E)
 
 def disk_source(sigma, NA, n=21, sigma_in=0.0):
     """Area-weighted grid quadrature of a disk (or annulus sigma_in..sigma) of direction cosines, n x n grid over the disk."""
@@ -943,7 +941,7 @@ class ModelX(Model):
         if not vector:
             if compress: compress_channels(self)
             return
-        E = np.exp(2j * np.pi * (self.x @ self.f.T)); Cs = {z: [] for z in self.focus}; ws = []
+        E = np.exp(2j * np.pi * (self.x @ self.f.T)); self.P = {}; Pz = {z: [] for z in self.focus}; ws = []
         for s, wsrc in zip(self.src, self.w):
             g = self.f2 + s / lam; gn = np.linalg.norm(g, axis=1); inside = (gn * lam <= NA + 1e-12)
             a = g[:, 0] * lam / n_img; b = g[:, 1] * lam / n_img; gam = np.sqrt(np.clip(1 - a**2 - b**2, 1e-9, 1))
@@ -958,10 +956,11 @@ class ModelX(Model):
                 ph = 2 * np.pi * n_img * z / lam * (np.sqrt(arg) - 1) + zernike_phase(g, lam, NA, self.aberr); P = inside * np.exp(1j * ph)
                 for p in pols:
                     ex = p[0] * (1 - a**2 / (1 + gam)) + p[1] * (-a * b / (1 + gam)); ey = p[0] * (-a * b / (1 + gam)) + p[1] * (1 - b**2 / (1 + gam)); ez = -p[0] * a - p[1] * b
-                    for comp in (ex, ey, ez): Cs[z].append(E * (P * ob * comp)[None, :])
+                    for comp in (ex, ey, ez): Pz[z].append(P * ob * comp)
             ws += [wsrc / len(pols)] * (3 * len(pols))
-        self.C = {z: np.stack(Cs[z]) for z in self.focus}; self.w = np.array(ws)
-        if compress: compress_channels(self)
+        self.w = np.array(ws); self.P = {z: np.array(Pz[z]) for z in self.focus}
+        if compress: compress_channels(self, E=E)
+        else: self.C = {z: E[None, :, :] * self.P[z][:, None, :] for z in self.focus}
 
 def build_1d_x(L, lam, NA, src, segs, margin, spacing=4.0, focus=(0.0,), **kw):
     s, w = src; x, B, D, tgt = samples_1d(L, segs, margin, spacing)

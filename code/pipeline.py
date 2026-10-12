@@ -45,20 +45,23 @@ def sets_2d(md, tf, margin):
 # DUV: lambda 193 nm, NA 1.35, immersion (defocus in water, n_img = 1.44). EUV: lambda 13.5 nm, NA 0.33, vacuum.
 NA_DUV, LAM_DUV, NIMG_DUV = 1.35, 193.0, 1.44
 NA_EUV, LAM_EUV, NIMG_EUV = 0.33, 13.5, 1.0
-def catalogue(NA):
+def catalogue(NA, n=401, n_pole=121):
+    """Area-weighted midpoint-grid quadratures of the illuminator aperture. The default n = 401 (126k points for a full
+       disk) converges the certified bounds to ~1e-4 (exp8); the coherent-mode compression makes the point count cheap."""
     return {
         'coh':       (np.array([[0.0, 0.0]]), np.ones(1)),                    # on-axis coherent point
-        'conv0.5':   disk_source(0.5, NA, n=21),                              # disk sigma 0.5, 21x21 grid -> 349 pts
-        'conv0.7':   disk_source(0.7, NA, n=21),
-        'conv0.9':   disk_source(0.9, NA, n=21),
-        'dipole0.8': dipole_source(0.8, NA, pole_radius=0.15, n=9),           # two poles r=0.15 at +-0.8 (x axis), 69 pts each
-        'dipole0.7': dipole_source(0.7, NA, pole_radius=0.15, n=9),
-        'annular':   annular_source(0.6, 0.9, NA, n=25),                      # ring 0.6-0.9, 25x25 grid -> ~280 pts
-        'quasar':    quasar_source(0.6, 0.9, NA, opening_deg=30.0, n=31),     # four 30-deg sectors of the 0.6-0.9 ring
-        'annularE':  annular_source(0.5, 0.9, NA, n=25),                      # EUV ring 0.5-0.9
-        'quasarE':   quasar_source(0.5, 0.9, NA, opening_deg=30.0, n=31),
+        'conv0.5':   disk_source(0.5, NA, n=n),                               # disk sigma 0.5
+        'conv0.7':   disk_source(0.7, NA, n=n),
+        'conv0.9':   disk_source(0.9, NA, n=n),
+        'dipole0.8': dipole_source(0.8, NA, pole_radius=0.15, n=n_pole),      # two poles r=0.15 at +-0.8 (x axis)
+        'dipole0.7': dipole_source(0.7, NA, pole_radius=0.15, n=n_pole),
+        'annular':   annular_source(0.6, 0.9, NA, n=n),                       # ring 0.6-0.9
+        'quasar':    quasar_source(0.6, 0.9, NA, opening_deg=30.0, n=n),      # four 30-deg sectors of the 0.6-0.9 ring
+        'annularE':  annular_source(0.5, 0.9, NA, n=n),                       # EUV ring 0.5-0.9
+        'quasarE':   quasar_source(0.5, 0.9, NA, opening_deg=30.0, n=n),
     }
-SRC_DUV = catalogue(NA_DUV); SRC_EUV = catalogue(NA_EUV)
+SRC_COARSE_DUV = None   # set below: the coarse (n = 21) catalogue, used only by the per-source SMO relaxation
+SRC_DUV = catalogue(NA_DUV); SRC_EUV = catalogue(NA_EUV); SRC_COARSE_DUV = catalogue(NA_DUV, n=21, n_pole=9); SRC_COARSE_EUV = catalogue(NA_EUV, n=21, n_pole=9)
 TAU_DUV = 5.0    # edge tolerance for 1-D DUV targets (CD 40-50 nm -> +-10% CD per edge)
 def analyze_el(rec):
     """Add full-range exposure-latitude fields (window width / centre dose) and a degenerate flag."""
