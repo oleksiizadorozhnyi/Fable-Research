@@ -1,3 +1,1 @@
-{"name": "Tjunction320_quasar", "t": 0.7827065208646435, "rigorous": 0.7827063218814571, "c": 0.9999997576001899, "null_dim": 0, "resid_null": 0.0, "best": 0.8514952810098491, "gap": 0.08788604001950334, "solver": "CLARABEL"}
-{"name": "lineend320_annular", "t": 0.8665270209884386, "rigorous": 0.8665270178114451, "c": 0.9999999996315737, "null_dim": 0, "resid_null": 0.0, "best": 0.8935078914865979, "gap": 0.031136794491760184, "solver": "CLARABEL"}
-1D isodense rigorous: (0.5904112657938181, np.float64(1.0000000298559873e-10), 0.9999998278141458) null_dim 0
+{"name": "Tjunction320_quasar", "t": 0.7816714639513991, "rigorous": 0.7816712647440189, "c": 0.9999997572815004, "null_dim": 0, "resid_null": 0.0, "best": 0.8500810750411011, "gap": 0.08751736616477125, "solver": "CLARABEL"}

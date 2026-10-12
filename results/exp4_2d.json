@@ -213,5 +213,136 @@
    100
   ],
   "nsrc": 23404
+ },
+ {
+  "F": 61,
+  "nB": 536,
+  "nD": 737,
+  "focus": [
+   0.0
+  ],
+  "status": "optimal",
+  "solver": "CLARABEL",
+  "t_sdp": 0.804972927118703,
+  "rigorous": 0.8049729211521794,
+  "cert_mineig": 1.0000003411749229e-10,
+  "cert_scale": 0.9999999936091957,
+  "rank": 2,
+  "eig_top": [
+   5.2096794855524955,
+   0.6660186939347356,
+   1.0803202487112268e-07,
+   5.2705745152138265e-08,
+   5.187981907476863e-08
+  ],
+  "rounded": 1.3538595275807175,
+  "round_refined": 0.8663197090886438,
+  "multistart": 0.8663772007657127,
+  "best_feasible": 0.8663197090886438,
+  "gap_rel": 0.07620975355128344,
+  "EL_bound": 0.10804986410728407,
+  "EL_best": 0.07162775501986991,
+  "sdp_time": 2242.6697607040405,
+  "total_time": 3041.4406309127808,
+  "n_img": 1.0,
+  "dead_orders_dropped": 0,
+  "EL_full_bound": 0.21609972821456813,
+  "EL_full_best": 0.14325551003973983,
+  "degenerate": false,
+  "cert_violation": false,
+  "name": "Tjunction320_annular",
+  "L": [
+   320,
+   320
+  ],
+  "nsrc": 70192
+ },
+ {
+  "F": 49,
+  "nB": 536,
+  "nD": 737,
+  "focus": [
+   0.0
+  ],
+  "status": "optimal_inaccurate",
+  "solver": "CLARABEL",
+  "t_sdp": 0.7816714639513991,
+  "rigorous": 0.7816712647440189,
+  "cert_mineig": 1.0000003015187792e-10,
+  "cert_scale": 0.9999997572815004,
+  "rank": 4,
+  "eig_top": [
+   1.5593141977977134,
+   0.49553456539160096,
+   0.4168640706377779,
+   0.22961492446795034,
+   2.6260507242824076e-07
+  ],
+  "rounded": 1.6449228939356193,
+  "round_refined": 0.8505851028957727,
+  "multistart": 0.8500810750411011,
+  "best_feasible": 0.8500810750411011,
+  "gap_rel": 0.08751736616477125,
+  "EL_bound": 0.12254153702554628,
+  "EL_best": 0.08103370548534924,
+  "sdp_time": 794.7416634559631,
+  "total_time": 1066.7526121139526,
+  "n_img": 1.0,
+  "dead_orders_dropped": 12,
+  "EL_full_bound": 0.24508307405109256,
+  "EL_full_best": 0.1620674109706985,
+  "degenerate": false,
+  "cert_violation": false,
+  "name": "Tjunction320_quasar",
+  "L": [
+   320,
+   320
+  ],
+  "nsrc": 23404,
+  "cert_null_dim": 0,
+  "cert_resid_null": 0.0
+ },
+ {
+  "F": 61,
+  "nB": 474,
+  "nD": 814,
+  "focus": [
+   0.0
+  ],
+  "status": "optimal",
+  "solver": "CLARABEL",
+  "t_sdp": 0.8677478243460718,
+  "rigorous": 0.8677478232941481,
+  "cert_mineig": 1.000000202532514e-10,
+  "cert_scale": 0.9999999997972311,
+  "rank": 2,
+  "eig_top": [
+   8.649044825702465,
+   0.4636445246423682,
+   1.6958374839040168e-08,
+   1.6923737513675056e-08,
+   1.6744899905792625e-08
+  ],
+  "rounded": 1.4530343889715143,
+  "round_refined": 0.8949629380919504,
+  "multistart": 0.8997137447757924,
+  "best_feasible": 0.8949629380919504,
+  "gap_rel": 0.03136293064324623,
+  "EL_bound": 0.07080836880462729,
+  "EL_best": 0.05542961278905648,
+  "sdp_time": 1323.8101007938385,
+  "total_time": 1946.7080166339874,
+  "n_img": 1.0,
+  "dead_orders_dropped": 0,
+  "EL_full_bound": 0.14161673760925458,
+  "EL_full_best": 0.11085922557811297,
+  "degenerate": false,
+  "cert_violation": false,
+  "name": "lineend320_annular",
+  "L": [
+   320,
+   320
+  ],
+  "nsrc": 70192
  }
 ]

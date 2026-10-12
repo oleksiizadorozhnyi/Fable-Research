@@ -2,27 +2,27 @@
  {
   "name": "isodense_coh",
   "F": 9,
-  "shor_bound": 0.5358712857685617,
-  "rigorous_shor": 0.5358712761823466,
+  "shor_bound": 0.5358712831765823,
+  "rigorous_shor": 0.5358712596896937,
   "min_face_rank": 2,
-  "lasserre2_bound": 0.6383137918879505,
+  "lasserre2_bound": 0.638313791889477,
   "lasserre_status": "optimal_inaccurate",
-  "lasserre_time": 2620.8768758773804,
+  "lasserre_time": 2287.871877193451,
   "M2_size": 66,
-  "best_single_mask": 0.6383065847247952,
-  "multi_exposure_gain_certified": 0.1911700071618405
+  "best_single_mask": 0.6383065847247973,
+  "multi_exposure_gain_certified": 0.19117004382564673
  },
  {
   "name": "mixed_coh",
   "F": 7,
-  "shor_bound": 0.5875589704288549,
-  "rigorous_shor": 0.5875386935924869,
+  "shor_bound": 0.5875589704290232,
+  "rigorous_shor": 0.5875386935693163,
   "min_face_rank": 2,
-  "lasserre2_bound": 0.6441384264567639,
+  "lasserre2_bound": 0.6439516181015561,
   "lasserre_status": "optimal_inaccurate",
-  "lasserre_time": 722.6312086582184,
+  "lasserre_time": 562.4185044765472,
   "M2_size": 45,
-  "best_single_mask": 0.6439091102736296,
-  "multi_exposure_gain_certified": 0.0963336261620485
+  "best_single_mask": 0.6439091102736303,
+  "multi_exposure_gain_certified": 0.0960156754775238
  }
 ]

@@ -30,3 +30,21 @@
 {"name": "sraf_like_narrow_space", "src": "dipole0.8", "F": 13, "rigorous": 0.7699196073389165, "best_feasible": 0.7699200015992761, "gap_rel": 5.120799052573642e-07, "rank": 1, "EL_bound": 0.1299948267181528}
 {"name": "extreme_duty_5pct", "src": "coh", "F": 5, "rigorous": 0.9247539965534705, "best_feasible": 0.9247540038071689, "gap_rel": 7.843922217941331e-09, "rank": 1, "EL_bound": 0.03909382891593813}
 {"name": "extreme_duty_5pct", "src": "conv0.7", "F": 9, "rigorous": 0.9365202434231026, "best_feasible": 0.9384231602867333, "gap_rel": 0.0020319014746284047, "rank": 2, "EL_bound": 0.0327803217097731}
+{"name": "extreme_duty_5pct", "src": "dipole0.8", "F": 11, "rigorous": 0.8988992030624836, "best_feasible": 0.898899207247106, "gap_rel": 4.655274375696595e-09, "rank": 1, "EL_bound": 0.053241792283900205}
+{"name": "extreme_duty_95pct", "src": "coh", "F": 5, "rigorous": 0.0, "best_feasible": 0.0076959438205093265, "gap_rel": null, "rank": 3, "EL_bound": 1.0}
+{"name": "extreme_duty_95pct", "src": "conv0.7", "F": 9, "rigorous": 0.5631466834437884, "best_feasible": 0.5915063683407877, "gap_rel": 0.05035932152449609, "rank": 2, "EL_bound": 0.2794704560891077}
+{"name": "extreme_duty_95pct", "src": "dipole0.8", "F": 11, "rigorous": 0.0, "best_feasible": 0.0014919876574670343, "gap_rel": null, "rank": 5, "EL_bound": 1.0}
+{"name": "alternating_widths", "src": "coh", "F": 9, "rigorous": 0.7587820380695727, "best_feasible": 1.051770196930219, "gap_rel": 0.3861295393945292, "rank": 5, "EL_bound": 0.13715057165081498}
+{"name": "alternating_widths", "src": "conv0.7", "F": 15, "rigorous": 0.9012907193681412, "best_feasible": 0.9012907509821212, "gap_rel": 3.507634030845468e-08, "rank": 1, "EL_bound": 0.051916984407657026}
+{"name": "alternating_widths", "src": "dipole0.8", "F": 17, "rigorous": 0.8099220755830697, "best_feasible": 0.811614364627877, "gap_rel": 0.002089446745341438, "rank": 2, "EL_bound": 0.10501994919073868}
+{"name": "three_pitches", "src": "coh", "F": 11, "rigorous": 0.5983235953935465, "best_feasible": 0.7378649758101394, "gap_rel": 0.23322058747292052, "rank": 5, "EL_bound": 0.2513110647706798}
+{"name": "three_pitches", "src": "conv0.7", "F": 17, "rigorous": 0.750950809381725, "best_feasible": 0.7582787377329264, "gap_rel": 0.00975820021718159, "rank": 2, "EL_bound": 0.1422365433019882}
+{"name": "three_pitches", "src": "dipole0.8", "F": 19, "rigorous": 0.6647659168607708, "best_feasible": 0.6651356697676315, "gap_rel": 0.0005562151991888899, "rank": 3, "EL_bound": 0.20137010239335995}
+{"pitch": 44, "src": "annular", "k1": 0.5377777777777778, "F": 13, "rigorous": 0.7698235235002092, "best_feasible": 0.7698235529170434, "gap_rel": 3.8212438685979366e-08, "rank": 1, "EL_bound": 0.1300561742136679}
+{"pitch": 44, "src": "quasar", "k1": 0.5377777777777778, "F": 9, "rigorous": 0.7455562419019306, "best_feasible": 0.7455562542378449, "gap_rel": 1.6545920477566307e-08, "rank": 1, "EL_bound": 0.1457665768596671}
+{"pitch": 40, "src": "annular", "k1": 0.48888888888888893, "F": 9, "rigorous": 0.7721582148223872, "best_feasible": 0.7721582383377071, "gap_rel": 3.045401766388395e-08, "rank": 1, "EL_bound": 0.1285674062687727}
+{"pitch": 40, "src": "quasar", "k1": 0.48888888888888893, "F": 9, "rigorous": 0.7477191090069092, "best_feasible": 0.747719116164342, "gap_rel": 9.572355007876714e-09, "rank": 1, "EL_bound": 0.14434864829992167}
+{"pitch": 36, "src": "annular", "k1": 0.44, "F": 9, "rigorous": 0.8171417112714722, "best_feasible": 0.8171417178785643, "gap_rel": 8.085613553340227e-09, "rank": 1, "EL_bound": 0.10062962486320345}
+{"pitch": 36, "src": "quasar", "k1": 0.44, "F": 9, "rigorous": 0.7534899904116026, "best_feasible": 0.7534900185731912, "gap_rel": 3.737486758283656e-08, "rank": 1, "EL_bound": 0.1405825017173513}
+{"pitch": 32, "src": "annular", "k1": 0.39111111111111113, "F": 9, "rigorous": 0.9099383094472252, "best_feasible": 0.9099385198275699, "gap_rel": 2.312028656409356e-07, "rank": 1, "EL_bound": 0.04715424058845151}
+{"pitch": 32, "src": "quasar", "k1": 0.39111111111111113, "F": 9, "rigorous": 0.8444317199249309, "best_feasible": 0.8444317243596381, "gap_rel": 5.251706031894423e-09, "rank": 1, "EL_bound": 0.08434483011461154}
