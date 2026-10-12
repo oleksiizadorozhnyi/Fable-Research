@@ -162,7 +162,7 @@ def local_refine(model, M0, B, D, real_mask=True, iters=300):
     def obj(p):
         M = unpack(p); tot = 0.0
         for z in model.focus:
-            fld = model.C[z] @ M; I = np.einsum('s,sx->x', model.w, np.abs(fld) ** 2)
+            I = model.image(M, z)
             ID, IB = I[D], I[B]
             tot += (np.log(np.sum(np.exp(beta * (ID / ID.max() - 1)))) / beta + np.log(ID.max()))
             tot -= (-np.log(np.sum(np.exp(-beta * (IB / IB.min() - 1)))) / beta + np.log(IB.min()))
@@ -199,7 +199,7 @@ def ilt_gradient(model, target_pix, N, B, D, steps=400, lr=0.05, a=10.0, thr=Non
     Nn = theta.size
     def fwd(m):
         M = model.orders_from_pixels(m)
-        fld = model.C[0.0] @ M
+        fld = model.fields(M, 0.0)
         I = np.einsum('s,sx->x', model.w, np.abs(fld) ** 2)
         return M, fld, I
     def dM_to_dm(gM, shape):
@@ -222,7 +222,7 @@ def ilt_gradient(model, target_pix, N, B, D, steps=400, lr=0.05, a=10.0, thr=Non
         err = r - tgt.ravel()
         dL_dI = 2 * err * a * r * (1 - r)
         # I = sum_s w_s |fld_s|^2, fld_s = C_s M  -> dL/dM^* = sum_s w_s C_s^H (dL_dI * fld_s)
-        gM = np.einsum('s,sxk,sx->k', model.w, model.C[0.0].conj(), dL_dI[None, :] * fld)
+        gM = np.einsum('sxk,sx->k', model.C[0.0].conj(), (model.w[:, None] * dL_dI[None, :]) * fld)
         gm = 2 * dM_to_dm(gM, theta.shape)
         gtheta = gm * (hi - lo) * 0.5 * (1 - np.tanh(theta) ** 2)
         mom = 0.9 * mom + 0.1 * gtheta; vel = 0.999 * vel + 0.001 * gtheta ** 2
@@ -381,9 +381,7 @@ def local_refine_real(rm, r0, B, D, iters=400, beta=40.0):
     def fg(r):
         lD, dD, lB, dB = [], [], [], []
         for z in rm.focus:
-            C = rm.C[z]; fld = C @ r
-            I = np.einsum('s,sx->x', rm.w, np.abs(fld)**2) + 1e-300
-            G = 2*np.einsum('s,sx,sxk->xk', rm.w, fld.conj(), C).real
+            I, G = rm.image_grad(r, z); I = I + 1e-300
             lI = np.log(I); dl = G / I[:, None]
             lD.append(lI[D]); dD.append(dl[D]); lB.append(lI[B]); dB.append(dl[B])
         lD = np.concatenate(lD); dD = np.concatenate(dD); lB = np.concatenate(lB); dB = np.concatenate(dB)
@@ -470,6 +468,7 @@ def sdp_bound_smo(rm, B, D, solvers=("CLARABEL","SCS")):
        min t s.t. sum_s Tr(Q_x^{(s)} Y_s) <= t (D), >= 1 (B), Y_s PSD. Equivalent to unlimited multi-exposure with
        coherent point-source exposures. Lower-bounds the ratio achievable by ANY source (supported on the point set) + mask."""
     F = rm.F; S = len(rm.w)
+    if getattr(rm.m, "compressed", False): raise ValueError("sdp_bound_smo needs per-source channels: build the model with compress=False")
     Ys = [cp.Variable((F, F), symmetric=True) for _ in range(S)]; t = cp.Variable()
     cons = [Y >> 0 for Y in Ys]
     def Qs(ix, z, s):
@@ -653,9 +652,8 @@ def exact_minimax_polish(rm, r0, B, D, maxiter=300):
     Cs = [rm.C[z] for z in rm.focus]
     def IG(r):
         Is, Gs = [], []
-        for C in Cs:
-            fld = C @ r; I = np.einsum('s,sx->x', rm.w, np.abs(fld)**2); G = 2*np.einsum('s,sx,sxk->xk', rm.w, fld.conj(), C).real
-            Is.append(I); Gs.append(G)
+        for z in rm.focus:
+            I, G = rm.image_grad(r, z); Is.append(I); Gs.append(G)
         return Is, Gs
     def cfun(x):
         Is, _ = IG(x[:F]); return np.concatenate([np.concatenate([x[-1] - I[D] for I in Is]), np.concatenate([I[B] - 1 for I in Is])])
@@ -833,8 +831,33 @@ def certificate_matrix_projected(model, mu, lamb, c):
 #    the pupil cutoff and the defocus phase exactly as for 2-D masks.  2) Defocus phase is evaluated in the image-side
 #    medium of index n_img:  phi = 2 pi n_img z / lambda * ( sqrt(1 - (|g| lambda / n_img)^2) - 1 ).
 # 3) Area-weighted quadratures for disk / annular / finite-pole dipole / quasar illuminators.
+
+def compress_channels(model, tol=1e-14):
+    """Exact coherent-mode (TCC eigen) compression of the source sum. For each focus z the channel matrix C_z (S, nx, F)
+       has rows E_x * P_s with E_x the Fourier phases and P_s the pupil/defocus vector of source point s, so
+       I(x) = sum_s w_s |(E_x*M)^T P_s|^2 = u^T T_z conj(u),  T_z = sum_s w_s P_s P_s^H  (F x F, PSD, rank <= F).
+       With T_z = sum_j lam_j v_j v_j^H the image is sum_j lam_j |(E_x*M)^T v_j|^2: at most F channels replace S source
+       points, exactly (up to rounding). Channels with lam_j <= tol*max(lam) are dropped. Keeps the original per-source
+       channels in model.C_src / model.w_src (needed by the per-source SMO relaxation)."""
+    if getattr(model, 'compressed', False) or len(model.w) <= model.F: model.compressed = getattr(model, 'compressed', False); return model
+    model.C_src, model.w_src = model.C, model.w
+    E = np.exp(2j * np.pi * (model.x @ model.f.T))                           # (nx, F) Fourier phases
+    newC = {}; J = 0
+    for z in model.focus:
+        P = model.C[z][:, 0, :] / E[0][None, :]                               # (S, F): per-channel pupil vectors (E_x divides out)
+        T = (P.T * model.w) @ P.conj()                                        # T[k,k'] = sum_s w_s P_s(k) conj(P_s(k'))
+        T = 0.5 * (T + T.conj().T); lam_, V = np.linalg.eigh(T); keep = lam_ > tol * max(lam_.max(), 1e-300)
+        modes = (V[:, keep] * np.sqrt(lam_[keep])).T                          # (J, F): virtual pupil vectors sqrt(lam_j) v_j
+        newC[z] = E[None, :, :] * modes[:, None, :]                           # u^T T conj(u) = sum_j lam_j |u^T v_j|^2, u = E_x * M
+        J = max(J, modes.shape[0])
+    # pad to a common channel count so that a single weight vector applies to every focus
+    for z in model.focus:
+        if newC[z].shape[0] < J: newC[z] = np.concatenate([newC[z], np.zeros((J - newC[z].shape[0],) + newC[z].shape[1:], complex)])
+    model.C = newC; model.w = np.ones(J); model.compressed = True; model.n_channels = J
+    return model
+
 class Model(Model):
-    def __init__(self, L, lam, NA, src_pts, src_w, nx, focus=(0.0,), dim=1, xs=None, n_img=1.0, aberr=None):
+    def __init__(self, L, lam, NA, src_pts, src_w, nx, focus=(0.0,), dim=1, xs=None, n_img=1.0, aberr=None, compress=True):
         self.dim = dim; self.n_img = n_img; self.aberr = aberr or {}
         self.L = np.atleast_1d(np.asarray(L, float)) if dim == 2 else np.array([float(L)])
         self.lam, self.NA = lam, NA
@@ -875,6 +898,7 @@ class Model(Model):
                 Cz.append(E * (inside * np.exp(1j * ph))[None, :])
             self.C[z] = np.stack(Cz)
         self.flip = np.array([self.kindex[tuple(-kk)] for kk in self.k])
+        if compress: compress_channels(self)
 
 def disk_source(sigma, NA, n=21, sigma_in=0.0):
     """Area-weighted grid quadrature of a disk (or annulus sigma_in..sigma) of direction cosines, n x n grid over the disk."""
@@ -901,22 +925,24 @@ def quasar_source(s_in, s_out, NA, opening_deg=30.0, n=31):
 def el_full(rho): return 2 * (1 - rho) / (1 + rho)   # full-range dose latitude (window width / centre dose) for a threshold resist
 def two_beam_closed_form(tau, pitch): return (1 - np.sin(2 * np.pi * tau / pitch)) / (1 + np.sin(2 * np.pi * tau / pitch))
 
-def build_1d(L, lam, NA, src, segs, margin, spacing=4.0, focus=(0.0,), n_img=1.0, aberr=None):
+def build_1d(L, lam, NA, src, segs, margin, spacing=4.0, focus=(0.0,), n_img=1.0, aberr=None, compress=True):
     s, w = src; x, B, D, tgt = samples_1d(L, segs, margin, spacing)
-    return Model(L, lam, NA, s, w, nx=len(x), focus=focus, xs=x, n_img=n_img, aberr=aberr), B, D, tgt
-def build_2d(L, lam, NA, src, target_fn, margin, spacing=10.0, fine=1.0, focus=(0.0,), n_img=1.0, aberr=None, corner_exclusion=0.0):
+    return Model(L, lam, NA, s, w, nx=len(x), focus=focus, xs=x, n_img=n_img, aberr=aberr, compress=compress), B, D, tgt
+def build_2d(L, lam, NA, src, target_fn, margin, spacing=10.0, fine=1.0, focus=(0.0,), n_img=1.0, aberr=None, corner_exclusion=0.0, compress=True):
     s, w = src; x, B, D, tgt, sd = samples_2d(L, target_fn, margin, spacing, fine=fine, corner_exclusion=corner_exclusion)
-    return Model(L, lam, NA, s, w, nx=None, focus=focus, dim=2, xs=x, n_img=n_img, aberr=aberr), B, D, tgt
+    return Model(L, lam, NA, s, w, nx=None, focus=focus, dim=2, xs=x, n_img=n_img, aberr=aberr, compress=compress), B, D, tgt
 
 class ModelX(Model):
     """Vector (high-NA) extension of the corrected Model: channels = (source point, polarization, field component).
        Direction cosines in the image medium: alpha = g_x lambda/n_img, beta = g_y lambda/n_img, gamma = sqrt(1-alpha^2-beta^2).
        Mask-side polarization p (x, y, unpolarized = average of x and y, TE/TM = azimuthal/radial per source point) is rotated
        by the minimal rotation taking z to the propagation direction (Rodrigues); optional obliquity amplitude 1/sqrt(gamma)."""
-    def __init__(self, L, lam, NA, src_pts, src_w, nx, focus=(0.0,), dim=1, xs=None, aberr=None, vector=False, pol='unpol', n_img=1.0, obliquity=True):
+    def __init__(self, L, lam, NA, src_pts, src_w, nx, focus=(0.0,), dim=1, xs=None, aberr=None, vector=False, pol='unpol', n_img=1.0, obliquity=True, compress=True):
         self.vector = vector; self.pol = pol; self.obliquity = obliquity
-        super().__init__(L, lam, NA, src_pts, src_w, nx, focus, dim, xs, n_img=n_img, aberr=aberr)
-        if not vector: return
+        super().__init__(L, lam, NA, src_pts, src_w, nx, focus, dim, xs, n_img=n_img, aberr=aberr, compress=False)
+        if not vector:
+            if compress: compress_channels(self)
+            return
         E = np.exp(2j * np.pi * (self.x @ self.f.T)); Cs = {z: [] for z in self.focus}; ws = []
         for s, wsrc in zip(self.src, self.w):
             g = self.f2 + s / lam; gn = np.linalg.norm(g, axis=1); inside = (gn * lam <= NA + 1e-12)
@@ -935,6 +961,7 @@ class ModelX(Model):
                     for comp in (ex, ey, ez): Cs[z].append(E * (P * ob * comp)[None, :])
             ws += [wsrc / len(pols)] * (3 * len(pols))
         self.C = {z: np.stack(Cs[z]) for z in self.focus}; self.w = np.array(ws)
+        if compress: compress_channels(self)
 
 def build_1d_x(L, lam, NA, src, segs, margin, spacing=4.0, focus=(0.0,), **kw):
     s, w = src; x, B, D, tgt = samples_1d(L, segs, margin, spacing)
@@ -1050,3 +1077,22 @@ def ensemble_ratio(rm, X, B, D):
        value is an UPPER bound on t_R and the right reference for a certified multi-exposure gain."""
     X = np.real(np.asarray(X)); vals = lambda S: [float(np.sum(rm.Q(ix, z) * X)) for z in rm.focus for ix in S]
     return max(vals(D)) / min(vals(B))
+
+# ----------------------------------------------------------------------------- fast field/gradient evaluation (session 3)
+# numpy's stacked (S, nx, F) @ (F,) matmul is ~40x slower than the equivalent 2-D BLAS call, and the three-operand einsum
+# 's,sx,sxk->xk' ~15x slower than the two-operand form; every primal routine goes through these helpers.
+def _fields(self, M, z=0.0):
+    """Channel fields (S, nx) for orders/real coefficients M via one 2-D BLAS matvec."""
+    C = self.C[z]; S, nx, F = C.shape
+    C2 = self.__dict__.setdefault('_C2', {}).get(z)
+    if C2 is None or C2.shape[0] != S * nx: C2 = self._C2[z] = C.reshape(S * nx, F)
+    return (C2 @ np.asarray(M, dtype=complex)).reshape(S, nx)
+def _image_fast(self, M, z=0.0):
+    fld = _fields(self, M, z); return np.einsum('s,sx->x', self.w, np.abs(fld) ** 2)
+def _image_grad(self, r, z=0.0):
+    """(I, G): intensity (nx,) and d I / d r (nx, F) for REAL coefficients r (RealModel) or complex M (Model: Wirtinger 2 dI/dM^*)."""
+    fld = _fields(self, r, z); I = np.einsum('s,sx->x', self.w, np.abs(fld) ** 2)
+    G = 2 * np.einsum('sx,sxk->xk', (self.w[:, None] * fld).conj(), self.C[z])
+    return I, (G.real if np.isrealobj(r) else G)
+for _cls in (Model, RealModel, ModelX):
+    _cls.fields = _fields; _cls.image = _image_fast; _cls.image_grad = _image_grad

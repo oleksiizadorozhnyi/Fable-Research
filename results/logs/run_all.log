@@ -16,3 +16,12 @@ FAILED exp9_outlier_pw rc=137
 === START exp14_bnb Mon Oct 12 09:47:16 UTC 2026
 === START exp9_outlier_pw (manual rerun, Lasserre-2 skipped for three-focus cases) Mon Oct 12 09:58:49 UTC 2026
 === START exp20_corner_exclusion (manual, added after launch) Mon Oct 12 10:01:33 UTC 2026
+=== END exp5_smo_euv_toeplitz Mon Oct 12 10:06:49 UTC 2026 exit=0
+=== START exp3_pixel_binary Mon Oct 12 10:06:49 UTC 2026
+=== END exp9_outlier_pw (manual rerun) Mon Oct 12 10:52:26 UTC 2026 exit=0
+=== END exp20_corner_exclusion (manual) Mon Oct 12 11:05:49 UTC 2026 exit=1
+FAILED exp20_corner_exclusion rc=1
+=== END exp14_bnb Mon Oct 12 11:24:37 UTC 2026 exit=0
+=== START exp14b_bnb_big Mon Oct 12 11:24:37 UTC 2026
+=== END exp3_pixel_binary Mon Oct 12 12:11:17 UTC 2026 exit=0
+=== START exp3b_ilt Mon Oct 12 12:11:18 UTC 2026

@@ -1,0 +1,28 @@
+[
+ {
+  "name": "contacts160_annular",
+  "tau": 7,
+  "corner_exclusion": 0.0,
+  "frac_cd": 0.0,
+  "F": 13,
+  "nB": 121,
+  "nD": 231,
+  "rigorous": 0.8057974523632394,
+  "EL_full_bound": 0.21508785205407013,
+  "best_single": 0.8057974988627072,
+  "time": 3823.217415332794
+ },
+ {
+  "name": "contacts160_annular",
+  "tau": 7,
+  "corner_exclusion": 17.5,
+  "frac_cd": 0.25,
+  "F": 13,
+  "nB": 81,
+  "nD": 147,
+  "rigorous": 0.6867864577483025,
+  "EL_full_bound": 0.3713730814151869,
+  "best_single": 0.6867867049940195,
+  "time": 30.189461708068848
+ }
+]

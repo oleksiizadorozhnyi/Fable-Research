@@ -11,10 +11,10 @@ def refine_pair(rm, R0, B, D, iters=600):
     def fg(p):
         R = p.reshape(rm.F, 2); f = 0; g = np.zeros_like(R)
         for z in rm.focus:
-            C = rm.C[z]; flds = [C @ R[:, j] for j in range(2)]; I = sum(np.einsum('s,sx->x', rm.w, np.abs(f_)**2) for f_ in flds) + 1e-300
+            IG = [rm.image_grad(R[:, j], z) for j in range(2)]; I = IG[0][0] + IG[1][0] + 1e-300
             lI = np.log(I); pD = softmax(40*lI[D]); pB = softmax(-40*lI[B]); f += logsumexp(40*lI[D])/40 + logsumexp(-40*lI[B])/40
             for j in range(2):
-                G = 2*np.einsum('s,sx,sxk->xk', rm.w, flds[j].conj(), C).real/I[:, None]; g[:, j] += pD @ G[D] - pB @ G[B]
+                G = IG[j][1]/I[:, None]; g[:, j] += pD @ G[D] - pB @ G[B]
         return f, g.ravel()
     res = minimize(fg, R0.ravel(), jac=True, method='L-BFGS-B', options=dict(maxiter=iters)); R = res.x.reshape(rm.F, 2)
     dm = max(sum(rm.image(R[:, j], z) for j in range(2))[D].max() for z in rm.focus); bm = min(sum(rm.image(R[:, j], z) for j in range(2))[B].min() for z in rm.focus); return dm/bm, R

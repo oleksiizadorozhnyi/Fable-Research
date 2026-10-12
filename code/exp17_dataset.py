@@ -6,7 +6,7 @@ ann = SRC_DUV['annular']; qua = SRC_DUV['quasar']; cv = SRC_DUV['conv0.5']
 srcs2 = {'annular': ann, 'quasar': qua, 'conv0.5': cv}  # catalogue illuminators
 def save(): json.dump(out, open('/home/user/Fable-Research/results/exp17_dataset.json','w'), indent=1)
 # (a) random 2D: cell 200x200 or 240x240, 1-3 random rectangles (>= 50 nm sides), margin 12
-for trial in range(40):
+for trial in range(24):
     Lc = float(rng.choice([200, 240])); nrect = int(rng.integers(1, 4)); rects = []
     for _ in range(nrect):
         w_ = rng.uniform(50, 0.6*Lc); h_ = rng.uniform(50, 0.6*Lc); x0 = rng.uniform(0, Lc); y0 = rng.uniform(0, Lc); rects.append((x0, y0, w_, h_))

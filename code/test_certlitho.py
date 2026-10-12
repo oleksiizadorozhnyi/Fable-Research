@@ -94,6 +94,19 @@ def test_samples_2d_exact():
     md, B, D, _ = build_2d((160, 160), lam, NA, (s, w), holes, 7, spacing=16.0, fine=2.0); rm = RealModel(md)
     r = sdp_bound_real(rm, B, D); rig, _, _ = rigorize_certificate(rm, r['mu'], r['lam']); rng = np.random.default_rng(0)
     assert all(rm.ratio(rng.standard_normal(rm.F), B, D) >= rig - 1e-9 for _ in range(200))
+def test_coherent_mode_compression():
+    rng = np.random.default_rng(3); segs = [(0,50),(100,150),(200,250),(430,480)]; s, w = disk_source(0.7, NA, n=11)
+    m0, B, D, _ = build_1d(600, lam, NA, (s, w), segs, 5, spacing=4.0, focus=(0.0, 80.0, -80.0), n_img=1.44, compress=False)
+    m1, _, _, _ = build_1d(600, lam, NA, (s, w), segs, 5, spacing=4.0, focus=(0.0, 80.0, -80.0), n_img=1.44)
+    assert m1.compressed and m1.n_channels <= m1.F < len(m0.w)
+    M = rng.standard_normal(m0.F) + 1j * rng.standard_normal(m0.F)
+    for z in m0.focus:
+        I0, I1 = m0.image(M, z), m1.image(M, z); assert np.abs(I0 - I1).max() <= 1e-10 * I0.max()
+        assert np.abs(m0.Q(3, z) - m1.Q(3, z)).max() <= 1e-10 * np.abs(m0.Q(3, z)).max()
+    r0 = sdp_bound_real(RealModel(m0), B, D); r1 = sdp_bound_real(RealModel(m1), B, D); assert abs(r0['t'] - r1['t']) < 1e-6
+    x0, B, D, _ = build_1d_x(600, lam, NA, (s, w), segs, 5, spacing=4.0, vector=True, pol='TM', n_img=1.7, compress=False)
+    x1, _, _, _ = build_1d_x(600, lam, NA, (s, w), segs, 5, spacing=4.0, vector=True, pol='TM', n_img=1.7)
+    I0, I1 = x0.image(M), x1.image(M); assert np.abs(I0 - I1).max() <= 1e-10 * I0.max() and x1.n_channels < len(x0.w)
 if __name__ == "__main__":
-    for f in [test_abbe_cutoff, test_certificate_and_rounding, test_pixel_vs_fourier, test_real_equals_complex_symmetric_source, test_ilt_gradient, test_toeplitz_necessity, test_bnb_consistency, test_vector_model_consistency, test_multifocus_metric, test_two_beam_closed_form, test_catalogue_and_defocus_medium, test_samples_2d_exact]:
+    for f in [test_abbe_cutoff, test_certificate_and_rounding, test_pixel_vs_fourier, test_real_equals_complex_symmetric_source, test_ilt_gradient, test_toeplitz_necessity, test_bnb_consistency, test_vector_model_consistency, test_multifocus_metric, test_two_beam_closed_form, test_catalogue_and_defocus_medium, test_samples_2d_exact, test_coherent_mode_compression]:
         f(); print("PASS", f.__name__)

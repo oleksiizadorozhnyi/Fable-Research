@@ -5,7 +5,7 @@ lam, NA = 193.0, 1.35
 segs = [(0,50),(100,150),(200,250),(430,480)]; L = 600
 res = []
 for sname, (s, w) in {"coh": SRC_DUV['coh'], "conv0.7": SRC_DUV['conv0.7'], "dipole0.8": SRC_DUV['dipole0.8'], "conv0.9": SRC_DUV['conv0.9']}.items():
-    md, B, D, tgt = build_1d(L, lam, NA, (s, w), segs, TAU_DUV, spacing=4.0); rm = RealModel(md)
+    md, B, D, tgt = build_1d(L, lam, NA, (s, w), segs, TAU_DUV, spacing=4.0, compress=False); rm = RealModel(md)
     r = sdp_bound_real(rm, B, D); smo = sdp_bound_smo(rm, B, D)
     res.append(dict(src=sname, nsrc=len(w), fixed_source_bound=r['t'], smo_bound=smo['t'], smo_status=smo['status'], smo_src_weights=[float(x) for x in smo['src_weights']]))
     print(json.dumps(res[-1]), flush=True)
