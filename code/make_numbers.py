@@ -5,7 +5,7 @@ L = lambda n: json.load(open(R+n)) if os.path.exists(R+n) else None
 e1 = L('exp1_1d_features.json'); e2 = L('exp2_random_tightness.json'); e3 = L('exp3_pixel_binary.json'); e3b = L('exp3b_ilt.json'); e4 = L('exp4_2d.json')
 e5 = L('exp5_smo_euv_toeplitz.json'); e7 = L('exp7_lasserre.json'); e8 = L('exp8_robustness.json'); e9 = L('exp9_outlier_pw.json'); e10 = L('exp10_baselines_complex.json')
 e11 = L('exp11_lasserre_pw.json'); e12 = L('exp12_lasserre_xcheck.json'); e13 = L('exp13_2d_strong.json'); e14 = L('exp14_bnb.json'); e14b = L('exp14b_bnb_big.json')
-e15 = L('exp15_verify_all.json'); e16 = L('exp16_physics.json'); e17 = L('exp17_dataset.json'); e18 = L('exp18_quasar_strong.json'); e19 = L('exp19_bnb_sdp.json')
+e15 = L('exp15_verify_all.json'); e16 = L('exp16_physics.json'); e17 = L('exp17_dataset.json'); e18 = L('exp18_quasar_strong.json'); e19 = L('exp19_bnb_sdp.json'); e20 = L('exp20_corner_exclusion.json')
 M = {}
 _DIG={'0':'Zero','1':'One','2':'Two','3':'Three','4':'Four','5':'Five','6':'Six','7':'Seven','8':'Eight','9':'Nine'}
 def _san(n): return ''.join(_DIG.get(c,c) for c in n if c.isalnum())
@@ -149,6 +149,20 @@ def _blk_physics():
         px = e16['pixelation']; F = px[0]['F']; same = [r for r in px if r['N'] >= F]; coarse = [r for r in px if r['N'] < F]; m('pixSameMaxDev', f"{max(abs(r['bound']-r['fourier'])/r['fourier'] for r in same):.0e}".replace('e-0','\\times10^{-').replace('e-','\\times10^{-')+'}'); m('pixCoarse', "; ".join(f"{r['pixel_nm']:.0f}\\,nm: {pct(r['bound']/r['fourier']-1,0)}" for r in coarse))
     pass
 _run('physics', _blk_physics)
+
+def _blk_corner():
+    global M
+    lab = {'contacts160_annular': 'contacts 160, annular', 'contacts120_quasar': 'contacts 120, quasar', 'contacts100_quasar': 'contacts 100, quasar', 'Tjunction320_annular': 'T-junction 320, annular', 'lineend320_annular': 'line-end 320, annular'}
+    by = {}
+    for r in e20: by.setdefault(r['name'], {})[r['frac_cd']] = r
+    rows = []; ratios = []
+    for nm, d in by.items():
+        r0 = d[0.0]; rows.append(f"{lab.get(nm, nm)} & {r0['tau']:g} & " + " & ".join(f"{f4(d[f]['rigorous'])} & {el_full(d[f]['rigorous']):.3f}" for f in (0.0, 0.25, 0.5)) + "\\\\")
+        ratios.append(el_full(d[0.5]['rigorous']) / max(el_full(r0['rigorous']), 1e-12))
+    open(P+'tab_corner.tex','w').write(tabbody(rows))
+    m('cornerElGainLo', f"{min(ratios):.1f}"); m('cornerElGainHi', f"{max(ratios):.1f}"); m('cornerN', str(len(by)))
+    c160 = by['contacts160_annular']; m('cornerContactsOneSixtyEL', f"{el_full(c160[0.0]['rigorous']):.2f}"); m('cornerContactsOneSixtyELHalf', f"{el_full(c160[0.5]['rigorous']):.2f}")
+_run('corner exclusion', _blk_corner)
 def _count_viol():
     n = 0
     for obj in (e1, e2, e4, e17):

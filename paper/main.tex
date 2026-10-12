@@ -239,6 +239,14 @@ Layout & $F$ & Bound $\rho$ & Max EL & Best single $\rho$ & Gap & SDP time (s)\\
 \begin{figure}[tbp]\centering\includegraphics[width=\linewidth]{fig6_dataset.png}
 \caption{Expanded dataset. Left: gap between the best single mask and the certified bound (percent, logarithmic) versus $F$ for the random two-dimensional layouts; color encodes the numerical rank of the SDP optimum. Middle: certified maximum full-range EL of the adversarial one-dimensional targets (\S\ref{sec:adv}) under coherent, $\sigma=0.7$ disk and finite-pole dipole illumination. Right: EUV two-dimensional contact arrays under annular and quasar illumination; certified EL and best single mask coincide.}\label{fig:dataset}\end{figure}
 
+\paragraph{Corner convention.} The two-dimensional sample sets enforce the edge tolerance along the whole offset contour, including the circular arcs around convex corners and the inner corners of contact holes, where the aerial image necessarily rounds. The resulting entitlements are therefore conservative relative to edge-placement checks that exclude a zone around corners, as is common practice. Table~\ref{tab:corner} quantifies this: dropping the offset samples whose foot point lies within $0.25$ or $0.5$ minimum CD of a corner raises the certified full-range EL by a factor \cornerElGainLo--\cornerElGainHi{} (0.5 CD) on the \cornerN{} layouts tested (e.g.\ from \cornerContactsOneSixtyEL{} to \cornerContactsOneSixtyELHalf{} for the \SI{160}{nm} contacts); all other two-dimensional numbers in this paper use the full contour.
+\begin{table}[tbp]\centering\small
+\caption{Sensitivity of the two-dimensional certified bounds to a corner-exclusion zone (DUV; $\tau$ as in Table~\ref{tab:2d}). Offset samples whose foot point lies within $c$ of a boundary corner are dropped; $c=0$ is the convention of all other tables. Columns: bound $\rho$ and full-range EL at the bound for $c=0$, $c=0.25$ CD and $c=0.5$ CD.}\label{tab:corner}
+\begin{tabular}{@{}lrrrrrrr@{}}\toprule
+Layout & $\tau$ (nm) & $\rho$ ($c=0$) & EL & $\rho$ ($0.25$ CD) & EL & $\rho$ ($0.5$ CD) & EL\\\midrule
+\input{tab_corner}\\
+\bottomrule\end{tabular}\end{table}
+
 \subsection{Adversarial one-dimensional targets}\label{sec:adv}
 Near-cutoff mixed pitches, SRAF-like \SI{20}{nm} spaces, 5\%/95\% duty cycles, alternating widths and three-pitch mixtures (Fig.~\ref{fig:dataset}, middle; $\tau=10\%$ CD) are tight under dipole illumination, mostly tight under the $\sigma=0.7$ disk, and show gaps of \advCohGapLo--\advCohGapHi{} in \advCohBigN{} of six coherent cases, the regime in which multiple exposure helps most. The isolated \SI{20}{nm} space under coherent or dipole light has a certified bound of $\approx0$: a phase-edge mask makes the sampled dark points exactly dark. This is a statement about the sampled constraint set, not about the printed width of a phase-edge line, which is dose-determined.
 
