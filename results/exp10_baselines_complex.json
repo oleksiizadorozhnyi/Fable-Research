@@ -3,7 +3,7 @@
   "case": "isodense",
   "src": "coh",
   "F": 9,
-  "sdp_real": 0.3625170854762293,
+  "sdp_real": 0.36251708581284847,
   "rayleigh_bound": 0.06676499685363164,
   "sdp_complex": 0.3625169389807657,
   "rank_complex": 4
@@ -12,7 +12,7 @@
   "case": "isodense",
   "src": "conv0.7",
   "F": 15,
-  "sdp_real": 0.4690650797168103,
+  "sdp_real": 0.4690650798363824,
   "rayleigh_bound": 0.13865683150856037,
   "sdp_complex": 0.469068462226355,
   "rank_complex": 2
@@ -21,7 +21,7 @@
   "case": "isodense",
   "src": "dipole0.8",
   "F": 15,
-  "sdp_real": 0.43125934436229,
+  "sdp_real": 0.4312593445060511,
   "rayleigh_bound": 0.08229869347748264,
   "sdp_complex": 0.4312603939588263,
   "rank_complex": 5
@@ -30,7 +30,7 @@
   "case": "mixed",
   "src": "coh",
   "F": 7,
-  "sdp_real": 0.4210810525022769,
+  "sdp_real": 0.42108107226250474,
   "rayleigh_bound": 0.0028395017426526862,
   "sdp_complex": 0.42108351917926357,
   "rank_complex": 3
@@ -39,7 +39,7 @@
   "case": "mixed",
   "src": "conv0.7",
   "F": 11,
-  "sdp_real": 0.48252771661524047,
+  "sdp_real": 0.48252771765842384,
   "rayleigh_bound": 0.034319369623831926,
   "sdp_complex": 0.48252942274842725,
   "rank_complex": 3
@@ -48,7 +48,7 @@
   "case": "mixed",
   "src": "dipole0.8",
   "F": 13,
-  "sdp_real": 0.4210735825806927,
+  "sdp_real": 0.42107360553369616,
   "rayleigh_bound": 0.0028395017426525314,
   "sdp_complex": 0.42108479140097566,
   "rank_complex": 5
@@ -57,7 +57,7 @@
   "case": "dense90",
   "src": "coh",
   "F": 5,
-  "sdp_real": 0.4217302208724788,
+  "sdp_real": 0.42173022096292667,
   "rayleigh_bound": 0.15820852809281166,
   "sdp_complex": 0.4217302213702619,
   "rank_complex": 1
@@ -66,7 +66,7 @@
   "case": "dense90",
   "src": "conv0.7",
   "F": 9,
-  "sdp_real": 0.6428320704567664,
+  "sdp_real": 0.6428320706140908,
   "rayleigh_bound": 0.4392194979029341,
   "sdp_complex": 0.6428320835308443,
   "rank_complex": 1
@@ -75,7 +75,7 @@
   "case": "dense90",
   "src": "dipole0.8",
   "F": 9,
-  "sdp_real": 0.4217301103388417,
+  "sdp_real": 0.42173011044063907,
   "rayleigh_bound": 0.15820852809276598,
   "sdp_complex": 0.42173022258378023,
   "rank_complex": 1
