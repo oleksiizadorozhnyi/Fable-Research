@@ -1,0 +1,1 @@
+{"name": "mixed_coh", "F": 7, "nB": 61, "nD": 46, "sdp_bound": 0.4210810525022836, "best_single": 0.47870382204697504, "bnb_L": 0.47760581228564386, "bnb_U": 0.47870382204697504, "bnb_nodes": 30027543, "bnb_converged": false, "bnb_time": 2090.6018364429474, "certified_gain": 0.13423724351276456}

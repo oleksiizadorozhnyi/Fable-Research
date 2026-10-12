@@ -75,4 +75,18 @@ if e16:
     for r in e16['vector_2d']: md.append(f"| {r['case']} | {r['scalar_bound']:.4f} | {r['scalar_gap']:.2%} | {r['unpol_bound']:.4f} | {r['unpol_gap']:.2%} | {r['TE_bound']:.4f} | {r['TE_gap']:.2%} |")
     md.append("\n### Aberration sensitivity (iso-dense, σ=0.7): " + "; ".join(f"{r['zernike']} {r['waves']}λ: {r['bound']:.4f}" for r in e16['aberrations']))
     md.append("\n### Pixelation (iso-dense, σ=0.7, F=15): " + "; ".join(f"{r['pixel_nm']:.0f} nm pixels (N={r['N']}): {r['bound']:.4f}" for r in e16['pixelation']) + f" (Fourier {e16['pixelation'][0]['fourier']:.4f})")
+e17 = load('exp17_dataset.json')
+if e17:
+    import numpy as _np
+    r2 = e17['random2d']
+    if r2:
+        g = _np.array([r['gap_rel'] for r in r2]); md.append(f"\n### Random 2D layouts (n={len(r2)}; cells 200/240 nm; annular/quasar/conv0.5; τ=12 nm): gap ≤1e-3: {_np.mean(g<=1e-3):.1%}; ≤1%: {_np.mean(g<=1e-2):.1%}; ≤5%: {_np.mean(g<=5e-2):.1%}; median {_np.median(g):.1e}; max {g.max():.3f}; F range {min(r['F'] for r in r2)}–{max(r['F'] for r in r2)}; median SDP time {_np.median([r['sdp_time'] for r in r2]):.1f} s")
+    a1 = e17['adversarial1d']
+    if a1:
+        md.append("\n### Table 12 — Adversarial 1D targets\n| target | source | F | bound ρ | max EL | best single ρ | gap | rank |\n|---|---|---|---|---|---|---|---|")
+        for r in a1: md.append(f"| {r['name']} | {r['src']} | {r['F']} | {r['rigorous']:.4f} | {r['EL_bound']:.3f} | {r['best_feasible']:.4f} | {r['gap_rel']:.2%} | {r['rank']} |")
+    e2d = e17['euv2d']
+    if e2d:
+        md.append("\n### Table 13 — EUV 2D contact arrays (13.5 nm, NA 0.33, ±40 nm focus, τ = 0.1 pitch)\n| pitch | k1 | source | F | bound ρ | max EL | best single ρ | gap | rank |\n|---|---|---|---|---|---|---|---|---|")
+        for r in e2d: md.append(f"| {r['pitch']} | {r['k1']:.3f} | {r['src']} | {r['F']} | {r['rigorous']:.4f} | {r['EL_bound']:.3f} | {r['best_feasible']:.4f} | {r['gap_rel']:.2%} | {r['rank']} |")
 open(R + 'RESULTS_TABLES.md', 'w').write("\n".join(md)); print("\n".join(md[-12:]))

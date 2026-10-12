@@ -20,7 +20,7 @@ Carathéodory–Toeplitz cone; and that mask pixelation at or above the collecte
 To separate single- from multi-exposure optima rigorously we introduce a branch-and-bound certifier for the
 single-mask problem based on interval bounds of positive semidefinite quadratic forms; it converges in seconds for
 five collected orders and certifies, for example, multi-exposure gains of 6.4–16.4% on random coherent-illumination
-targets and ≥10.8% on a mixed-width target, independently of the Lasserre moment relaxation that we also report.
+targets and 13.4% on a mixed-width target, independently of the Lasserre moment relaxation that we also report.
 Across 109 random one-dimensional targets, local optimization is certified globally optimal in 70% of cases and within
 1% in 83%; all two-dimensional contact arrays tested under annular, conventional and quasar illumination are certified
 within 0.3%; 320 nm T-junction and line-end cells are certified within [[exp13]]. The bound reproduces the classical
@@ -151,7 +151,7 @@ there and the first-order solver SCS fails (§6.9).
 coherent random targets with F = 5 and proves single-mask optima 0.4061, 0.6775, 0.4033, 0.3343 (within 0.1% of the
 best masks found) against multi-exposure bounds 0.3597, 0.6049, 0.3464, 0.3141: certified gains of 12.9%, 12.0%,
 16.4% and 6.4%, each attained by a rank-2 optimal face (two exposures). For the mixed-width coherent target (F = 7)
-the 6M-node run certifies ≥ 10.8% [[exp14b: large-budget value]]; for F = 9 and 11 the interval B&B does not converge
+a 30M-node run (35 min) certifies a single-mask optimum ≥ 0.4776 (best found 0.4787, B&B gap 0.23%), i.e. a rigorous gain ≥ 13.4%; for F = 9 and 11 the interval B&B does not converge
 within 6M nodes and only the Lasserre-2 values (0.4608 and 0.9552, solver status "optimal_inaccurate", cross-checked
 between CLARABEL and SCS to 1e-6 on the F = 7 case) corroborate gains of 27% and 9.9%.
 
