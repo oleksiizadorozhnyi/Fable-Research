@@ -3,3 +3,16 @@
 === START exp4_2d Mon Oct 12 07:58:23 UTC 2026
 === START exp1_1d_features Mon Oct 12 07:58:23 UTC 2026
 === START exp17_dataset Mon Oct 12 07:58:23 UTC 2026
+=== END exp1_1d_features Mon Oct 12 08:13:38 UTC 2026 exit=0
+=== START exp7_lasserre Mon Oct 12 08:13:38 UTC 2026
+=== END exp2_random_tightness Mon Oct 12 08:49:36 UTC 2026 exit=0
+=== START exp9_outlier_pw Mon Oct 12 08:49:36 UTC 2026
+=== END exp7_lasserre Mon Oct 12 08:59:19 UTC 2026 exit=0
+=== START exp8_robustness Mon Oct 12 08:59:19 UTC 2026
+=== END exp8_robustness Mon Oct 12 09:00:13 UTC 2026 exit=0
+=== START exp5_smo_euv_toeplitz Mon Oct 12 09:00:13 UTC 2026
+=== END exp9_outlier_pw Mon Oct 12 09:47:16 UTC 2026 exit=137
+FAILED exp9_outlier_pw rc=137
+=== START exp14_bnb Mon Oct 12 09:47:16 UTC 2026
+=== START exp9_outlier_pw (manual rerun, Lasserre-2 skipped for three-focus cases) Mon Oct 12 09:58:49 UTC 2026
+=== START exp20_corner_exclusion (manual, added after launch) Mon Oct 12 10:01:33 UTC 2026
