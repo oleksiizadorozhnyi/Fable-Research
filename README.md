@@ -21,3 +21,7 @@ Layout
 - `notes/` — RESEARCH_STATE.md (persistent state + bug log), PHASE2_DIRECTIONS.md (five directions & scoring),
   THEORY.md (definitions, theorems, proofs), NOVELTY.md, ADVERSARIAL.md, PAPER_DRAFT.md (manuscript), FINAL_REPORT.md.
 - `results/` — JSON outputs, RESULTS_TABLES.md, figs/, logs/.
+
+## Manuscript
+`paper/main.tex` + `paper/refs.bib` (LaTeX, article class, natbib). Compile with `cd paper && pdflatex main && bibtex main && pdflatex main && pdflatex main`
+(figures are read from `../results/figs/`). A Markdown version is kept in `notes/PAPER_v2.md`.

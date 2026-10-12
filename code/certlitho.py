@@ -765,3 +765,51 @@ def rigorize_certificate(model, mu, lamb, tol_rel=1e-11, safety=None):
         if rel_mineig(mid) >= -tol_rel: lo = mid
         else: hi = mid
     return lo*slam, rel_mineig(lo), lo
+
+# ----------------------------------------------------------------------------- rigorous certificate v3 (overrides): strict margin on the complement of the COMMON null space
+def rigorize_certificate(model, mu, lamb, margin=1e-10, null_tol=1e-12):
+    """Largest c<=1 with S_c = SD - c*SB strictly PSD (lambda_min >= margin*||S_c||) on the orthogonal complement of the
+       common null space N = {v : SD v = 0 and SB v = 0} (directions that contribute to no weighted intensity; on N every
+       quadratic form in the certificate vanishes identically, so the weak-duality chain is unaffected). N is taken as the
+       span of eigenvectors of SD with eigenvalue <= null_tol*||SD|| on which SB also vanishes (||P_N SB P_N|| <= null_tol*||SB||);
+       if SB does NOT vanish on the near-null space of SD, no projection is applied and bisection lowers c (to 0 if needed).
+       A strictly positive margin makes an exact Cholesky factorisation of the projected matrix possible (exp15).
+       Returns (bound = c*sum lam/sum mu, relative min eigenvalue achieved, c); diagnostics on the function object."""
+    F = model.F
+    SD = np.zeros((F, F), complex); smu = 0.0
+    for (z, ix), v in mu.items(): SD += v * model.Q(ix, z); smu += v
+    SB = np.zeros((F, F), complex); slam = 0.0
+    for (z, ix), v in lamb.items(): SB += v * model.Q(ix, z); slam += v
+    SD /= smu; SB /= smu; slam /= smu
+    SD = 0.5*(SD+SD.conj().T); SB = 0.5*(SB+SB.conj().T)
+    w, V = np.linalg.eigh(SD); nD = np.linalg.norm(SD, 2); nB = max(np.linalg.norm(SB, 2), 1e-300)
+    nullmask = w <= null_tol*nD; Vn = V[:, nullmask]
+    resid = (np.linalg.norm(Vn.conj().T @ SB @ Vn, 2)/nB) if Vn.shape[1] else 0.0
+    common = Vn.shape[1] > 0 and resid <= null_tol
+    Vk = V[:, ~nullmask] if common else np.eye(F)
+    rigorize_certificate.last_null_dim = int(Vn.shape[1]) if common else 0; rigorize_certificate.last_resid_null = float(resid)
+    def rel_mineig(c):
+        S = Vk.conj().T @ (SD - c*SB) @ Vk; S = 0.5*(S+S.conj().T); n = np.linalg.norm(S, 2)
+        return (np.linalg.eigvalsh(S).min()/n) if n > 0 else 0.0
+    if rel_mineig(1.0) >= margin: return slam, rel_mineig(1.0), 1.0
+    lo, hi = 0.0, 1.0
+    for _ in range(60):
+        mid = 0.5*(lo+hi)
+        if rel_mineig(mid) >= margin: lo = mid
+        else: hi = mid
+    rigorize_certificate.last_S_proj = (lambda c: Vk.conj().T @ (SD - c*SB) @ Vk)
+    return lo*slam, rel_mineig(lo), lo
+
+def certificate_matrix_projected(model, mu, lamb, c):
+    """Return the projected certificate matrix S_c restricted to the complement of the common null space (for exact checks)."""
+    F = model.F
+    SD = np.zeros((F, F), complex); smu = 0.0
+    for (z, ix), v in mu.items(): SD += v * model.Q(ix, z); smu += v
+    SB = np.zeros((F, F), complex)
+    for (z, ix), v in lamb.items(): SB += v * model.Q(ix, z)
+    SD /= smu; SB /= smu; SD = 0.5*(SD+SD.conj().T); SB = 0.5*(SB+SB.conj().T)
+    w, V = np.linalg.eigh(SD); nD = np.linalg.norm(SD, 2); nB = max(np.linalg.norm(SB, 2), 1e-300)
+    nullmask = w <= 1e-12*nD; Vn = V[:, nullmask]
+    common = Vn.shape[1] > 0 and (np.linalg.norm(Vn.conj().T @ SB @ Vn, 2)/nB) <= 1e-12
+    Vk = V[:, ~nullmask] if common else np.eye(F)
+    S = Vk.conj().T @ (SD - c*SB) @ Vk; return 0.5*(S+S.conj().T), int(Vn.shape[1]) if common else 0

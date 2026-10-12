@@ -54,5 +54,47 @@
   "bnb_converged": true,
   "bnb_time": 0.44103026390075684,
   "certified_gain": 0.064480812005584
+ },
+ {
+  "name": "mixed_coh",
+  "F": 7,
+  "nB": 61,
+  "nD": 46,
+  "sdp_bound": 0.42108107226250474,
+  "best_single": 0.47870382204697504,
+  "bnb_L": 0.466695200227668,
+  "bnb_U": 0.47870382204697504,
+  "bnb_nodes": 6002541,
+  "bnb_converged": false,
+  "bnb_time": 307.8621389865875,
+  "certified_gain": 0.10832623684573284
+ },
+ {
+  "name": "isodense_coh",
+  "F": 9,
+  "nB": 40,
+  "nD": 90,
+  "sdp_bound": 0.36251708581284847,
+  "best_single": 0.47410892513878167,
+  "bnb_L": 0.06501288664979236,
+  "bnb_U": 0.47410892513878167,
+  "bnb_nodes": 6005751,
+  "bnb_converged": false,
+  "bnb_time": 340.2647159099579,
+  "certified_gain": -0.8206625585549486
+ },
+ {
+  "name": "mixed_conv0.7_PW80_edgeonly",
+  "F": 11,
+  "nB": 6,
+  "nD": 6,
+  "sdp_bound": 0.8691145398427641,
+  "best_single": 0.9568466316067524,
+  "bnb_L": -1e-12,
+  "bnb_U": 0.9568466316067524,
+  "bnb_nodes": 6007797,
+  "bnb_converged": false,
+  "bnb_time": 195.72361159324646,
+  "certified_gain": -1.0000000000011506
  }
 ]

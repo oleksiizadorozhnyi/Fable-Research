@@ -1,18 +1,18 @@
 ### Table 1 — 1D feature library (DUV 193 nm, NA 1.35; edge tolerance 8 nm; dense90: 6 nm)
 | case | F | foci | certified bound ρ | max EL | best single mask ρ | gap | SDP time (s) |
 |---|---|---|---|---|---|---|---|
-| isodense_coh | 9 | 1 | 0.3625 | 0.468 | 0.4741 | 30.78% | 0.16 |
-| mixed_coh | 7 | 1 | 0.4211 | 0.407 | 0.4787 | 13.68% | 0.16 |
-| isodense_conv0.7 | 15 | 1 | 0.4691 | 0.361 | 0.4808 | 2.50% | 0.20 |
-| mixed_conv0.7 | 11 | 1 | 0.4825 | 0.349 | 0.4836 | 0.22% | 0.17 |
-| isodense_dipole0.8 | 15 | 1 | 0.4313 | 0.397 | 0.4313 | 0.00% | 0.21 |
-| mixed_dipole0.8 | 13 | 1 | 0.4211 | 0.407 | 0.4211 | 0.00% | 0.36 |
-| isodense_conv0.7_PW80 | 15 | 3 | 0.8131 | 0.103 | 0.9044 | 11.22% | 0.69 |
-| mixed_conv0.7_PW80 | 11 | 3 | 0.8691 | 0.070 | 0.9866 | 13.52% | 0.42 |
-| isodense_dipole0.8_PW80 | 15 | 3 | 0.7686 | 0.131 | 0.8972 | 16.73% | 0.57 |
-| dense90_conv0.7 | 9 | 1 | 0.6428 | 0.217 | 0.6428 | 0.00% | 0.12 |
-| dense90_dipole0.8 | 9 | 1 | 0.4217 | 0.407 | 0.4217 | 0.00% | 0.08 |
-| dense90_coh | 5 | 1 | 0.4217 | 0.407 | 0.4217 | 0.00% | 0.14 |
+| isodense_coh | 9 | 1 | 0.3625 | 0.468 | 0.4741 | 30.78% | 0.19 |
+| mixed_coh | 7 | 1 | 0.4211 | 0.407 | 0.4787 | 13.68% | 0.12 |
+| isodense_conv0.7 | 15 | 1 | 0.4691 | 0.361 | 0.4808 | 2.50% | 0.56 |
+| mixed_conv0.7 | 11 | 1 | 0.4825 | 0.349 | 0.4836 | 0.22% | 0.44 |
+| isodense_dipole0.8 | 15 | 1 | 0.4313 | 0.397 | 0.4313 | 0.00% | 0.54 |
+| mixed_dipole0.8 | 13 | 1 | 0.4211 | 0.407 | 0.4211 | 0.00% | 0.88 |
+| isodense_conv0.7_PW80 | 15 | 3 | 0.8131 | 0.103 | 0.9044 | 11.22% | 2.93 |
+| mixed_conv0.7_PW80 | 11 | 3 | 0.8691 | 0.070 | 0.9742 | 12.09% | 1.35 |
+| isodense_dipole0.8_PW80 | 15 | 3 | 0.7686 | 0.131 | 0.8921 | 16.06% | 1.95 |
+| dense90_conv0.7 | 9 | 1 | 0.6428 | 0.217 | 0.6428 | 0.00% | 0.31 |
+| dense90_dipole0.8 | 9 | 1 | 0.4217 | 0.407 | 0.4217 | 0.00% | 0.22 |
+| dense90_coh | 5 | 1 | 0.4217 | 0.407 | 0.4217 | 0.00% | 0.27 |
 
 ### Table 2 — Certified multi-exposure gain (Lasserre-2 single-mask bound vs SDP multi-exposure bound)
 | case | F | SDP (multi-exposure) bound | Lasserre-2 single-mask bound | best single mask found | certified gain | status |
@@ -21,14 +21,14 @@
 | mixed_coh | 7 | 0.4211 | 0.4787 | 0.4787 | 13.68% | optimal_inaccurate |
 | mixed_conv0.7_PW80_edgeonly | 11 | 0.8691 | 0.9552 | 0.9568 | 9.91% | optimal_inaccurate |
 
-### Random 1D targets (n=109): gap ≤1e-4: 69.7%; ≤1%: 82.6%; ≤5%: 91.7%; median 1.8e-06; max 0.173; worst certificate min-eig 1.3e-19
+### Random 1D targets (n=109): gap ≤1e-4: 69.7%; ≤1%: 82.6%; ≤5%: 91.7%; median 1.8e-06; max 0.173; worst certificate min-eig -1.0e-11
 
 ### Table 3 — Pixel vs Fourier relaxations, PSM vs binary (DNN), ILT baseline (σ=0.7 conventional)
 | case | F | Fourier PSM bound | pixel PSM bound | pixel nonneg (DNN) bound | ILT-PSM ratio | ILT-PSM refined | ILT-binary ratio | best PSM (pipeline) |
 |---|---|---|---|---|---|---|---|---|
-| isodense | 15 | 0.3879 | 0.3879 | 0.4266 | 6.173 | 0.4332 | 227.751 | 0.3981 |
-| mixed | 11 | 0.4031 | 0.4031 | 0.4599 | 29.300 | 0.5174 | 158.776 | 0.4036 |
-| dense120 | 9 | 0.3671 | 0.3671 | 0.3777 | 5.956 | 0.3671 | 104.414 | 0.3671 |
+| isodense | 15 | 0.3879 | 0.3879 | 0.4266 | 0.571 | 0.4257 | 0.603 | 0.3981 |
+| mixed | 11 | 0.4031 | 0.4031 | 0.4599 | 0.679 | 0.5301 | 0.740 | 0.4036 |
+| dense120 | 9 | 0.3671 | 0.3671 | 0.3777 | 0.868 | 0.3671 | 0.523 | 0.3671 |
 
 ### Table 3b — Standard gradient ILT (sigmoid resist, pattern-error loss; best of 6 settings) vs certified bound
 | case | F | certified bound ρ | ILT-PSM best ρ | ILT-PSM then ratio-refined | ILT-binary best ρ | ILT-binary then ratio-refined |
@@ -69,19 +69,19 @@ Theorem 4 numerics: necessity violations 0/2000; sufficiency failures 0/200.
 - interior spacing sweep (bound): 16 nm: 0.46907, 8 nm: 0.46907, 4 nm: 0.46907, 2 nm: 0.46907, 1 nm: 0.46907
 - margin sweep (bound / EL): 2 nm: 0.8281/0.094, 4 nm: 0.6855/0.187, 8 nm: 0.4691/0.361, 12 nm: 0.3209/0.514, 16 nm: 0.2197/0.640, 20 nm: 0.1516/0.737
 - source quadrature & solver agreement: 3 pts: CLARABEL 0.41345 SCS 0.41345, 5 pts: CLARABEL 0.47298 SCS 0.47298, 7 pts: CLARABEL 0.46907 SCS 0.46907, 11 pts: CLARABEL 0.51612 SCS 0.51612, 15 pts: CLARABEL 0.51463 SCS 0.51463, 21 pts: CLARABEL 0.52607 SCS 0.52607
-- 50-digit certificate check: Cholesky success=True, min eig=8.25e-11, bound=0.469065
+- 50-digit certificate check: Cholesky success=False, min eig=-8.25e-12, bound=0.469065
 
 ### Table 6 — 2D layouts (DUV, NA 1.35), edge tolerance 12 nm (contacts120/100: 10/8 nm; T/line-end: 14 nm)
 | layout | cell (nm) | source pts | F | samples | bound ρ | max EL | best single mask ρ | gap | rank | cert. null dim | SDP time (s) |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| contacts160_annular | [160, 160] | 28 | 13 | 320 | 0.5843 | 0.262 | 0.5861 | 0.30% | 1 | 0 | 0.4 |
-| contacts160_conv0.5 | [160, 160] | 13 | 9 | 320 | 0.6174 | 0.237 | 0.6177 | 0.04% | 1 | 0 | 0.4 |
-| contacts120_annular | [120, 120] | 28 | 9 | 216 | 0.6957 | 0.179 | 0.6962 | 0.07% | 1 | 0 | 0.4 |
-| contacts120_quasar | [120, 120] | 20 | 9 | 216 | 0.5740 | 0.271 | 0.5747 | 0.13% | 1 | 0 | 0.3 |
-| contacts100_quasar | [100, 100] | 20 | 5 | 197 | 0.8751 | 0.067 | 0.8754 | 0.03% | 1 | 0 | 0.2 |
-| Tjunction320_annular | [320, 320] | 28 | 61 | 1210 | 0.4386 | 0.390 | 0.4789 | 9.17% | 6 | 4 | 142.7 |
-| Tjunction320_quasar | [320, 320] | 20 | 61 | 1210 | 0.3893 | 0.440 | 0.4444 | 14.17% | 3 | 16 | 104.6 |
-| lineend320_annular | [320, 320] | 28 | 61 | 1189 | 0.5194 | 0.316 | 0.5328 | 2.59% | 6 | 4 | 204.3 |
+| contacts160_annular | [160, 160] | 28 | 13 | 320 | 0.5843 | 0.262 | 0.5861 | 0.30% | 1 | 0 | 1.4 |
+| contacts160_conv0.5 | [160, 160] | 13 | 9 | 320 | 0.6174 | 0.237 | 0.6177 | 0.04% | 1 | 0 | 1.5 |
+| contacts120_annular | [120, 120] | 28 | 9 | 216 | 0.6957 | 0.179 | 0.6962 | 0.07% | 1 | 0 | 0.7 |
+| contacts120_quasar | [120, 120] | 20 | 9 | 216 | 0.5740 | 0.271 | 0.5747 | 0.13% | 1 | 0 | 0.7 |
+| contacts100_quasar | [100, 100] | 20 | 5 | 197 | 0.8751 | 0.067 | 0.8754 | 0.03% | 1 | 0 | 0.5 |
+| Tjunction320_annular | [320, 320] | 28 | 61 | 1210 | 0.4387 | 0.390 | 0.4789 | 9.17% | 6 | 0 | 410.2 |
+| Tjunction320_quasar | [320, 320] | 20 | 61 | 1210 | 0.3893 | 0.440 | 0.4444 | 14.17% | 3 | 0 | 268.8 |
+| lineend320_annular | [320, 320] | 28 | 61 | 1189 | 0.5194 | 0.316 | 0.5328 | 2.59% | 6 | 0 | 649.3 |
 
 ### Outlier / process-window re-examination (strong primal search, face exploration, Lasserre-2 where F≤11)
 | case | F | bound | old best | new best | new gap | min face rank | Lasserre-2 | status |
@@ -108,21 +108,22 @@ Theorem 4 numerics: necessity violations 0/2000; sufficiency failures 0/200.
 ### Table 8 — 320 nm 2D layouts: strong single-mask search, optimal-face rank, and two-exposure realization
 | layout | F | bound ρ | min face rank | best single mask ρ | single gap | two-exposure ρ | two-exposure gap |
 |---|---|---|---|---|---|---|---|
-| Tjunction320_annular | 61 | 0.4386 | None | 0.4413 | 0.61% | 0.4775 | 8.85% |
+| Tjunction320_annular | 61 | 0.4387 | None | 0.4413 | 0.61% | 0.4775 | 8.85% |
 | Tjunction320_quasar | 61 | 0.3893 | None | 0.4135 | 6.23% | 0.4263 | 9.52% |
+| lineend320_annular | 61 | 0.5194 | None | 0.5195 | 0.03% | 0.5326 | 2.56% |
 
 ### Table 9 — Rigorous branch-and-bound certification of the single-mask optimum (real masks) and certified multi-exposure gain
 | case | F | SDP multi-exposure bound | B&B certified single-mask lower bound L | best single mask U | B&B gap (U-L)/U | nodes | converged | time (s) | certified gain (L-bound)/bound |
 |---|---|---|---|---|---|---|---|---|---|
-| trial82 | 5 | 0.3597 | 0.4061 | 0.4066 | 0.10% | 40383 | True | 0.7 | 12.92% |
-| trial91 | 5 | 0.6049 | 0.6775 | 0.6782 | 0.10% | 76027 | True | 1.6 | 12.00% |
+| trial82 | 5 | 0.3597 | 0.4061 | 0.4066 | 0.10% | 40383 | True | 1.2 | 12.92% |
+| trial91 | 5 | 0.6049 | 0.6775 | 0.6782 | 0.10% | 76027 | True | 1.7 | 12.00% |
 | trial110 | 5 | 0.3464 | 0.4033 | 0.4037 | 0.10% | 17413 | True | 0.3 | 16.44% |
-| trial50 | 5 | 0.3141 | 0.3343 | 0.3347 | 0.10% | 28517 | True | 0.5 | 6.45% |
-| mixed_coh | 7 | 0.4211 | 0.4667 | 0.4787 | 2.51% | 6002541 | False | 288.6 | 10.83% |
-| isodense_coh | 9 | 0.3625 | 0.0650 | 0.4741 | 86.29% | 6005751 | False | 330.7 | -82.07% |
-| mixed_conv0.7_PW80_edgeonly | 11 | 0.8691 | -0.0000 | 0.9568 | 100.00% | 6007797 | False | 182.5 | -100.00% |
+| trial50 | 5 | 0.3141 | 0.3343 | 0.3347 | 0.10% | 28517 | True | 0.4 | 6.45% |
+| mixed_coh | 7 | 0.4211 | 0.4667 | 0.4787 | 2.51% | 6002541 | False | 307.9 | 10.83% |
+| isodense_coh | 9 | 0.3625 | 0.0650 | 0.4741 | 86.29% | 6005751 | False | 340.3 | -82.07% |
+| mixed_conv0.7_PW80_edgeonly | 11 | 0.8691 | -0.0000 | 0.9568 | 100.00% | 6007797 | False | 195.7 | -100.00% |
 
-### Independent certificate verification (exp15): 136 instances recomputed; 50-digit Cholesky of the reduced certificate matrix succeeded on 134; degenerate (S≈0, bound=1, uniform certificate) on ['EUV_p20_conv0.9', 'EUV_p20_dipole0.8']; min rigorization scale c = 0.8354; CLARABEL/SCS agreement: median |Δt| = 4.5e-09, instances with |Δt|>1e-5: random_trial16 (CLARABEL 0.0015, SCS 0.0002), random_trial75 (CLARABEL 0.0034, SCS 0.0020), random_trial87 (CLARABEL 0.0013, SCS 0.0013), random_trial103 (CLARABEL 0.1419, SCS 0.0004), random_trial105 (CLARABEL 0.0054, SCS -0.0035), random_trial119 (CLARABEL 0.0063, SCS 0.0001)
+### Independent certificate verification (exp15): 136 instances recomputed; 50-digit Cholesky of the reduced certificate matrix succeeded on 135; degenerate (S≈0, bound=1, uniform certificate) on ['EUV_p20_dipole0.8']; min rigorization scale c = 0.8354; CLARABEL/SCS agreement: median |Δt| = 4.5e-09, instances with |Δt|>1e-5: random_trial16 (CLARABEL 0.0015, SCS 0.0002), random_trial75 (CLARABEL 0.0034, SCS 0.0020), random_trial87 (CLARABEL 0.0013, SCS 0.0013), random_trial103 (CLARABEL 0.1419, SCS 0.0004), random_trial105 (CLARABEL 0.0054, SCS -0.0035), random_trial119 (CLARABEL 0.0063, SCS 0.0001)
 
 ### Table 10 — Vector (high-NA, n_resist=1.7) vs scalar bounds, 1D
 | case | source | scalar bound | scalar gap | TE bound | TE gap | TM bound | TM gap | unpol bound | unpol gap |
@@ -142,7 +143,7 @@ Theorem 4 numerics: necessity violations 0/2000; sufficiency failures 0/200.
 
 ### Pixelation (iso-dense, σ=0.7, F=15): 4 nm pixels (N=150): 0.4691; 10 nm pixels (N=60): 0.4691; 20 nm pixels (N=30): 0.4691; 40 nm pixels (N=15): 0.4691; 50 nm pixels (N=12): 0.5407; 67 nm pixels (N=9): 0.6864 (Fourier 0.4691)
 
-### Random 2D layouts (n=40; cells 200/240 nm; annular/quasar/conv0.5; τ=12 nm): gap ≤1e-3: 45.0%; ≤1%: 52.5%; ≤5%: 62.5%; median 7.7e-03; max 0.265; F range 13–37; median SDP time 3.2 s
+### Random 2D layouts (n=40; cells 200/240 nm; annular/quasar/conv0.5; τ=12 nm): gap ≤1e-3: 45.0%; ≤1%: 52.5%; ≤5%: 62.5%; median 7.7e-03; max 0.265; F range 13–37; median SDP time 4.1 s
 
 ### Table 12 — Adversarial 1D targets
 | target | source | F | bound ρ | max EL | best single ρ | gap | rank |
@@ -156,9 +157,9 @@ Theorem 4 numerics: necessity violations 0/2000; sufficiency failures 0/200.
 | extreme_duty_5pct | coh | 5 | 0.7951 | 0.114 | 0.7951 | 0.00% | 1 |
 | extreme_duty_5pct | conv0.7 | 9 | 0.8014 | 0.110 | 0.8014 | 0.00% | 2 |
 | extreme_duty_5pct | dipole0.8 | 11 | 0.7038 | 0.174 | 0.7038 | 0.00% | 5 |
-| extreme_duty_95pct | coh | 5 | 0.0006 | 0.999 | 0.0000 | -100.00% | 3 |
+| extreme_duty_95pct | coh | 5 | 0.0000 | 1.000 | 0.0000 | -100.00% | 3 |
 | extreme_duty_95pct | conv0.7 | 9 | 0.0734 | 0.863 | 0.0734 | 0.00% | 1 |
-| extreme_duty_95pct | dipole0.8 | 11 | 0.0000 | 1.000 | 0.0000 | 46.22% | 7 |
+| extreme_duty_95pct | dipole0.8 | 11 | 0.0000 | 1.000 | 0.0000 | 1592.09% | 7 |
 | alternating_widths | coh | 9 | 0.5244 | 0.312 | 0.5989 | 14.22% | 4 |
 | alternating_widths | conv0.7 | 15 | 0.6826 | 0.189 | 0.6830 | 0.06% | 2 |
 | alternating_widths | dipole0.8 | 15 | 0.6798 | 0.191 | 0.6798 | 0.00% | 7 |
@@ -175,5 +176,5 @@ Theorem 4 numerics: necessity violations 0/2000; sufficiency failures 0/200.
 | 40 | 0.489 | quasar | 9 | 0.4194 | 0.409 | 0.4194 | 0.00% | 1 |
 | 36 | 0.440 | annular | 9 | 0.5690 | 0.275 | 0.5690 | 0.00% | 1 |
 | 36 | 0.440 | quasar | 9 | 0.4258 | 0.403 | 0.4258 | 0.00% | 1 |
-| 32 | 0.391 | annular | 9 | 0.7681 | 0.131 | 0.7569 | -1.47% | 5 |
-| 32 | 0.391 | quasar | 9 | 0.5782 | 0.267 | 0.5673 | -1.88% | 1 |
+| 32 | 0.391 | annular | 9 | 0.7681 | 0.131 | 0.7681 | 0.00% | 5 |
+| 32 | 0.391 | quasar | 9 | 0.5782 | 0.267 | 0.5782 | 0.00% | 1 |

@@ -9,15 +9,15 @@ def verify(name, rm, B, D):
     r = sdp_bound_real(rm, B, D, solvers=("CLARABEL",)); rig, me, c = rigorize_certificate(rm, r['mu'], r['lam'])
     try: r2 = sdp_bound_real(rm, B, D, solvers=("SCS",)); t2 = r2['t']
     except Exception: t2 = None
-    F = rm.F; SD = np.zeros((F, F)); smu = sum(r['mu'].values()); SB = np.zeros((F, F)); slam = 0
-    for (z, ix), v in r['mu'].items(): SD += v/smu*rm.Q(ix, z)
-    for (z, ix), v in r['lam'].items(): SB += v/smu*rm.Q(ix, z); slam += v/smu
-    w, V = np.linalg.eigh(SD); keep = w > 1e-9*np.linalg.norm(SD, 2); Vk = V[:, keep]
-    S = Vk.T @ (SD - c*SB) @ Vk; S = 0.5*(S+S.T)
-    try: mp.cholesky(mp.matrix(S.tolist())); chol = True
+    S, ndim = certificate_matrix_projected(rm, r['mu'], r['lam'], c)
+    Sr = np.real(S) if np.allclose(S.imag, 0) else S
+    degenerate = np.linalg.norm(Sr, 2) < 1e-13
+    try:
+        if degenerate: chol = None
+        else: mp.cholesky(mp.matrix(Sr.tolist())); chol = True
     except Exception: chol = False
-    resid_null = float(np.linalg.norm(V[:, ~keep].T @ SB @ V[:, ~keep], 2)/max(np.linalg.norm(SB, 2), 1e-300)) if (~keep).any() else 0.0
-    rec = dict(name=name, F=F, t_clarabel=r['t'], t_scs=t2, rigorous=rig, c=c, cholesky50=chol, null_dim=int((~keep).sum()), resid_null=resid_null, solver_diff=(abs(r['t']-t2) if t2 else None))
+    rec = dict(name=name, F=rm.F, t_clarabel=r['t'], t_scs=t2, rigorous=rig, c=c, rel_mineig=float(me), cholesky50=chol, degenerate=bool(degenerate), null_dim=ndim,
+               resid_null=float(rigorize_certificate.last_resid_null), solver_diff=(abs(r['t']-t2) if t2 is not None else None), rel_gap_t_vs_rigorous=(r['t']-rig)/max(r['t'],1e-300))
     print(json.dumps(rec), flush=True); out.append(rec); json.dump(out, open('/home/user/Fable-Research/results/exp15_verify_all.json','w'), indent=1)
 conv = conventional_source_1d(0.7, NA, 7); dip = dipole_source_1d(0.8, NA); coh = ([0.0],[1.0])
 for nm, src in [("coh",coh),("conv0.7",conv),("dipole0.8",dip)]:
