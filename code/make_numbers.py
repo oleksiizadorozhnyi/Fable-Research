@@ -157,11 +157,11 @@ def _blk_corner():
     for r in e20: by.setdefault(r['name'], {})[r['frac_cd']] = r
     rows = []; ratios = []
     for nm, d in by.items():
-        r0 = d[0.0]; rows.append(f"{lab.get(nm, nm)} & {r0['tau']:g} & " + " & ".join(f"{f4(d[f]['rigorous'])} & {el_full(d[f]['rigorous']):.3f}" for f in (0.0, 0.25, 0.5)) + "\\\\")
-        ratios.append(el_full(d[0.5]['rigorous']) / max(el_full(r0['rigorous']), 1e-12))
+        r0 = d[0.0]; rows.append(f"{lab.get(nm, nm)} & {r0['tau']:g} & " + " & ".join(f"{f4(d[f]['rigorous'])} & {el_full(d[f]['rigorous']):.3f}" for f in (0.0, 0.15, 0.25)) + "\\\\")
+        ratios.append(el_full(d[0.25]['rigorous']) / max(el_full(r0['rigorous']), 1e-12))
     open(P+'tab_corner.tex','w').write(tabbody(rows))
     m('cornerElGainLo', f"{min(ratios):.1f}"); m('cornerElGainHi', f"{max(ratios):.1f}"); m('cornerN', str(len(by)))
-    c160 = by['contacts160_annular']; m('cornerContactsOneSixtyEL', f"{el_full(c160[0.0]['rigorous']):.2f}"); m('cornerContactsOneSixtyELHalf', f"{el_full(c160[0.5]['rigorous']):.2f}")
+    c160 = by['contacts160_annular']; m('cornerContactsOneSixtyEL', f"{el_full(c160[0.0]['rigorous']):.2f}"); m('cornerContactsOneSixtyELQuarter', f"{el_full(c160[0.25]['rigorous']):.2f}")
 _run('corner exclusion', _blk_corner)
 def _count_viol():
     n = 0
