@@ -23,5 +23,5 @@ Layout
 - `results/` — JSON outputs, RESULTS_TABLES.md, figs/, logs/.
 
 ## Manuscript
-`paper/main.tex` + `paper/refs.bib` (LaTeX, article class, natbib). Compile with `cd paper && pdflatex main && bibtex main && pdflatex main && pdflatex main`
+`paper/main.tex` + `paper/refs.bib` (LaTeX, article class, natbib); compiled PDF: `paper/main.pdf` (12 pages). Compile with `cd paper && pdflatex main && bibtex main && pdflatex main && pdflatex main`
 (figures are read from `../results/figs/`). A Markdown version is kept in `notes/PAPER_v2.md`.

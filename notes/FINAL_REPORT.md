@@ -57,6 +57,5 @@ Ready for submission as a methods paper (e.g. JM3 / Optics Express / SIAM J. Ima
 caveats stated in the manuscript: (a) scalar/vector thin-mask periodic model; (b) single-mask optima certified only for
 F ≤ 7 (interval B&B), with Lasserre-2 corroboration only (solver status) for F = 9–11; (c) one 320 nm 2D gap (6.2%) and
 the large-F random-2D gaps unresolved; (d) literature verification from abstracts/snippets only — a referee with access
-to the IBM 2002/2007 full texts should confirm that no convex-relaxation bound appears there; (e) the LaTeX source could
-not be compiled in this environment (no TeX engine); it passed static checks (balanced environments, all citations,
-labels and figures resolve). Not ready for claims beyond the model (no silicon validation).
+to the IBM 2002/2007 full texts should confirm that no convex-relaxation bound appears there; (e) the LaTeX source compiles cleanly (pdflatex + bibtex; 12 pages, no overfull boxes, all citations, labels and
+figures resolve): paper/main.pdf. Not ready for claims beyond the model (no silicon validation).
