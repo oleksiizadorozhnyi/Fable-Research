@@ -80,3 +80,9 @@ Continuation instruction (if resumed): remaining open items are (1) rigorize Las
   the weighted bright matrix did not vanish on the near-null space of the weighted dark matrix (95%-duty coherent case:
   reported 6e-4, true bound ≈ 1.5e-5). Replaced by a full-space eigenvalue test with relative tolerance 1e-11 (bisection
   drives c -> 0 when needed). All certificates recomputed by the clean rerun (exp15).
+
+## Session-2 checkpoint (2026-10-12, after clean reproduction)
+Clean run (code/run_all_par.sh) completed: 20 scripts, all exit 0 (exp15 re-run separately with rigorization v3).
+Deliverables: paper/main.tex + refs.bib (LaTeX), notes/PAPER_v2.md (Markdown), notes/FINAL_REPORT.md (v2),
+notes/THEORY.md (Theorems 1–9), notes/NOVELTY.md, notes/ADVERSARIAL.md, results/RESULTS_TABLES.md, results/figs/fig1–6.
+Open: exp15 v3 statistics to be inserted; TeX compilation (no engine); see FINAL_REPORT §11.
