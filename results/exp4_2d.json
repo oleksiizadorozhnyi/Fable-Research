@@ -213,5 +213,138 @@
    100
   ],
   "nsrc": 140
+ },
+ {
+  "F": 57,
+  "nB": 536,
+  "nD": 737,
+  "focus": [
+   0.0
+  ],
+  "status": "optimal",
+  "solver": "CLARABEL",
+  "t_sdp": 0.8035298939461368,
+  "rigorous": 0.8035298932711502,
+  "cert_mineig": 1.0000004032338987e-10,
+  "cert_scale": 0.9999999992362963,
+  "rank": 2,
+  "eig_top": [
+   3.4013164236992197,
+   0.8152053152116868,
+   4.6333182461823795e-10,
+   3.516457574845138e-10,
+   1.5599610407231035e-10
+  ],
+  "rounded": 1.5094018934780393,
+  "round_refined": 0.8651846751088546,
+  "multistart": 0.887315362017752,
+  "best_feasible": 0.8651846751088546,
+  "gap_rel": 0.07672991677597614,
+  "EL_bound": 0.10893642931113405,
+  "EL_best": 0.07227988021254649,
+  "sdp_time": 1898.9131178855896,
+  "total_time": 2483.3927631378174,
+  "n_img": 1.0,
+  "dead_orders_dropped": 0,
+  "EL_full_bound": 0.2178728586222681,
+  "EL_full_best": 0.14455976042509297,
+  "degenerate": false,
+  "cert_violation": false,
+  "name": "Tjunction320_annular",
+  "L": [
+   320,
+   320
+  ],
+  "nsrc": 268
+ },
+ {
+  "F": 45,
+  "nB": 536,
+  "nD": 737,
+  "focus": [
+   0.0
+  ],
+  "status": "optimal_inaccurate",
+  "solver": "CLARABEL",
+  "t_sdp": 0.7827065208646435,
+  "rigorous": 0.7827063218814571,
+  "cert_mineig": 1.0000014750205442e-10,
+  "cert_scale": 0.9999997576001899,
+  "rank": 4,
+  "eig_top": [
+   1.2130382901164365,
+   0.38117374705860524,
+   0.34634927292111334,
+   0.24167652071704446,
+   1.4845724644244994e-08
+  ],
+  "rounded": 1.7796380774902754,
+  "round_refined": 0.8514952810098491,
+  "multistart": 0.8572267157949458,
+  "best_feasible": 0.8514952810098491,
+  "gap_rel": 0.08788604001950334,
+  "EL_bound": 0.12188977817120912,
+  "EL_best": 0.08020799216358411,
+  "sdp_time": 716.0561935901642,
+  "total_time": 960.128589630127,
+  "n_img": 1.0,
+  "dead_orders_dropped": 12,
+  "EL_full_bound": 0.24377955634241824,
+  "EL_full_best": 0.16041598432716822,
+  "degenerate": false,
+  "cert_violation": false,
+  "name": "Tjunction320_quasar",
+  "L": [
+   320,
+   320
+  ],
+  "nsrc": 140,
+  "cert_null_dim": 0,
+  "cert_resid_null": 0.0
+ },
+ {
+  "F": 57,
+  "nB": 474,
+  "nD": 814,
+  "focus": [
+   0.0
+  ],
+  "status": "optimal",
+  "solver": "CLARABEL",
+  "t_sdp": 0.8665270209884386,
+  "rigorous": 0.8665270178114451,
+  "cert_mineig": 1.0000006040050154e-10,
+  "cert_scale": 0.9999999996315737,
+  "rank": 2,
+  "eig_top": [
+   4.759096233050272,
+   0.3579856613434672,
+   7.751850700880455e-09,
+   4.871979310614629e-09,
+   1.3651693160343355e-09
+  ],
+  "rounded": 1.1763348764685528,
+  "round_refined": 0.8935078914865979,
+  "multistart": 0.8979829026010453,
+  "best_feasible": 0.8935078914865979,
+  "gap_rel": 0.031136794491760184,
+  "EL_bound": 0.07150873301853172,
+  "EL_best": 0.05624064678695099,
+  "sdp_time": 1277.2161748409271,
+  "total_time": 1876.107479095459,
+  "n_img": 1.0,
+  "dead_orders_dropped": 0,
+  "EL_full_bound": 0.14301746603706345,
+  "EL_full_best": 0.11248129357390198,
+  "degenerate": false,
+  "cert_violation": false,
+  "name": "lineend320_annular",
+  "L": [
+   320,
+   320
+  ],
+  "nsrc": 268,
+  "cert_null_dim": 0,
+  "cert_resid_null": 0.0
  }
 ]
