@@ -9,6 +9,6 @@ for name, L, segs, src, margin, spacing, focus, Ts in cases:
     r = sdp_bound_real(rm, B, D); rig, _, _ = rigorize_certificate(rm, r['mu'], r['lam'])
     for T in Ts:
         res = certify_target(rm, B, D, T, mu=r['mu'], lam=r['lam'], max_nodes=6000)
-        rec = dict(name=name, F=rm.F, sdp_bound=rig, T=T, certified_gain_if_ok=(T-rig)/rig, **res); print(json.dumps(rec), flush=True); out.append(rec)
+        rec = dict(name=name, F=rm.F, sdp_bound=rig, certified_gain_if_ok=(T-rig)/rig, **{k: v for k, v in res.items() if k != 'T'}, T=T); print(json.dumps(rec), flush=True); out.append(rec)
         json.dump(out, open('/home/user/Fable-Research/results/exp19_bnb_sdp.json','w'), indent=1)
         if not res['certified']: break

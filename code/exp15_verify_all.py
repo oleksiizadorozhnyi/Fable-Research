@@ -6,7 +6,12 @@ import mpmath as mp
 mp.mp.dps = 50
 lam, NA = 193.0, 1.35; out = []
 def verify(name, rm, B, D):
-    r = sdp_bound_real(rm, B, D, solvers=("CLARABEL",)); rig, me, c = rigorize_certificate(rm, r['mu'], r['lam'])
+    try: r = sdp_bound_real(rm, B, D, solvers=("CLARABEL",))
+    except Exception as e:                                  # near-degenerate instance: CLARABEL fails; record it, verify the SCS certificate instead
+        try: r = sdp_bound_real(rm, B, D, solvers=("SCS",)); r['solver'] = 'SCS (CLARABEL failed)'
+        except Exception as e2:
+            rec = dict(name=name, F=rm.F, solver_failed=True, error=str(e2)[:120]); print(json.dumps(rec), flush=True); out.append(rec); json.dump(out, open('/home/user/Fable-Research/results/exp15_verify_all.json','w'), indent=1); return
+    rig, me, c = rigorize_certificate(rm, r['mu'], r['lam'])
     try: r2 = sdp_bound_real(rm, B, D, solvers=("SCS",)); t2 = r2['t']
     except Exception: t2 = None
     S, ndim = certificate_matrix_projected(rm, r['mu'], r['lam'], c)

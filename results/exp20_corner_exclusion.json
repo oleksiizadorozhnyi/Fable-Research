@@ -154,5 +154,44 @@
   "EL_full_bound": 0.34966616406122825,
   "best_single": NaN,
   "time": 353.7434513568878
+ },
+ {
+  "name": "lineend320_annular",
+  "tau": 6,
+  "corner_exclusion": 0.0,
+  "frac_cd": 0.0,
+  "F": 57,
+  "nB": 474,
+  "nD": 814,
+  "rigorous": 0.8665270178114451,
+  "EL_full_bound": 0.14301746603706345,
+  "best_single": NaN,
+  "time": 435.8118860721588
+ },
+ {
+  "name": "lineend320_annular",
+  "tau": 6,
+  "corner_exclusion": 7.5,
+  "frac_cd": 0.15,
+  "F": 57,
+  "nB": 466,
+  "nD": 724,
+  "rigorous": 0.841601232492195,
+  "EL_full_bound": 0.17202287304450567,
+  "best_single": NaN,
+  "time": 163.6543300151825
+ },
+ {
+  "name": "lineend320_annular",
+  "tau": 6,
+  "corner_exclusion": 12.5,
+  "frac_cd": 0.25,
+  "F": 57,
+  "nB": 418,
+  "nD": 676,
+  "rigorous": 0.7762395909312414,
+  "EL_full_bound": 0.251948453588343,
+  "best_single": NaN,
+  "time": 155.45428562164307
  }
 ]

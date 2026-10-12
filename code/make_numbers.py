@@ -13,9 +13,12 @@ def m(name, val): M[_san(name)] = val
 def tabbody(rows):
     # rows end with \\; the last row must NOT end with \\ because \input{...} followed by \bottomrule breaks a trailing row terminator
     return "\\\\\n".join(r[:-2] if r.endswith("\\\\") else r for r in rows)+"\n"
-def pct(x, d=1): return f"{100*x:.{d}f}\\%"
+def pct(x, d=1):
+    v = round(100*x, d); v = 0.0 if abs(v) < 10**(-d) / 2 else v
+    return f"{v:.{d}f}\\%"
 def f4(x): return f"{x:.4f}"
 def elf(rho): return 2*(1-rho)/(1+rho)
+el_full = elf
 def gapstr(r):
     g = r.get('gap_rel'); return 'degenerate' if g is None else pct(g, 2 if g < 0.01 else 1)
 rows = []
@@ -30,21 +33,24 @@ def _blk_Table11Dlibrary():
     for r in e1: rows.append(f"{names.get(r['name'], r['name'])} & {r['F']} & {len(r['focus'])} & {f4(r['rigorous'])} & {elf(r['rigorous']):.3f} & {f4(r['best_feasible'])} & {gapstr(r)}\\\\")
     open(P+'tab_1d.tex','w').write(tabbody(rows))
     d1 = {r['name']: r for r in e1}
-    for k, v in d1.items(): m('n'+k.replace('.','').replace('_',''), v)
     m('isoCohGap', pct(d1['isodense_coh']['gap_rel'])); m('mixCohGap', pct(d1['mixed_coh']['gap_rel'])); m('isoConvGap', pct(d1['isodense_conv0.7']['gap_rel'])); m('mixConvGap', pct(d1['mixed_conv0.7']['gap_rel']))
     pw = [d1[k]['gap_rel'] for k in ['isodense_conv0.7_PW80','mixed_conv0.7_PW80','isodense_dipole0.8_PW80']]; m('pwGapLo', pct(min(pw),0)); m('pwGapHi', pct(max(pw),0))
     els = [elf(r['rigorous']) for r in e1 if len(r['focus'])==1]; m('elOneLo', f"{min(els):.2f}"); m('elOneHi', f"{max(els):.2f}")
     elp = [elf(r['rigorous']) for r in e1 if len(r['focus'])==3]; m('elPwLo', f"{min(elp):.2f}"); m('elPwHi', f"{max(elp):.2f}")
-    dense_bounds = [d1[k]['rigorous'] for k in ['dense90_conv0.7','dense90_dipole0.8','dense90_coh']]; m('denseNinetyGapMax', pct(max(d1[k]['gap_rel'] for k in ['dense90_conv0.7','dense90_dipole0.8','dense90_coh']),2))
+    m('dipGapMax', pct(max(d1[k]['gap_rel'] for k in ['isodense_dipole0.8','mixed_dipole0.8']), 2)); dense_bounds = [d1[k]['rigorous'] for k in ['dense90_conv0.7','dense90_dipole0.8','dense90_coh']]; m('denseNinetyGapMax', pct(max(d1[k]['gap_rel'] for k in ['dense90_conv0.7','dense90_dipole0.8','dense90_coh']),2))
     m('denseDipoleBound', f"{d1['dense90_dipole0.8']['rigorous']:.5f}")
 _run('Table 1 (1D library)', _blk_Table11Dlibrary)
 def _blk_random1D():
     global M
-    g = np.array([r['gap_rel'] if r.get('gap_rel') is not None else 0.0 for r in e2]); m('randN', str(len(e2))); m('randExact', pct(np.mean(g<=1e-4))); m('randOne', pct(np.mean(g<=1e-2))); m('randFive', pct(np.mean(g<=5e-2)))
+    e9 = L('exp9_outlier_pw.json') or {}
+    deg = [r for r in e2 if r['rigorous'] < 1e-3]; nd = [r for r in e2 if r['rigorous'] >= 1e-3]
+    m('randDegN', str(len(deg))); m('randDegBoundMax', f"{max((r['rigorous'] for r in deg), default=0):.0e}".replace('e-0','\\times10^{-')+'}' if deg else '0')
+    m('randDegBestMax', f"{max((min(r['best_feasible'], e9.get('trial%d' % r['trial'], {}).get('new_best', 9)) for r in deg), default=0):.3f}")
+    g = np.array([r['gap_rel'] if r.get('gap_rel') is not None else 0.0 for r in nd]); m('randN', str(len(e2))); m('randNonDegN', str(len(nd))); m('randExact', pct(np.mean(g<=1e-4))); m('randOne', pct(np.mean(g<=1e-2))); m('randFive', pct(np.mean(g<=5e-2)))
     m('randMedian', f"{np.median(g):.1e}".replace('e-0','\\times10^{-').replace('e-','\\times10^{-')+'}'); m('randMax', pct(g.max())); m('randMaxFrac', f"{g.max():.3f}")
-    bysrc = {s_: np.mean([ (r['gap_rel'] or 0) <=1e-4 for r in e2 if r['src']==s_]) for s_ in set(r['src'] for r in e2)}
+    bysrc = {s_: np.mean([ (r['gap_rel'] or 0) <=1e-4 for r in nd if r['src']==s_]) for s_ in set(r['src'] for r in nd)}
     for s_, v in bysrc.items(): m('randExact'+s_.replace('.','').replace('0','z'), pct(v,0))
-    big = [r for r in e2 if (r.get('gap_rel') or 0) > 0.05]; m('randBigN', str(len(big))); m('randBigRankMax', str(max((r['rank'] for r in big), default=0)))
+    big = [r for r in nd if (r.get('gap_rel') or 0) > 0.05]; m('randBigN', str(len(big))); m('randBigRankMax', str(max((r['rank'] for r in big), default=0)))
 _run('random 1D', _blk_random1D)
 def _blk_BB():
     global M
@@ -71,6 +77,10 @@ def _blk_BB():
         if key in las:
             r = las[key]; lb = r.get('lasserre2_bound', r.get('lasserre2')); sb = r.get('rigorous_shor', r.get('shor')); m(k+'Bound', f4(lb)); m(k+'Gain', pct((lb-sb)/sb)); m(k+'Best', f4(r.get('best_single_mask', r.get('best_single'))))
     if e12: m('lasXClarabel', f"{e12['CLARABEL']['t']:.7f}"); m('lasXScs', f"{e12['SCS']['t']:.7f}")
+    devs = [abs(r['lasserre2_bound'] - r['best_single_mask']) / r['best_single_mask'] for r in e7 if r.get('lasserre2_bound')]
+    if e9:
+        for k in ('mixed_conv0.7_PW80',): pass
+    m('lasMaxDev', f"{max(devs):.0e}".replace('e-0','\\times10^{-').replace('e-','\\times10^{-')+'}')
 _run('B&B', _blk_BB)
 def _blk_PSMvsbinaryILT():
     global M
@@ -124,7 +134,7 @@ def _blk_2D():
     cg = [ (min(d4[n]['best_feasible'], d13.get(n, {}).get('best_single', 9)) - d4[n]['rigorous'])/d4[n]['rigorous'] for n in d4 if n.startswith('contacts')]; m('contactsGapMax', pct(max(cg),2))
     def g320(n): b = min(d4[n]['best_feasible'], d13.get(n, {}).get('best_single', 9), (e18['best_single'] if (n=='Tjunction320_quasar' and e18) else 9)); return (b-d4[n]['rigorous'])/d4[n]['rigorous']
     m('tjF', str(d4['Tjunction320_annular']['F'])); m('tjConstraints', f"{d4['Tjunction320_annular']['nB']+d4['Tjunction320_annular']['nD']:,}"); m('contactsRankMax', str(max(d4[n]['rank'] for n in d4 if n.startswith('contacts')))); m('tjAnnGap', pct(g320('Tjunction320_annular'),2)); m('tjQuaGap', pct(g320('Tjunction320_quasar'),1)); m('leGap', pct(g320('lineend320_annular'),2)); m('tjAnnBound', f4(d4['Tjunction320_annular']['rigorous'])); m('tjQuaBound', f4(d4['Tjunction320_quasar']['rigorous'])); m('leBound', f4(d4['lineend320_annular']['rigorous']))
-    m('nullDimMax', str(max((r.get('cert_null_dim') or 0) for r in e4))); t61 = [r['sdp_time'] for r in e4 if r['F'] >= 50]; m('sdpTimeBigLo', f"{min(t61):.0f}"); m('sdpTimeBigHi', f"{max(t61):.0f}"); tsm = [r['sdp_time'] for r in e4 if r['F'] < 50]; m('sdpTimeSmallHi', f"{max(tsm):.1f}")
+    m('nullDimMax', str(max((r.get('cert_null_dim') or 0) for r in e4))); t61 = [r['sdp_time'] for r in e4 if r['F'] >= 50]; m('sdpTimeBigLo', f"{min(t61):.0f}"); m('sdpTimeBigHi', f"{max(t61):.0f}"); tsm = [r['sdp_time'] for r in e4 if r['F'] <= 15]; m('sdpTimeSmallHi', f"{max(tsm):.1f}")
 _run('2D', _blk_2D)
 def _blk_expandeddataset():
     global M

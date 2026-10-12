@@ -27,5 +27,5 @@ if any(r['name'] == name for r in e4):
     ax[3].scatter(md.x[D,0], md.x[D,1], c=mu[D]/mu.sum(), s=12, cmap='Reds', label='mu (dark)'); ax[3].scatter(md.x[B,0], md.x[B,1], c=la[B]/mu.sum(), s=12, cmap='Greens', marker='s', label='lambda (bright)')
     ax[3].set_xlim(0,320); ax[3].set_ylim(0,320); ax[3].set_aspect('equal'); ax[3].set_title('certificate weights'); ax[3].legend(fontsize=7)
     rec = [r for r in e4 if r['name'] == name][0]; vb = rm.ratio(rb, B, D)
-    fig.suptitle(f"{name}: certified bound ρ={rec['rigorous']:.4f} (max EL {rec['EL_bound']:.3f}); best single mask ρ={vb:.4f}; gap {(vb-rec['rigorous'])/rec['rigorous']:.2%}")
+    fig.suptitle(f"{name}: certified bound ρ={rec['rigorous']:.4f} (max full-range EL {rec['EL_full_bound']:.3f}); best single mask ρ={vb:.4f}; gap {(vb-rec['rigorous'])/rec['rigorous']:.2%}")
     plt.tight_layout(); plt.savefig('/home/user/Fable-Research/results/figs/fig4_2d_Tjunction.png', dpi=130); print("fig4 written")

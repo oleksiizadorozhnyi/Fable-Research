@@ -3,8 +3,10 @@ R = '/home/user/Fable-Research/results/'; e17 = json.load(open(R+'exp17_dataset.
 fig, ax = plt.subplots(1, 3, figsize=(14, 3.8))
 r2 = e17['random2d']
 if r2:
-    ax[0].scatter([r['F'] for r in r2], [100*max(r['gap_rel'], 1e-6) for r in r2], c=[r['rank'] for r in r2], cmap='viridis', s=25)
-    ax[0].set_yscale('log'); ax[0].set_xlabel('collected orders F'); ax[0].set_ylabel('gap best single mask vs bound (%)'); ax[0].set_title(f'random 2D layouts (n={len(r2)}); color = rank of SDP optimum')
+    ranks = np.minimum([r['rank'] for r in r2], 4); sc = ax[0].scatter([r['F'] for r in r2], [100*max(r['gap_rel'] or 0, 1e-5) for r in r2], c=ranks, cmap=matplotlib.colors.ListedColormap(['#440154', '#31688e', '#35b779', '#fde725']), vmin=0.5, vmax=4.5, s=30, edgecolors='k', linewidths=0.3)
+    cb = plt.colorbar(sc, ax=ax[0], pad=0.02, ticks=[1, 2, 3, 4]); cb.set_label('numerical rank of SDP optimum'); cb.set_ticklabels(['1', '2', '3', '>=4'])
+    ax[0].axhline(1e-3, color='gray', lw=0.6, ls=':'); ax[0].set_ylim(5e-4, 30); ax[0].text(ax[0].get_xlim()[0]+0.3, 7e-4, 'gaps below 1e-3 % plotted at the floor', fontsize=7, color='gray')
+    ax[0].set_yscale('log'); ax[0].set_xlabel('collected orders F'); ax[0].set_ylabel('gap best single mask vs bound (%)'); ax[0].set_title(f'random 2D layouts (n={len(r2)})', fontsize=10)
 a1 = e17['adversarial1d']
 if a1:
     names = sorted(set(r['name'] for r in a1)); x = np.arange(len(names)); srcs = ['coh', 'conv0.7', 'dipole0.8']

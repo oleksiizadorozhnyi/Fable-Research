@@ -35,3 +35,25 @@
 === START exp20_corner_exclusion Mon Oct 12 16:05:47 UTC 2026
 === END exp14b_bnb_big Mon Oct 12 16:06:22 UTC 2026 exit=0
 === START exp19_bnb_sdp Mon Oct 12 16:06:22 UTC 2026
+=== END exp19_bnb_sdp Mon Oct 12 16:32:17 UTC 2026 exit=1
+FAILED exp19_bnb_sdp rc=1
+=== START exp11b_lasserre_pw Mon Oct 12 16:32:17 UTC 2026
+=== END exp11b_lasserre_pw Mon Oct 12 16:37:35 UTC 2026 exit=0
+=== START exp12_lasserre_xcheck Mon Oct 12 16:37:35 UTC 2026
+=== END exp20_corner_exclusion Mon Oct 12 16:40:13 UTC 2026 exit=0
+=== END exp12_lasserre_xcheck Mon Oct 12 16:49:21 UTC 2026 exit=0
+=== START exp15_verify_all Mon Oct 12 16:49:21 UTC 2026
+=== END exp15_verify_all Mon Oct 12 16:49:51 UTC 2026 exit=1
+FAILED exp15_verify_all rc=1
+=== assembled Mon Oct 12 16:49:51 UTC 2026
+=== START figs Mon Oct 12 16:49:51 UTC 2026
+=== END figs Mon Oct 12 16:49:58 UTC 2026 exit=0
+=== START fig2d Mon Oct 12 16:49:58 UTC 2026
+=== END fig2d Mon Oct 12 16:51:21 UTC 2026 exit=0
+=== START fig5 Mon Oct 12 16:51:21 UTC 2026
+=== END fig5 Mon Oct 12 16:51:23 UTC 2026 exit=0
+=== START fig6 Mon Oct 12 16:51:23 UTC 2026
+=== END fig6 Mon Oct 12 16:51:25 UTC 2026 exit=0
+=== DONE WITH FAILURES Mon Oct 12 16:51:25 UTC 2026
+=== START exp19_bnb_sdp (rerun after fix) Mon Oct 12 16:53:50 UTC 2026
+=== START exp15_verify_all (rerun after fix) Mon Oct 12 16:53:50 UTC 2026
