@@ -30,3 +30,7 @@ FAILED exp16_physics rc=137
 === END exp3_pixel_binary Mon Oct 12 22:32:19 UTC 2026 exit=0
 === START exp3b_ilt Mon Oct 12 22:32:19 UTC 2026
 === END exp3b_ilt Mon Oct 12 22:38:25 UTC 2026 exit=0
+=== END exp14b_bnb_big Mon Oct 12 23:00:46 UTC 2026 exit=0
+=== START exp19_bnb_sdp Mon Oct 12 23:00:46 UTC 2026
+=== END exp13_2d_strong Mon Oct 12 23:21:02 UTC 2026 exit=0
+=== START exp18_quasar_strong Mon Oct 12 23:21:02 UTC 2026
