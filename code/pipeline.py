@@ -40,3 +40,32 @@ def sets_2d(md, tf, margin):
         return np.min(np.hypot(d[:, 0], d[:, 1]))
     dd = np.array([dist(p) for p in pts])
     return np.where(tgt & (dd >= margin))[0], np.where(~tgt & (dd >= margin))[0], tgt
+
+# ----------------------------------------------------------------------------- illuminator catalogue (session 3; area-weighted 2-D quadratures)
+# DUV: lambda 193 nm, NA 1.35, immersion (defocus in water, n_img = 1.44). EUV: lambda 13.5 nm, NA 0.33, vacuum.
+NA_DUV, LAM_DUV, NIMG_DUV = 1.35, 193.0, 1.44
+NA_EUV, LAM_EUV, NIMG_EUV = 0.33, 13.5, 1.0
+def catalogue(NA):
+    return {
+        'coh':       (np.array([[0.0, 0.0]]), np.ones(1)),                    # on-axis coherent point
+        'conv0.5':   disk_source(0.5, NA, n=21),                              # disk sigma 0.5, 21x21 grid -> 349 pts
+        'conv0.7':   disk_source(0.7, NA, n=21),
+        'conv0.9':   disk_source(0.9, NA, n=21),
+        'dipole0.8': dipole_source(0.8, NA, pole_radius=0.15, n=9),           # two poles r=0.15 at +-0.8 (x axis), 69 pts each
+        'dipole0.7': dipole_source(0.7, NA, pole_radius=0.15, n=9),
+        'annular':   annular_source(0.6, 0.9, NA, n=25),                      # ring 0.6-0.9, 25x25 grid -> ~280 pts
+        'quasar':    quasar_source(0.6, 0.9, NA, opening_deg=30.0, n=31),     # four 30-deg sectors of the 0.6-0.9 ring
+        'annularE':  annular_source(0.5, 0.9, NA, n=25),                      # EUV ring 0.5-0.9
+        'quasarE':   quasar_source(0.5, 0.9, NA, opening_deg=30.0, n=31),
+    }
+SRC_DUV = catalogue(NA_DUV); SRC_EUV = catalogue(NA_EUV)
+TAU_DUV = 5.0    # edge tolerance for 1-D DUV targets (CD 40-50 nm -> +-10% CD per edge)
+def analyze_el(rec):
+    """Add full-range exposure-latitude fields (window width / centre dose) and a degenerate flag."""
+    rec['EL_full_bound'] = el_full(rec['rigorous']); rec['EL_full_best'] = el_full(rec['best_feasible'])
+    rec['degenerate'] = bool(rec['rigorous'] < 1e-6)
+    if rec['degenerate']: rec['gap_rel'] = None; rec['gap_abs'] = rec['best_feasible'] - rec['rigorous']
+    return rec
+_analyze_orig = analyze
+def analyze(md, B, D, **kw):
+    rec, rm, r, rbest = _analyze_orig(md, B, D, **kw); return analyze_el(rec), rm, r, rbest

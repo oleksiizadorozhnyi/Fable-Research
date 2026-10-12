@@ -13,11 +13,15 @@
 - Mask classes: 𝓜_ℂ = ℂ^F (complex transmission); 𝓜_ℝ = {M : M_{-k} = conj(M_k)} (real transmission, e.g. PSM);
   𝓜_+ ⊂ 𝓜_ℝ: in-band orders of some real m ≥ 0 (binary/attenuated masks).
 - Dark/bright ratio of a mask: ρ(M) = max_{(x,z)∈D×Z} I_{M,z}(x) / min_{(x,z)∈B×Z} I_{M,z}(x). Scale-invariant.
-- Exposure latitude associated with ratio ρ: EL(ρ) = (1-ρ)/(1+ρ) (relative dose window within which every B point
-  prints and no D point prints, for a threshold resist placed at the midpoint).
+- Exposure latitude associated with ratio ρ: for a threshold resist (threshold θ, dose E, printed where E·I ≥ θ) every
+  B point prints and no D point prints iff θ/β ≤ E < θ/δ (β = min_B I, δ = max_D I). The full-range dose latitude,
+  window width over its centre dose, is EL(ρ) = 2(1−ρ)/(1+ρ) with ρ = δ/β; the half-range (±) latitude about the
+  centre dose (θ(β+δ)/(2βδ), i.e. threshold at the harmonic mean of δ and β) is (1−ρ)/(1+ρ). The manuscript reports
+  the full-range value. The edge tolerance τ is quoted as a fraction of the minimum CD (10% per edge).
 
 ## 2. Problems
-(P_𝓜)  ρ*(𝓜) = inf_{M∈𝓜\{0}} ρ(M)  ⇔  min t s.t. M^H Q_{x,z} M ≤ t ∀(x,z)∈D×Z,  M^H Q_{x,z} M ≥ 1 ∀(x,z)∈B×Z.
+(P_𝓜)  ρ*(𝓜) = inf_{M∈𝓜\{0}} ρ(M)  (inf, not min: ρ need not be lower semicontinuous where bright and dark
+       intensities vanish together; ρ := +∞ when min_B I = 0)  ⇔  min t s.t. M^H Q_{x,z} M ≤ t ∀(x,z)∈D×Z,  M^H Q_{x,z} M ≥ 1 ∀(x,z)∈B×Z.
        This is a nonconvex homogeneous QCQP (the bright constraints are reverse-convex).
 (R_ℂ)  t_R(ℂ) = min t s.t. Tr(Q_{x,z} X) ≤ t (D×Z), Tr(Q_{x,z} X) ≥ 1 (B×Z), X ⪰ 0 Hermitian F×F.
 (R_ℝ)  same with X restricted to the real-structured cone: X = conj(Π X Π), Π = order-flip permutation.
@@ -51,9 +55,13 @@ conversely, if ρ*(𝓜) = t_R(𝓜) is attained by some mask then (R) has a ran
 automatic: ρ is scale-invariant and continuous on the unit sphere away from {min_B I = 0}, and the infimum can be
 approached by masks whose bright and dark intensities vanish together; in that case ρ* is still certified by Theorem 1.)
 Writing the inequalities of (R) with slack variables, (R) is a standard-form SDP with m = |D×Z| + |B×Z| equality
-constraints and block-diagonal cone (X, slacks, t = t⁺ − t⁻); Pataki's theorem gives an optimal extreme solution whose
-blocks satisfy Σ_blocks r_b(r_b+1)/2 ≤ m, hence rank(X) = r with r(r+1)/2 ≤ |D×Z| + |B×Z|: at most that many
-exposures are ever needed to attain t_R.
+constraints and block-diagonal cone (X, slacks, t = t⁺ − t⁻); (R) attains its optimum: the feasible set is closed, t is bounded below by 0, and along any minimizing sequence X_n
+the constraints Tr(Q_b X_n) ≥ 1 and Tr(Q_d X_n) ≤ t_n ≤ t_1 bound Tr(X_n) on the complement of the common null space of
+all Q's (on that null space X may be set to zero without changing any constraint), so a convergent subsequence exists.
+Pataki's theorem then gives an optimal extreme solution whose blocks satisfy Σ_blocks r_b(r_b+1)/2 ≤ m for REAL
+symmetric blocks (the 𝓜_ℝ problem in the real basis of Lemma 2), hence rank(Y) = r with r(r+1)/2 ≤ |D×Z| + |B×Z|;
+for the complex Hermitian problem (𝓜_ℂ) the corresponding count is r² ≤ |D×Z| + |B×Z|. At most that many exposures
+are ever needed to attain t_R.
 Proof. X ⪰ 0 ⇔ X = Σ_{i=1}^{r} M_i M_i^H (r ≤ F), and Tr(Q X) = Σ_i M_i^H Q M_i = summed image. Hence feasible X of
 (R) ↔ exposure ensembles (M_i) with summed-image constraints; objectives coincide. For 𝓜_ℝ use Lemma 2 to choose
 M_i ∈ V_ℝ. Rank-one optimum ↔ a single mask attaining t_R; conversely any single optimal mask gives a rank-one
@@ -61,8 +69,8 @@ feasible X with the same value. Pataki's theorem on extreme points of spectrahed
 
 **Theorem 4 (exact convex description of 𝓜_+ in 1D).** d = 1, K = {-Kmax..Kmax}. M ∈ ℂ^F is the in-band Fourier
 coefficient vector of some nonnegative measure on the circle iff the Toeplitz matrix T(M) = (M_{a-b})_{a,b=0..Kmax} ⪰ 0
-(Carathéodory–Toeplitz). If T(M) ≻ 0 the measure may be taken to be a bounded nonnegative function (a strictly
-positive trigonometric polynomial of degree Kmax, by the Fejér–Riesz theorem), hence a legitimate mask. Consequently the
+(Carathéodory–Toeplitz). If T(M) ≻ 0 the measure may be taken to be a bounded, strictly positive continuous function (the maximum-entropy
+autoregressive density σ²/|a(e^{iθ})|², a rational — not polynomial — function), hence a legitimate mask after scaling. Consequently the
 closure of 𝓜_+ equals {M : T(M) ⪰ 0}, and (P_{𝓜_+}) is a QCQP over an SDP-representable cone.
 Proof. (Necessity) For m ≥ 0 and any v ∈ ℂ^{Kmax+1}, v^H T(M) v = (1/|Λ|)∫ m(x) |Σ_a v_a e^{2πi a x/L}|² dx ≥ 0.
 (Sufficiency, T(M) ⪰ 0) Carathéodory–Toeplitz [Grenander–Szegő, Ch. 1–2]: a finite sequence with PSD Toeplitz matrix
@@ -73,15 +81,21 @@ with all zeros in |z| > 1 and σ² > 0 such that f(θ) = σ²/|a(e^{iθ})|² has
 Grenander–Szegő §5). Since a has no zeros on the unit circle, f is continuous, bounded and bounded away from zero;
 scaled by its maximum it is an admissible mask with |m| ≤ 1. Hence int{T ⪰ 0} ⊂ 𝓜_+ ⊂ {T ⪰ 0}, and the closure of
 𝓜_+ is {T(M) ⪰ 0}, an SDP-representable cone. ∎
-Note. In d = 2 the block-Toeplitz PSD condition is necessary but not sufficient (no 2D Fejér–Riesz); it still gives
-a valid relaxation.
+Note. In d = 2 the block-Toeplitz PSD condition is necessary but not sufficient (the two-dimensional truncated
+trigonometric moment problem is not characterised by block-Toeplitz positivity alone; see Dumitrescu, Positive
+Trigonometric Polynomials and Signal Processing Applications, 2007); it still gives a valid relaxation. T(M) is
+Hermitian for M ∈ 𝓜_ℝ (M_{-k} = conj M_k), which is the case of interest.
 
 **Proposition 5 (resolution limit recovery).** If no two collected orders k ≠ k' both pass the pupil for a common
-source point (i.e., L·(NA+max|s|)/λ < 1 — equivalently pitch below λ/((1+σ)NA)), then Q_{x,z} is independent of x,
-so ρ(M) ≥ 1 for all M, t_R = 1, and (μ,λ) = (uniform, uniform) is a certificate. Above this pitch, t_R < 1.
-Proof. With a single order per source point the image is |M_{k_j}|² per source point — x-independent. The dual
-certificate with μ uniform, λ uniform gives S = (1/|D|)Σ Q − (1/|B|)Σ Q = 0 ⪰ 0, Σλ = 1. For the converse, choose
-M with two interfering orders ±1 to get modulation. ∎
+source point — in d = 1 this is exactly L·(NA+max|s|)/λ < 1, i.e. pitch below λ/((1+σ)NA); in d = 2 it holds when
+max(L_1, L_2)·(NA+max|s|)/λ < 1 — then Q_{x,z} is independent of x, so ρ(M) ≥ 1 for all M, t_R = 1, and
+(μ,λ) = (uniform, uniform) is a certificate.
+Proof. With a single order per source point the image is Σ_j w_j |M_{k_j}|² — x-independent. The dual certificate with
+μ uniform, λ uniform gives S = (1/|D|)Σ Q − (1/|B|)Σ Q = 0 ⪰ 0, Σλ = 1. ∎
+Remark. The converse is not true for every target: just above the cutoff only the orders 0 and ±1 interfere for some
+source points and the image is a sinusoid at the cell period, so a target whose bright and dark samples cannot be
+separated by such a sinusoid (e.g. B = {0, L/2}, D = {L/4, 3L/4}) still has t_R = 1. For dense lines (one line per
+period) t_R < 1 immediately above the cutoff, which is the classical statement verified in the experiments.
 
 ## 4. Hypothesis, success and failure criteria
 H1 (certification): on realistic 1D/2D periodic targets the certified bound t_R and the best feasible mask found by
@@ -100,12 +114,17 @@ edge, plus interior points). The continuous problem (constraints for all x in th
 problem is also a valid lower bound for the continuous problem. Numerically the interior points are inactive (dual
 weight 0): the bound is determined by the edge-offset points, and is invariant to interior spacing (verified).
 
-**Lemma 6 (complex vs real masks under symmetric illumination).** If the source is symmetric (w(s) = w(−s)) and the
-pupil is even (P_z(g) = P_z(−g)), then for every complex order vector M the conjugate-reflected vector M̃ := conj(ΠM)
-produces the same image, I_{M̃,z}(x) = I_{M,z}(x) for all x, z. Consequently t_R(𝓜_ℂ) = t_R(𝓜_ℝ): the relaxation over
-complex-transmission masks equals that over real masks (X := ½(MM^H + M̃M̃^H) is real-structured with the same image).
-Proof. I_{M̃}(x) = Σ_s w_s |Σ_k P(f_k + s/λ) conj(M_{-k}) e^{2πi f_k x}|² ; substitute k → −k and use evenness of P:
-= Σ_s w_s |Σ_k P(−f_k + s/λ) conj(M_k) e^{−2πi f_k x}|² = Σ_s w_s |conj(Σ_k P(f_k − s/λ) M_k e^{2πi f_k x})|²
+**Lemma 6 (complex vs real masks under symmetric illumination).** Let the source be symmetric (w(s) = w(−s)) and the
+pupil satisfy P(−g) = conj(P(g)) (even amplitude, odd phase: e.g. no aberration, or odd aberrations such as coma).
+Then for every complex order vector M the conjugate-reflected vector M̃ := conj(ΠM) produces the same image at best
+focus, I_{M̃,0}(x) = I_{M,0}(x). Since the defocus phase is even in g, with defocus the images are related by
+I_{M̃,z}(x) = I_{M,−z}(x). Consequently, for a focus set with Z = −Z (e.g. {0, ±z_0}) and no even aberrations,
+t_R(𝓜_ℂ) = t_R(𝓜_ℝ): the relaxation over complex-transmission masks equals that over real masks
+(X := ½(MM^H + M̃M̃^H) is real-structured with the same constraint values). Even aberrations (astigmatism, spherical,
+Z4) break the identity.
+Proof. I_{M̃}(x) = Σ_s w_s |Σ_k P(f_k + s/λ) conj(M_{-k}) e^{2πi f_k x}|² ; substitute k → −k:
+= Σ_s w_s |Σ_k P(−f_k + s/λ) conj(M_k) e^{−2πi f_k x}|² = Σ_s w_s |conj(Σ_k conj(P(−f_k + s/λ)) M_k e^{2πi f_k x})|²
+= Σ_s w_s |Σ_k P(f_k − s/λ) M_k e^{2πi f_k x}|² using conj(P(−g)) = P(g) (for the defocus factor, conj flips the sign of z)
 = Σ_s w_{s} |Σ_k P(f_k + (−s)/λ) M_k e^{2πi f_k x}|² = Σ_{s'} w_{s'} |Σ_k P(f_k + s'/λ) M_k e^{2πi f_k x}|² = I_M(x),
 using w(−s) = w(s). The matrix ½(MM^H + M̃M̃^H) is PSD, satisfies X = conj(ΠXΠ) (since Π conj(M̃ M̃^H) Π = MM^H),
 and has image ½(I_M + I_{M̃}) = I_M. Hence every complex-feasible X yields a real-structured feasible X with the same
@@ -140,6 +159,7 @@ dark forms (over D×Z) and P_1..P_n ⪰ 0 the bright forms (over B×Z), and ρ(r
 Proof. (i) sign and scale invariance; every r ≠ 0 has a coordinate of maximal modulus, which can be scaled to +1.
 (ii)–(iv) as written. ∎
 Numerical note. LB is evaluated in floating point; error terms are multiplied by (1+1e-9) and 1e-12 is subtracted; the
-forms Q, P are themselves floating-point images of exact complex exponentials with relative error ~1e-15. The reported
-certified gains (≥ 6%) exceed these perturbations by many orders of magnitude; a fully interval-arithmetic version is
-left as future work.
+forms Q, P are themselves floating-point images of exact complex exponentials with relative error ~1e-15. These
+safeguards are heuristic, not a proof: the certificate is exact in exact arithmetic and 'certified' in the manuscript
+means 'exact modulo double-precision rounding of order 1e-12 relative', many orders below the reported gains (≥ 6%).
+A directed-rounding (interval) implementation is future work.

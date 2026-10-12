@@ -1,9 +1,9 @@
 from pipeline import *
 lam, NA = 193.0, 1.35; out = []
-conv = conventional_source_1d(0.7, NA, 7)
+conv = SRC_DUV['conv0.7']
 cases = {"isodense": (600, [(0,50),(100,150),(200,250),(430,480)]), "mixed": (500, [(0,40),(100,180),(240,400)]), "dense120": (360, [(0,60),(120,180),(240,300)])}
 for name, (L, segs) in cases.items():
-    s, w = conv; md, B, D, tgt = build_1d(L, lam, NA, conv, segs, margin=10, spacing=5.0); rm = RealModel(md)
+    s, w = conv; md, B, D, tgt = build_1d(L, lam, NA, conv, segs, margin=TAU_DUV, spacing=5.0); rm = RealModel(md)
     tf = lambda v: any(a <= (v % L) < b for a, b in segs)
     rF = sdp_bound_real(rm, B, D); N = 120
     rP = sdp_bound_pixel(md, N, B, D, nonneg=False, solver="SCS"); rN = sdp_bound_pixel(md, N, B, D, nonneg=True, solver="SCS")

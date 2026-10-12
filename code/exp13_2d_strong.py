@@ -2,7 +2,7 @@
 from pipeline import *
 from scipy.optimize import minimize
 from scipy.special import logsumexp, softmax
-lam, NA = 193.0, 1.35; ann = annular_source_2d(0.6, 0.9, NA, n=9); qua = quasar_source_2d(0.6, 0.9, NA, n=11)
+lam, NA = 193.0, 1.35; ann = SRC_DUV['annular']; qua = SRC_DUV['quasar']
 Tj = lambda a, b: (abs(a-160) < 30 and 60 < b < 220) or (abs(b-40) < 30)
 lineend = lambda a, b: (abs(a-100) < 25 and 30 < b < 210) or (abs(a-220) < 25 and (b < 150 or b > 270))
 out = []
@@ -19,7 +19,7 @@ def refine_pair(rm, R0, B, D, iters=600):
     res = minimize(fg, R0.ravel(), jac=True, method='L-BFGS-B', options=dict(maxiter=iters)); R = res.x.reshape(rm.F, 2)
     dm = max(sum(rm.image(R[:, j], z) for j in range(2))[D].max() for z in rm.focus); bm = min(sum(rm.image(R[:, j], z) for j in range(2))[B].min() for z in rm.focus); return dm/bm, R
 for name, tf, src in [("Tjunction320_annular", Tj, ann), ("Tjunction320_quasar", Tj, qua), ("lineend320_annular", lineend, ann)]:
-    t0 = time.time(); md, B, D, tgt = build_2d((320,320), lam, NA, src, tf, 14, spacing=16.0, fine=2.0); rm = RealModel(md)
+    t0 = time.time(); md, B, D, tgt = build_2d((320,320), lam, NA, src, tf, 6, spacing=16.0, fine=2.0); rm = RealModel(md)
     r = sdp_bound_real(rm, B, D); rig, me, c = rigorize_certificate(rm, r['mu'], r['lam']); log(name, "SDP", round(r['t'],5), r['solver'], round(time.time()-t0))
     rec = dict(name=name, F=rm.F, bound=rig, ipm_rank=r['rank_eps'], ipm_eigs=[float(e) for e in r['eig'][:4]])
     # face exploration: trace minimization only (1 extra SDP), CLARABEL only

@@ -1,7 +1,7 @@
 from pipeline import *
 from bnb_cert import bnb_single_mask
 lam, NA = 193.0, 1.35; out = []
-for name, L, segs, src, margin, spacing, focus, budget in [("mixed_coh", 500, [(0,40),(100,180),(240,400)], ([0.0],[1.0]), 8, 4.0, (0.0,), 30_000_000)]:
+for name, L, segs, src, margin, spacing, focus, budget in [("mixed_coh", 500, [(0,40),(100,180),(240,400)], SRC_DUV['coh'], TAU_DUV, 4.0, (0.0,), 30_000_000)]:
     md, B, D, tgt = build_1d(L, lam, NA, src, segs, margin, spacing=spacing, focus=focus); rm = RealModel(md)
     r = sdp_bound_real(rm, B, D); rig, _, _ = rigorize_certificate(rm, r['mu'], r['lam'])
     v, rb = strong_primal(rm, B, D, [r['X']], nround=300, nstart=20)

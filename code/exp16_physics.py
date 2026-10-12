@@ -1,7 +1,7 @@
 # Physics sensitivity: vector imaging (polarizations), aberrations, pixelation; tightness under the vector model.
 from pipeline import *
 lam, NA = 193.0, 1.35; out = {}
-conv = conventional_source_1d(0.7, NA, 7); dip = dipole_source_1d(0.8, NA)
+conv = SRC_DUV['conv0.7']; dip = SRC_DUV['dipole0.8']
 # (a) vector vs scalar, 1D
 res = []
 for cname, L, segs, margin in [("dense90", 360, [(0,45),(90,135),(180,225),(270,315)], 6), ("isodense", 600, [(0,50),(100,150),(200,250),(430,480)], 8)]:
@@ -18,15 +18,15 @@ out['vector_1d'] = res
 res = []
 for key in ['Z5', 'Z7', 'Z9']:
     for amp in [0.0, 0.02, 0.05, 0.1]:
-        md, B, D, _ = build_1d_x(600, lam, NA, conv, [(0,50),(100,150),(200,250),(430,480)], 8, spacing=4.0, aberr={key: amp})
+        md, B, D, _ = build_1d_x(600, lam, NA, conv, [(0,50),(100,150),(200,250),(430,480)], TAU_DUV, spacing=4.0, aberr={key: amp})
         r = sdp_bound_real(RealModel(md), B, D); rig, _, _ = rigorize_certificate(RealModel(md), r['mu'], r['lam'])
         res.append(dict(zernike=key, waves=amp, bound=rig)); print(json.dumps(res[-1]), flush=True)
 out['aberrations'] = res
 # (c) 2D contacts: vector unpolarized / TE vs scalar
 res = []
-ann = annular_source_2d(0.6, 0.9, NA, n=9); qua = quasar_source_2d(0.6, 0.9, NA, n=11)
+ann = SRC_DUV['annular']; qua = SRC_DUV['quasar']
 holes = lambda P, hw: (lambda a, b: (abs((a+P/2)%P-P/2) < hw) and (abs((b+P/2)%P-P/2) < hw))
-for name, L, tf, src, margin in [("contacts120_annular", (120,120), holes(120,25), ann, 10), ("contacts120_quasar", (120,120), holes(120,25), qua, 10)]:
+for name, L, tf, src, margin in [("contacts120_annular", (120,120), holes(120,25), ann, 5), ("contacts120_quasar", (120,120), holes(120,25), qua, 5)]:
     md0, B, D, _ = build_2d(L, lam, NA, src, tf, margin, spacing=16.0, fine=2.0); rec0, *_ = analyze(md0, B, D, nround=150, nstart=4, polish=False)
     row = dict(case=name, scalar_bound=rec0['rigorous'], scalar_gap=rec0['gap_rel'])
     for pol in ['unpol', 'TE']:
@@ -36,7 +36,7 @@ for name, L, tf, src, margin in [("contacts120_annular", (120,120), holes(120,25
 out['vector_2d'] = res
 # (d) pixelation
 res = []
-md, B, D, _ = build_1d(600, lam, NA, conv, [(0,50),(100,150),(200,250),(430,480)], 8, spacing=4.0); rF = sdp_bound_real(RealModel(md), B, D)
+md, B, D, _ = build_1d(600, lam, NA, conv, [(0,50),(100,150),(200,250),(430,480)], TAU_DUV, spacing=4.0); rF = sdp_bound_real(RealModel(md), B, D)
 for N in [150, 60, 30, 15, 12, 9]:
     rp = sdp_bound_pixel_int(md, N, B, D, solver="SCS"); res.append(dict(N=N, pixel_nm=600/N, bound=rp['t'], fourier=rF['t'], F=md.F)); print(json.dumps(res[-1]), flush=True)
 out['pixelation'] = res

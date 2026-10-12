@@ -6,8 +6,8 @@ def load(n):
 md = []
 e1 = load('exp1_1d_features.json')
 if e1:
-    md.append("### Table 1 — 1D feature library (DUV 193 nm, NA 1.35; edge tolerance 8 nm; dense90: 6 nm)\n| case | F | foci | certified bound ρ | max EL | best single mask ρ | gap | SDP time (s) |\n|---|---|---|---|---|---|---|---|")
-    for r in e1: md.append(f"| {r['name']} | {r['F']} | {len(r['focus'])} | {r['rigorous']:.4f} | {r['EL_bound']:.3f} | {r['best_feasible']:.4f} | {r['gap_rel']:.2%} | {r['sdp_time']:.2f} |")
+    md.append("### Table 1 — 1D feature library (DUV 193 nm, NA 1.35; edge tolerance 8 nm; dense90: 6 nm)\n| case | F | foci | certified bound ρ | max EL (full range) | best single mask ρ | gap | SDP time (s) |\n|---|---|---|---|---|---|---|---|")
+    for r in e1: md.append(f"| {r['name']} | {r['F']} | {len(r['focus'])} | {r['rigorous']:.4f} | {r.get('EL_full_bound', 2*(1-r['rigorous'])/(1+r['rigorous'])):.3f} | {r['best_feasible']:.4f} | {('degenerate' if r.get('gap_rel') is None else f"{r['gap_rel']:.2%}")} | {r['sdp_time']:.2f} |")
 e7 = load('exp7_lasserre.json'); e11 = load('exp11_lasserre_pw.json')
 rows = (e7 or []) + (e11 or [])
 if rows:
@@ -31,8 +31,8 @@ e5 = load('exp5_smo_euv_toeplitz.json')
 if e5:
     md.append("\n### Table 4 — Source–mask entitlement bound (iso-dense, DUV)\n| source | #pts | fixed-source bound | SMO relaxation bound |\n|---|---|---|---|")
     for r in e5['smo']: md.append(f"| {r['src']} | {r['nsrc']} | {r['fixed_source_bound']:.4f} | {r['smo_bound']:.4f} |")
-    md.append("\n### Table 5 — EUV (13.5 nm, NA 0.33, ±50 nm focus) dense lines: certified max EL vs pitch\n| pitch (nm) | k1 | source | F | bound ρ | max EL | best single mask ρ | gap |\n|---|---|---|---|---|---|---|---|")
-    for r in e5['euv_pw']: md.append(f"| {r['pitch']} | {r['k1']:.3f} | {r['src']} | {r['F']} | {r['rigorous']:.4f} | {r['EL_bound']:.3f} | {r['best_feasible']:.4f} | {r['gap_rel']:.2%} |")
+    md.append("\n### Table 5 — EUV (13.5 nm, NA 0.33, ±50 nm focus) dense lines: certified max EL (full range) vs pitch\n| pitch (nm) | k1 | source | F | bound ρ | max EL (full range) | best single mask ρ | gap |\n|---|---|---|---|---|---|---|---|")
+    for r in e5['euv_pw']: md.append(f"| {r['pitch']} | {r['k1']:.3f} | {r['src']} | {r['F']} | {r['rigorous']:.4f} | {r.get('EL_full_bound', 2*(1-r['rigorous'])/(1+r['rigorous'])):.3f} | {r['best_feasible']:.4f} | {('degenerate' if r.get('gap_rel') is None else f"{r['gap_rel']:.2%}")} |")
     t4 = e5['theorem4']; md.append(f"\nTheorem 4 numerics: necessity violations {t4['necessity_violations']}/{t4['necessity_trials']}; sufficiency failures {t4['sufficiency_failures']}/{t4['sufficiency_tested']}.")
 e8 = load('exp8_robustness.json')
 if e8:
@@ -42,8 +42,8 @@ if e8:
     m = e8['mp_check']; md.append(f"- 50-digit certificate check: Cholesky success={m['cholesky_success']}, min eig={m['mineig_mp50']:.2e}, bound={m['bound']:.6f}")
 e4 = load('exp4_2d.json')
 if e4:
-    md.append("\n### Table 6 — 2D layouts (DUV, NA 1.35), edge tolerance 12 nm (contacts120/100: 10/8 nm; T/line-end: 14 nm)\n| layout | cell (nm) | source pts | F | samples | bound ρ | max EL | best single mask ρ | gap | rank | cert. null dim | SDP time (s) |\n|---|---|---|---|---|---|---|---|---|---|---|---|")
-    for r in e4: md.append(f"| {r['name']} | {r['L']} | {r['nsrc']} | {r['F']} | {r['nB']+r['nD']} | {r['rigorous']:.4f} | {r['EL_bound']:.3f} | {r['best_feasible']:.4f} | {r['gap_rel']:.2%} | {r['rank']} | {r.get('cert_null_dim', 0)} | {r['sdp_time']:.1f} |")
+    md.append("\n### Table 6 — 2D layouts (DUV, NA 1.35), edge tolerance 12 nm (contacts120/100: 10/8 nm; T/line-end: 14 nm)\n| layout | cell (nm) | source pts | F | samples | bound ρ | max EL (full range) | best single mask ρ | gap | rank | cert. null dim | SDP time (s) |\n|---|---|---|---|---|---|---|---|---|---|---|---|")
+    for r in e4: md.append(f"| {r['name']} | {r['L']} | {r['nsrc']} | {r['F']} | {r['nB']+r['nD']} | {r['rigorous']:.4f} | {r.get('EL_full_bound', 2*(1-r['rigorous'])/(1+r['rigorous'])):.3f} | {r['best_feasible']:.4f} | {('degenerate' if r.get('gap_rel') is None else f"{r['gap_rel']:.2%}")} | {r['rank']} | {r.get('cert_null_dim', 0)} | {r['sdp_time']:.1f} |")
 e9 = load('exp9_outlier_pw.json')
 if e9:
     md.append("\n### Outlier / process-window re-examination (strong primal search, face exploration, Lasserre-2 where F≤11)\n| case | F | bound | old best | new best | new gap | min face rank | Lasserre-2 | status |\n|---|---|---|---|---|---|---|---|---|")
@@ -83,10 +83,10 @@ if e17:
         g = _np.array([r['gap_rel'] for r in r2]); md.append(f"\n### Random 2D layouts (n={len(r2)}; cells 200/240 nm; annular/quasar/conv0.5; τ=12 nm): gap ≤1e-3: {_np.mean(g<=1e-3):.1%}; ≤1%: {_np.mean(g<=1e-2):.1%}; ≤5%: {_np.mean(g<=5e-2):.1%}; median {_np.median(g):.1e}; max {g.max():.3f}; F range {min(r['F'] for r in r2)}–{max(r['F'] for r in r2)}; median SDP time {_np.median([r['sdp_time'] for r in r2]):.1f} s")
     a1 = e17['adversarial1d']
     if a1:
-        md.append("\n### Table 12 — Adversarial 1D targets\n| target | source | F | bound ρ | max EL | best single ρ | gap | rank |\n|---|---|---|---|---|---|---|---|")
-        for r in a1: md.append(f"| {r['name']} | {r['src']} | {r['F']} | {r['rigorous']:.4f} | {r['EL_bound']:.3f} | {r['best_feasible']:.4f} | {r['gap_rel']:.2%} | {r['rank']} |")
+        md.append("\n### Table 12 — Adversarial 1D targets\n| target | source | F | bound ρ | max EL (full range) | best single ρ | gap | rank |\n|---|---|---|---|---|---|---|---|")
+        for r in a1: md.append(f"| {r['name']} | {r['src']} | {r['F']} | {r['rigorous']:.4f} | {r.get('EL_full_bound', 2*(1-r['rigorous'])/(1+r['rigorous'])):.3f} | {r['best_feasible']:.4f} | {('degenerate' if r.get('gap_rel') is None else f"{r['gap_rel']:.2%}")} | {r['rank']} |")
     e2d = e17['euv2d']
     if e2d:
-        md.append("\n### Table 13 — EUV 2D contact arrays (13.5 nm, NA 0.33, ±40 nm focus, τ = 0.1 pitch)\n| pitch | k1 | source | F | bound ρ | max EL | best single ρ | gap | rank |\n|---|---|---|---|---|---|---|---|---|")
-        for r in e2d: md.append(f"| {r['pitch']} | {r['k1']:.3f} | {r['src']} | {r['F']} | {r['rigorous']:.4f} | {r['EL_bound']:.3f} | {r['best_feasible']:.4f} | {r['gap_rel']:.2%} | {r['rank']} |")
+        md.append("\n### Table 13 — EUV 2D contact arrays (13.5 nm, NA 0.33, ±40 nm focus, τ = 0.1 pitch)\n| pitch | k1 | source | F | bound ρ | max EL (full range) | best single ρ | gap | rank |\n|---|---|---|---|---|---|---|---|---|")
+        for r in e2d: md.append(f"| {r['pitch']} | {r['k1']:.3f} | {r['src']} | {r['F']} | {r['rigorous']:.4f} | {r.get('EL_full_bound', 2*(1-r['rigorous'])/(1+r['rigorous'])):.3f} | {r['best_feasible']:.4f} | {('degenerate' if r.get('gap_rel') is None else f"{r['gap_rel']:.2%}")} | {r['rank']} |")
 open(R + 'RESULTS_TABLES.md', 'w').write("\n".join(md)); print("\n".join(md[-12:]))

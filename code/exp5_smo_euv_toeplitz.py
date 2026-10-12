@@ -4,8 +4,8 @@ out = {}
 lam, NA = 193.0, 1.35
 segs = [(0,50),(100,150),(200,250),(430,480)]; L = 600
 res = []
-for sname, (s, w) in {"coh": ([0.0],[1.0]), "conv0.7": conventional_source_1d(0.7, NA, 7), "dipole0.8": dipole_source_1d(0.8, NA), "full_grid0.9": conventional_source_1d(0.9, NA, 13)}.items():
-    md, B, D, tgt = build_1d(L, lam, NA, (s, w), segs, 8, spacing=4.0); rm = RealModel(md)
+for sname, (s, w) in {"coh": SRC_DUV['coh'], "conv0.7": SRC_DUV['conv0.7'], "dipole0.8": SRC_DUV['dipole0.8'], "conv0.9": SRC_DUV['conv0.9']}.items():
+    md, B, D, tgt = build_1d(L, lam, NA, (s, w), segs, TAU_DUV, spacing=4.0); rm = RealModel(md)
     r = sdp_bound_real(rm, B, D); smo = sdp_bound_smo(rm, B, D)
     res.append(dict(src=sname, nsrc=len(w), fixed_source_bound=r['t'], smo_bound=smo['t'], smo_status=smo['status'], smo_src_weights=[float(x) for x in smo['src_weights']]))
     print(json.dumps(res[-1]), flush=True)
@@ -13,9 +13,9 @@ out['smo'] = res
 # --- (b) EUV: lam=13.5, NA=0.33, dense lines & iso-dense, pitch sweep, conventional sigma 0.9 and dipole
 lam, NA = 13.5, 0.33; res = []
 for pitch in [20, 22, 24, 26, 28, 32, 40]:
-    for sname, (s, w) in {"conv0.9": conventional_source_1d(0.9, NA, 7), "dipole0.8": dipole_source_1d(0.8, NA)}.items():
+    for sname, (s, w) in {"conv0.9": SRC_EUV['conv0.9'], "dipole0.8": SRC_EUV['dipole0.8']}.items():
         segsE = [(i*pitch, i*pitch + pitch/2) for i in range(4)]
-        md, B, D, tgt = build_1d(4*pitch, lam, NA, (s, w), segsE, 0.12*pitch, spacing=pitch/8, focus=(0.0, 50.0, -50.0))   # +-50nm defocus process window
+        md, B, D, tgt = build_1d(4*pitch, lam, NA, (s, w), segsE, 0.05*pitch, spacing=pitch/8, focus=(0.0, 50.0, -50.0))   # +-50nm defocus process window
         rec, rm, r, rb = analyze(md, B, D, nround=200, nstart=6)
         rec.update(pitch=pitch, src=sname, k1=pitch/2*NA/lam); res.append(rec); print(json.dumps({k: rec[k] for k in ['pitch','src','k1','F','t_sdp','rigorous','rank','best_feasible','gap_rel','EL_bound']}), flush=True)
 out['euv_pw'] = res

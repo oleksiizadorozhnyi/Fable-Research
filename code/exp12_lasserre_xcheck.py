@@ -1,6 +1,6 @@
 from pipeline import *
 lam, NA = 193.0, 1.35
-md, B, D, tgt = build_1d(500, lam, NA, ([0.0],[1.0]), [(0,40),(100,180),(240,400)], 8, spacing=4.0); rm = RealModel(md)
+md, B, D, tgt = build_1d(500, lam, NA, SRC_DUV['coh'], [(0,40),(100,180),(240,400)], TAU_DUV, spacing=4.0); rm = RealModel(md)
 out = {}
 for sv in ["CLARABEL", "SCS"]:
     t0 = time.time(); las = lasserre2_single_mask(rm, B, D, tmax=1.0, solvers=(sv,)); out[sv] = dict(t=las['t'], status=las['status'], time=time.time()-t0)

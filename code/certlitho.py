@@ -813,3 +813,110 @@ def certificate_matrix_projected(model, mu, lamb, c):
     common = Vn.shape[1] > 0 and (np.linalg.norm(Vn.conj().T @ SB @ Vn, 2)/nB) <= 1e-12
     Vk = V[:, ~nullmask] if common else np.eye(F)
     S = Vk.conj().T @ (SD - c*SB) @ Vk; return 0.5*(S+S.conj().T), int(Vn.shape[1]) if common else 0
+
+# =============================================================================== Session-3 physics corrections (reviewer F2/F3/F8)
+# 1) Source points are ALWAYS 2-D direction-cosine vectors (s_x, s_y); for 1-D (y-invariant) masks the y-component enters
+#    the pupil cutoff and the defocus phase exactly as for 2-D masks.  2) Defocus phase is evaluated in the image-side
+#    medium of index n_img:  phi = 2 pi n_img z / lambda * ( sqrt(1 - (|g| lambda / n_img)^2) - 1 ).
+# 3) Area-weighted quadratures for disk / annular / finite-pole dipole / quasar illuminators.
+class Model(Model):
+    def __init__(self, L, lam, NA, src_pts, src_w, nx, focus=(0.0,), dim=1, xs=None, n_img=1.0, aberr=None):
+        self.dim = dim; self.n_img = n_img; self.aberr = aberr or {}
+        self.L = np.atleast_1d(np.asarray(L, float)) if dim == 2 else np.array([float(L)])
+        self.lam, self.NA = lam, NA
+        src = np.asarray(src_pts, float)
+        if src.ndim == 1: src = src.reshape(-1, 1)
+        if src.shape[1] == 1: src = np.hstack([src, np.zeros((src.shape[0], 1))])     # legacy 1-D slit points
+        self.src = src; self.w = np.asarray(src_w, float) / np.sum(src_w); self.focus = tuple(focus)
+        smax = np.max(np.linalg.norm(self.src, axis=1)); R = (NA + smax) / lam
+        if dim == 1:
+            K = int(np.floor(R * self.L[0] + 1e-9)); ks = [(k,) for k in range(-K, K + 1)]
+        else:
+            Kx = int(np.floor(R * self.L[0] + 1e-9)); Ky = int(np.floor(R * self.L[1] + 1e-9))
+            ks = [(kx, ky) for kx in range(-Kx, Kx + 1) for ky in range(-Ky, Ky + 1) if np.hypot(kx / self.L[0], ky / self.L[1]) <= R + 1e-12]
+        self.k = np.array(ks); self.F = len(self.k); self.f = self.k / self.L
+        self.f2 = self.f if dim == 2 else np.hstack([self.f, np.zeros((self.F, 1))])
+        self.kindex = {tuple(kk): i for i, kk in enumerate(self.k)}
+        if dim == 1: self.x = (np.arange(nx) * self.L[0] / nx).reshape(-1, 1) if xs is None else np.asarray(xs, float).reshape(-1, 1)
+        elif xs is not None: self.x = np.asarray(xs, float).reshape(-1, 2)
+        else:
+            gx = np.arange(nx[0]) * self.L[0] / nx[0]; gy = np.arange(nx[1]) * self.L[1] / nx[1]; self.x = np.array([(a, b) for a in gx for b in gy])
+        self.nx = len(self.x)
+        E = np.exp(2j * np.pi * (self.x @ self.f.T))
+        self.C = {}
+        for z in self.focus:
+            Cz = []
+            for s in self.src:
+                g = self.f2 + s / lam; gn = np.linalg.norm(g, axis=1); inside = (gn * lam <= NA + 1e-12)
+                arg = np.clip(1 - (gn * lam / n_img) ** 2, 0.0, None)
+                ph = 2 * np.pi * n_img * z / lam * (np.sqrt(arg) - 1) + zernike_phase(g, lam, NA, self.aberr)
+                Cz.append(E * (inside * np.exp(1j * ph))[None, :])
+            self.C[z] = np.stack(Cz)
+        self.flip = np.array([self.kindex[tuple(-kk)] for kk in self.k])
+
+def disk_source(sigma, NA, n=21, sigma_in=0.0):
+    """Area-weighted grid quadrature of a disk (or annulus sigma_in..sigma) of direction cosines, n x n grid over the disk."""
+    g = (np.arange(n) + 0.5) / n * 2 - 1; pts = [(a * sigma * NA, b * sigma * NA) for a in g for b in g if sigma_in <= np.hypot(a, b) * sigma <= sigma + 1e-12]
+    return np.array(pts), np.ones(len(pts))
+def annular_source(s_in, s_out, NA, n=25): return disk_source(s_out, NA, n=n, sigma_in=s_in)
+def dipole_source(sigma_c, NA, pole_radius=0.15, n=9, axis='x'):
+    """Two finite circular poles of radius pole_radius (in sigma units) centred at (+-sigma_c, 0) [axis x] or (0, +-sigma_c)."""
+    pts = []
+    for sgn in (+1, -1):
+        c = np.array([sgn * sigma_c, 0.0]) if axis == 'x' else np.array([0.0, sgn * sigma_c])
+        g = (np.arange(n) + 0.5) / n * 2 - 1
+        pts += [((c[0] + a * pole_radius) * NA, (c[1] + b * pole_radius) * NA) for a in g for b in g if np.hypot(a, b) <= 1 + 1e-12]
+    return np.array(pts), np.ones(len(pts))
+def quasar_source(s_in, s_out, NA, opening_deg=30.0, n=31):
+    """Four annular sectors of opening angle `opening_deg` centred on the diagonals (45, 135, 225, 315 deg)."""
+    g = (np.arange(n) + 0.5) / n * 2 - 1; pts = []
+    for a in g:
+        for b in g:
+            r = np.hypot(a, b) * s_out; th = np.degrees(np.arctan2(b, a)) % 90
+            if s_in <= r <= s_out + 1e-12 and abs(th - 45) <= opening_deg / 2: pts.append((a * s_out * NA, b * s_out * NA))
+    return np.array(pts), np.ones(len(pts))
+
+def el_full(rho): return 2 * (1 - rho) / (1 + rho)   # full-range dose latitude (window width / centre dose) for a threshold resist
+def two_beam_closed_form(tau, pitch): return (1 - np.sin(2 * np.pi * tau / pitch)) / (1 + np.sin(2 * np.pi * tau / pitch))
+
+def build_1d(L, lam, NA, src, segs, margin, spacing=4.0, focus=(0.0,), n_img=1.0, aberr=None):
+    s, w = src; x, B, D, tgt = samples_1d(L, segs, margin, spacing)
+    return Model(L, lam, NA, s, w, nx=len(x), focus=focus, xs=x, n_img=n_img, aberr=aberr), B, D, tgt
+def build_2d(L, lam, NA, src, target_fn, margin, spacing=10.0, fine=1.0, focus=(0.0,), n_img=1.0, aberr=None):
+    s, w = src; x, B, D, tgt, sd = samples_2d(L, target_fn, margin, spacing, fine=fine)
+    return Model(L, lam, NA, s, w, nx=None, focus=focus, dim=2, xs=x, n_img=n_img, aberr=aberr), B, D, tgt
+
+class ModelX(Model):
+    """Vector (high-NA) extension of the corrected Model: channels = (source point, polarization, field component).
+       Direction cosines in the image medium: alpha = g_x lambda/n_img, beta = g_y lambda/n_img, gamma = sqrt(1-alpha^2-beta^2).
+       Mask-side polarization p (x, y, unpolarized = average of x and y, TE/TM = azimuthal/radial per source point) is rotated
+       by the minimal rotation taking z to the propagation direction (Rodrigues); optional obliquity amplitude 1/sqrt(gamma)."""
+    def __init__(self, L, lam, NA, src_pts, src_w, nx, focus=(0.0,), dim=1, xs=None, aberr=None, vector=False, pol='unpol', n_img=1.0, obliquity=True):
+        self.vector = vector; self.pol = pol; self.obliquity = obliquity
+        super().__init__(L, lam, NA, src_pts, src_w, nx, focus, dim, xs, n_img=n_img, aberr=aberr)
+        if not vector: return
+        E = np.exp(2j * np.pi * (self.x @ self.f.T)); Cs = {z: [] for z in self.focus}; ws = []
+        for s, wsrc in zip(self.src, self.w):
+            g = self.f2 + s / lam; gn = np.linalg.norm(g, axis=1); inside = (gn * lam <= NA + 1e-12)
+            a = g[:, 0] * lam / n_img; b = g[:, 1] * lam / n_img; gam = np.sqrt(np.clip(1 - a**2 - b**2, 1e-9, 1))
+            arg = np.clip(1 - (gn * lam / n_img) ** 2, 0.0, None)
+            if pol == 'x': pols = [np.array([1.0, 0.0])]
+            elif pol == 'y': pols = [np.array([0.0, 1.0])]
+            elif pol == 'unpol': pols = [np.array([1.0, 0.0]), np.array([0.0, 1.0])]
+            else:
+                ns = np.linalg.norm(s); rad = s / ns if ns > 1e-12 else np.array([1.0, 0.0]); azi = np.array([-rad[1], rad[0]]); pols = [azi if pol == 'TE' else rad]
+            ob = (1 / np.sqrt(gam)) if obliquity else np.ones(self.F)
+            for z in self.focus:
+                ph = 2 * np.pi * n_img * z / lam * (np.sqrt(arg) - 1) + zernike_phase(g, lam, NA, self.aberr); P = inside * np.exp(1j * ph)
+                for p in pols:
+                    ex = p[0] * (1 - a**2 / (1 + gam)) + p[1] * (-a * b / (1 + gam)); ey = p[0] * (-a * b / (1 + gam)) + p[1] * (1 - b**2 / (1 + gam)); ez = -p[0] * a - p[1] * b
+                    for comp in (ex, ey, ez): Cs[z].append(E * (P * ob * comp)[None, :])
+            ws += [wsrc / len(pols)] * (3 * len(pols))
+        self.C = {z: np.stack(Cs[z]) for z in self.focus}; self.w = np.array(ws)
+
+def build_1d_x(L, lam, NA, src, segs, margin, spacing=4.0, focus=(0.0,), **kw):
+    s, w = src; x, B, D, tgt = samples_1d(L, segs, margin, spacing)
+    return ModelX(L, lam, NA, s, w, nx=len(x), focus=focus, xs=x, **kw), B, D, tgt
+def build_2d_x(L, lam, NA, src, target_fn, margin, spacing=10.0, fine=1.0, focus=(0.0,), **kw):
+    s, w = src; x, B, D, tgt, sd = samples_2d(L, target_fn, margin, spacing, fine=fine)
+    return ModelX(L, lam, NA, s, w, nx=None, focus=focus, dim=2, xs=x, **kw), B, D, tgt

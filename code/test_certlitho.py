@@ -66,6 +66,16 @@ def test_multifocus_metric():
     v, rv = round_from_Y(rm, r['X'], B, D, nsamp=100); v, rv = local_refine_real(rm, rv, B, D)
     dmax = max(rm.image(rv, z)[D].max() for z in rm.focus); bmin = min(rm.image(rv, z)[B].min() for z in rm.focus)
     assert abs(rm.ratio(rv, B, D) - dmax/bmin) < 1e-12 and v >= rig - 1e-9, (v, rig)
+def test_two_beam_closed_form():
+    p, tau = 90.0, 6.0; sig = lam/(2*p*NA); s = np.array([[sig*NA, 0.0], [-sig*NA, 0.0]]); w = np.ones(2)
+    md, B, D, _ = build_1d(4*p, lam, NA, (s, w), [(i*p, i*p+p/2) for i in range(4)], tau, spacing=4.0)
+    r = sdp_bound_real(RealModel(md), B, D); assert abs(r['t'] - two_beam_closed_form(tau, p)) < 2e-5, (r['t'], two_beam_closed_form(tau, p))
+def test_catalogue_and_defocus_medium():
+    s, w = disk_source(0.7, NA, n=11); segs = [(0,50),(100,150),(200,250),(430,480)]
+    md1, B, D, _ = build_1d(600, lam, NA, (s, w), segs, 5, spacing=4.0, focus=(0.0, 80.0, -80.0), n_img=1.0)
+    md2, _, _, _ = build_1d(600, lam, NA, (s, w), segs, 5, spacing=4.0, focus=(0.0, 80.0, -80.0), n_img=1.44)
+    r1 = sdp_bound_real(RealModel(md1), B, D); r2 = sdp_bound_real(RealModel(md2), B, D); assert r2['t'] < r1['t']   # weaker defocus in water
+    assert abs(sum(w) - len(w)) < 1e-12 and s.shape[1] == 2
 if __name__ == "__main__":
-    for f in [test_abbe_cutoff, test_certificate_and_rounding, test_pixel_vs_fourier, test_real_equals_complex_symmetric_source, test_ilt_gradient, test_toeplitz_necessity, test_bnb_consistency, test_vector_model_consistency, test_multifocus_metric]:
+    for f in [test_abbe_cutoff, test_certificate_and_rounding, test_pixel_vs_fourier, test_real_equals_complex_symmetric_source, test_ilt_gradient, test_toeplitz_necessity, test_bnb_consistency, test_vector_model_consistency, test_multifocus_metric, test_two_beam_closed_form, test_catalogue_and_defocus_medium]:
         f(); print("PASS", f.__name__)
