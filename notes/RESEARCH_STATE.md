@@ -86,3 +86,18 @@ Clean run (code/run_all_par.sh) completed: 20 scripts, all exit 0 (exp15 re-run 
 Deliverables: paper/main.tex + refs.bib (LaTeX), notes/PAPER_v2.md (Markdown), notes/FINAL_REPORT.md (v2),
 notes/THEORY.md (Theorems 1–9), notes/NOVELTY.md, notes/ADVERSARIAL.md, results/RESULTS_TABLES.md, results/figs/fig1–6.
 Open: exp15 v3 statistics to be inserted; TeX compilation (no engine); see FINAL_REPORT §11.
+
+## Session 3 (2026-10-12) — adversarial hardening and manuscript v3
+Six independent reviews (math, numbers, physics, prior art, editor, code) were run; fixes applied (see ADVERSARIAL.md).
+Bug log additions (honesty record):
+- exp1_1d_features.py: `run()` did not accept `n_img`, so the clean reproduction's exp1 crashed after the six best-focus
+  cases (exit 1). Fixed (n_img passed to build_1d) and exp1 re-run; the through-focus cases now use water defocus (n=1.44).
+- exp15_verify_all.py rebuilt the 1D-library instances with the OLD edge tolerance (8 nm; random: 10 nm) and the
+  through-focus instances without the immersion index, i.e. it verified different instances from those reported.
+  Fixed: exp15 mirrors exp1/exp2 exactly (tau = 10% CD, n_img = 1.44 for ±80 nm, dense90 at 4.5 nm, mixed PW80 added).
+- exp11/exp11b/exp14/exp19 used the old tolerance and/or air defocus for the ±80 nm case; aligned with exp1 before they
+  ran in the clean reproduction (group 2 had not reached them).
+- make_numbers.py: macro names contained digits (illegal in LaTeX) and the physics block ran after numbers.tex was
+  written; table bodies ended with `\\` which, followed by `\bottomrule` after `\input`, produced "Misplaced \noalign".
+  All three fixed (digit->word sanitizer, write moved to the end, last row without `\\` and `\input{..}\\` in main.tex).
+- run_all_par.sh now records per-script exit codes ("FAILED <name> rc=<n>") instead of the echo's own status.
