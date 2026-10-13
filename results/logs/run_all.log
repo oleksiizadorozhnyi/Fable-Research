@@ -47,3 +47,7 @@ FAILED exp16_physics rc=137
 === START exp15_verify_all Tue Oct 13 00:49:39 UTC 2026
 === END exp15_verify_all Tue Oct 13 01:28:40 UTC 2026 exit=0
 === START exp21_exact_verify Tue Oct 13 01:28:40 UTC 2026
+=== END exp21_exact_verify Tue Oct 13 03:33:25 UTC 2026 exit=143
+FAILED exp21_exact_verify rc=143
+=== START exp22_psm_penalty Tue Oct 13 03:33:25 UTC 2026
+=== START exp21_exact_verify (rerun, fast exact rebuild) Tue Oct 13 03:33:48 UTC 2026

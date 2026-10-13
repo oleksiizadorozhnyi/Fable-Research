@@ -12,7 +12,7 @@
   "lambda_min_50digit": 2.185144089604798e-10,
   "cholesky_margin_1e30": true,
   "status": "PD with margin 1e-30",
-  "time": 0.40750670433044434
+  "time": 0.4532592296600342
  },
  {
   "name": "mixed_coh",
@@ -27,7 +27,7 @@
   "lambda_min_50digit": 1.9595152946284462e-10,
   "cholesky_margin_1e30": true,
   "status": "PD with margin 1e-30",
-  "time": 0.24630975723266602
+  "time": 0.2512650489807129
  },
  {
   "name": "isodense_conv0.7",
@@ -42,6 +42,21 @@
   "lambda_min_50digit": 5.4709034500233936e-11,
   "cholesky_margin_1e30": true,
   "status": "PD with margin 1e-30",
-  "time": 153.52841329574585
+  "time": 1.9706175327301025
+ },
+ {
+  "name": "mixed_conv0.7",
+  "F": 11,
+  "nB": 67,
+  "nD": 52,
+  "n_src": 126309,
+  "kappa": 0.9999994492435105,
+  "rigorous": 0.6811947801609421,
+  "bound_from_duals": 0.6811947801609424,
+  "cert_norm": 0.4225205114705917,
+  "lambda_min_50digit": 9.857577212008984e-11,
+  "cholesky_margin_1e30": true,
+  "status": "PD with margin 1e-30",
+  "time": 0.6999967098236084
  }
 ]
