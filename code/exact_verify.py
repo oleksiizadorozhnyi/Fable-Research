@@ -46,6 +46,9 @@ def mp_source_matrices(md, mu, lamb):
             for a in range(F):
                 pa = vv * phx[a]
                 for b in range(F): tgt[a, b] += pa * T[a, b] * mp.conj(phx[b])
+    # model convention: Q_ab = sum_s w_s conj(c_a) c_b  (M^H Q M = sum_s w |c^T M|^2), i.e. the conjugate of D T D^H built above
+    for a in range(F):
+        for b in range(F): S[a, b] = mp.conj(S[a, b]); SB[a, b] = mp.conj(SB[a, b])
     return S, SB
 
 def real_basis(md):

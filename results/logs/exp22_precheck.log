@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/home/user/Fable-Research/code/exp22_psm_penalty.py", line 34, in <module>
+    mu, lm, kap = parse(du[key]['mu']), parse(du[key]['lam']), du[key]['kappa']
+                  ~~~~~^^^^^^^^^^^^^^^
+  File "/home/user/Fable-Research/code/exp22_psm_penalty.py", line 15, in parse
+    def parse(d): return {(float(k.split(',')[0].strip('( ')), int(k.split(',')[1].strip(') '))): v for k, v in d.items()}
+                                                               ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: 'np.int64(11'
+precheck done rc=1

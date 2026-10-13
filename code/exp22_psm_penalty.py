@@ -12,7 +12,12 @@ lam, NA = 193.0, 1.35; out = []
 e3 = {r['name']: r for r in json.load(open('/home/user/Fable-Research/results/exp3_pixel_binary.json'))}
 conv = SRC_DUV['conv0.7']
 cases = {"isodense": (600, [(0,50),(100,150),(200,250),(430,480)]), "mixed": (500, [(0,40),(100,180),(240,400)]), "dense120": (360, [(0,60),(120,180),(240,300)])}
-def parse(d): return {(float(k.split(',')[0].strip('( ')), int(k.split(',')[1].strip(') '))): v for k, v in d.items()}
+import re as _re
+def parse(d):
+    out = {}
+    for k, v in d.items():
+        nums = _re.findall(r'-?\d+\.?\d*(?:e-?\d+)?', k); out[(float(nums[0]), int(float(nums[-1])))] = v
+    return out
 def refine_nonneg(md, B, D, m0, G, iters=600, beta=40.0):
     N = m0.size
     def fg(m):
@@ -39,7 +44,7 @@ for name, (L, segs) in cases.items():
             ver[key] = dict(kappa=kap, kappa_exact=kd, bound_exact=kd * sum(lm.values()) / smu, bisected=bis, ok=ok)
         else:   # exact Jansson-type bound: t >= kappa*slam / (smu + delta N^2 |D| / lamQ), delta = max(0, -lambda_min(Z)) at 50 digits
             slam = sum(lm.values()); Nm = 0.5*(Nmat + Nmat.T)
-            Z = SDm * smu - mp.mpf(kap) * SBm * smu - mp.matrix([[mp.mpf(float(Nm[a, b])) for b in range(N)] for a in range(N)])   # un-normalized (SDm, SBm are divided by smu)
+            Z = SDm - mp.mpf(kap) * SBm - mp.matrix([[mp.mpf(float(Nm[a, b])) for b in range(N)] for a in range(N)])   # SDm, SBm are the un-normalized sums (mp_source_matrices does not divide by smu)
             lminZ = min(mp.eigsy(Z, eigvals_only=True)); delta = max(mp.mpf(0), -lminZ)
             SQ, _ = mp_source_matrices(md, {(z, ix): 1.0 for z in md.focus for ix in D}, {}); lamQ = min(mp.re(v) for v in mp.eighe(SQ, eigvals_only=True)); nDk = len(D) * len(md.focus)
             b_exact = mp.mpf(kap) * slam / (smu + delta * N * N * nDk / lamQ) if lamQ > 0 else mp.mpf(0)
