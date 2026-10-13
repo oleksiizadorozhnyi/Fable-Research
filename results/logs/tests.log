@@ -12,3 +12,4 @@ PASS test_catalogue_and_defocus_medium
 PASS test_samples_2d_exact
 PASS test_coherent_mode_compression
 PASS test_rigorize_no_false_null_space
+PASS test_pixel_certificates_exact
