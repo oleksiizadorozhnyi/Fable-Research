@@ -17,7 +17,7 @@ def pct(x, d=1):
     v = round(100*x, d); v = 0.0 if abs(v) < 10**(-d) / 2 else v
     return f"{v:.{d}f}\\%"
 def f4(x): return f"{x:.4f}"
-def elf(rho): return 2*(1-rho)/(1+rho)
+def elf(rho): return max(2*(1-rho)/(1+rho), 0.0)   # full-range EL, clamped at 0 (rho >= 1: unprintable)
 el_full = elf
 def gapstr(r):
     g = r.get('gap_rel'); return 'degenerate' if g is None else pct(g, 2 if g < 0.01 else 1)
@@ -105,7 +105,7 @@ def _blk_EUV1D():
     for r in e5['euv_pw']: rows.append(f"{r['pitch']} & {r['k1']:.3f} & {r['src']} & {r['F']} & {f4(r['rigorous'])} & {elf(r['rigorous']):.3f} & {f4(r['best_feasible'])} & {elf(r['best_feasible']):.3f} & {gapstr(r)}\\\\")
     open(P+'tab_euv.tex','w').write(tabbody(rows))
     eu = {(r['pitch'], r['src']): r for r in e5['euv_pw']}
-    m('euvTwentyTwoConvEL', f"{elf(eu[(22,'conv0.9')]['rigorous']):.2f}"); m('euvTwentyTwoConvELBest', f"{elf(eu[(22,'conv0.9')]['best_feasible']):.3f}"); m('euvTwentyTwoDipBound', f4(eu[(22,'dipole0.8')]['rigorous'])); m('euvN', str(len(e5['euv_pw']))); m('euvMaxGap', pct(max((r.get('gap_rel') or 0) for r in e5['euv_pw']),2))
+    m('euvTwentyTwoConvEL', f"{elf(eu[(22,'conv0.9')]['rigorous']):.3f}"); m('euvTwentyTwoConvELBest', f"{elf(eu[(22,'conv0.9')]['best_feasible']):.3f}"); _mx = max(e5['euv_pw'], key=lambda r: r.get('gap_rel') or 0); m('euvLoosePitch', str(_mx['pitch'])); m('euvLooseSrc', 'finite-pole dipole' if 'dipole' in _mx['src'] else 'disk'); m('euvLooseELBound', f"{elf(_mx['rigorous']):.3f}"); m('euvLooseELBest', f"{elf(_mx['best_feasible']):.3f}"); m('euvTightN', str(sum(1 for r in e5['euv_pw'] if (r.get('gap_rel') or 0) < 1e-4))); m('euvTwentyTwoDipBound', f4(eu[(22,'dipole0.8')]['rigorous'])); m('euvN', str(len(e5['euv_pw']))); m('euvMaxGap', pct(max((r.get('gap_rel') or 0) for r in e5['euv_pw']),2))
     m('thmFourNec', str(e5['theorem4']['necessity_violations'])); m('thmFourNecN', str(e5['theorem4']['necessity_trials'])); m('thmFourSuf', str(e5['theorem4']['sufficiency_failures'])); m('thmFourSufN', str(e5['theorem4']['sufficiency_tested']))
 _run('EUV 1D', _blk_EUV1D)
 def _blk_robustness():
@@ -181,7 +181,7 @@ def _blk_exact():
     pd_ = [r for r in e21 if r['status'].startswith('PD')]; zero = [r for r in e21 if r['status'].startswith('zero')]; fail = [r for r in e21 if r['status'] == 'FAILED']
     lm = [r['lambda_min_50digit'] for r in pd_ if r.get('lambda_min_50digit') is not None]
     fmt = lambda v: f"{v:.0e}".replace('e-0','\\times10^{-').replace('e-','\\times10^{-')+'}'
-    m('exactN', str(len(e21))); m('exactPD', str(len(pd_))); m('exactZero', str(len(zero))); m('exactFail', str(len(fail))); m('exactLminLo', fmt(min(lm)) if lm else 'n/a'); m('exactLminHi', fmt(max(lm)) if lm else 'n/a')
+    m('exactBisected', str(sum(1 for r in pd_ if 'bisection' in r['status']))); m('exactN', str(len(e21))); m('exactPD', str(len(pd_))); m('exactZero', str(len(zero))); m('exactFail', str(len(fail))); m('exactLminLo', fmt(min(lm)) if lm else 'n/a'); m('exactLminHi', fmt(max(lm)) if lm else 'n/a')
 _run('exact verification', _blk_exact)
 def _count_viol():
     n = 0

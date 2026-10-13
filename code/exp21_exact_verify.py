@@ -8,7 +8,7 @@
 from verify_instances import *
 import mpmath as mp, os
 mp.mp.dps = 50; out = []; os.makedirs('/home/user/Fable-Research/results/certs', exist_ok=True)
-def mp_cert(md, mu, lamb, kappa):
+def mp_cert(md, mu, lamb, kappa=None):
     """Exact (50-digit) rebuild of S~ = Re U^H (sum_d mu_d Q_d - kappa sum_b lam_b Q_b) U from the model equations.
        Pupil test: the double-precision margin |g|^2 lam^2 - NA^2 decides every clear case (relative margin > 1e-9 is far
        beyond double rounding); borderline points are decided exactly with rational arithmetic (Fraction of the exact
@@ -27,7 +27,7 @@ def mp_cert(md, mu, lamb, kappa):
             fy = (Fraction(int(md.k[ki][1])) / L_fr[1] if dim == 2 else Fraction(0)) + Fraction(float(src[si, 1])) / lam_fr
             inside[si, ki] = (fx * fx + fy * fy) * lam_fr * lam_fr <= NA_fr * NA_fr
     assert np.allclose(w, w[0]), "equal-area weights expected"; w0 = mp.mpf(float(w[0]))
-    S = mp.zeros(F, F)
+    S = mp.zeros(F, F); SB = mp.zeros(F, F)
     for z in md.focus:
         if float(z) == 0.0:
             N = inside.astype(np.int64).T @ inside.astype(np.int64)                      # exact integer counts (< 2^53)
@@ -46,41 +46,59 @@ def mp_cert(md, mu, lamb, kappa):
                 for a in live:
                     pa = w0 * ph[a]
                     for b in live: T[a, b] += pa * mp.conj(ph[b])
-        for (zc, ix), v in list(mu.items()) + [((zc, ix), -kappa * v) for (zc, ix), v in lamb.items()]:
+        for (zc, ix), v, tgt in [(kk, v, S) for kk, v in mu.items()] + [(kk, v, SB) for kk, v in lamb.items()]:
             if zc != z or v == 0: continue
             x = md.x[ix]; phx = [mp.expj(2 * mp.pi * (mp.mpf(int(md.k[a][0])) / mp.mpf(Lf[0]) * mp.mpf(float(x[0])) + ((mp.mpf(int(md.k[a][1])) / mp.mpf(Lf[1]) * mp.mpf(float(x[1]))) if dim == 2 else 0))) for a in range(F)]
             vv = mp.mpf(float(v))
             for a in range(F):
                 pa = vv * phx[a]
-                for b in range(F): S[a, b] += pa * T[a, b] * mp.conj(phx[b])
+                for b in range(F): tgt[a, b] += pa * T[a, b] * mp.conj(phx[b])
     U = mp.zeros(F, F); col = 0; seen = set(); r2 = 1 / mp.sqrt(2)
     for i in range(F):
         j = int(md.flip[i])
         if i in seen: continue
         if j == i: U[i, col] = 1; col += 1; seen.add(i)
         else: U[i, col] = r2; U[j, col] = r2; col += 1; U[i, col] = mp.mpc(0, 1) * r2; U[j, col] = mp.mpc(0, -1) * r2; col += 1; seen.update([i, j])
-    St = U.H * S * U; Sr = mp.zeros(F, F)
-    for a in range(F):
-        for b in range(F): Sr[a, b] = (mp.re(St[a, b]) + mp.re(St[b, a])) / 2
-    return Sr
+    def real_sym(X):
+        Xt = U.H * X * U; R = mp.zeros(F, F)
+        for a in range(F):
+            for b in range(F): R[a, b] = (mp.re(Xt[a, b]) + mp.re(Xt[b, a])) / 2
+        return R
+    return real_sym(S), real_sym(SB)
 import sys
-LIMIT = int(sys.argv[1]) if len(sys.argv) > 1 else 10**9
+LIMIT = int(sys.argv[1]) if len(sys.argv) > 1 and int(sys.argv[1]) > 0 else 10**9
+ONLY = set(sys.argv[2].split(',')) if len(sys.argv) > 2 else None
+OUTF = '/home/user/Fable-Research/results/exp21_exact_verify.json'
+if ONLY: out = [r for r in json.load(open(OUTF)) if r['name'] not in ONLY]
+def is_pd(Sr, delta):
+    try: mp.cholesky(Sr - delta * mp.eye(Sr.rows)); return True
+    except Exception: return False
 for ii, (name, md, B, D) in enumerate(verify_instances()):
     if ii >= LIMIT: break
+    if ONLY and name not in ONLY: continue
     rm = RealModel(md); t0 = time.time()
     try: r = sdp_bound_real(rm, B, D, solvers=("CLARABEL",))
     except Exception: r = sdp_bound_real(rm, B, D, solvers=("SCS",))
     rig, me, c = rigorize_certificate(rm, r['mu'], r['lam']); kappa = float(c)
-    Sr = mp_cert(md, r['mu'], r['lam'], kappa); F = md.F
-    norm = max(abs(Sr[a, b]) for a in range(F) for b in range(F))
+    SDm, SBm = mp_cert(md, r['mu'], r['lam']); F = md.F; delta = mp.mpf('1e-30')
+    Sr = SDm - mp.mpf(kappa) * SBm
+    norm = max(abs(Sr[a, b]) for a in range(F) for b in range(F)); kappa_exact = kappa; bisected = False
     if norm < mp.mpf('1e-40'): status = 'zero certificate (PSD trivially)'; lmin = mp.mpf(0); chol = True
     else:
-        try: mp.cholesky(Sr - mp.mpf('1e-30') * mp.eye(F)); chol = True
-        except Exception: chol = False
+        chol = is_pd(Sr, delta)
+        if not chol:                       # exact fallback: largest kappa' <= kappa with S~(kappa') >= delta I, by bisection at 50 digits
+            lo, hi = mp.mpf(0), mp.mpf(kappa); bisected = True
+            if is_pd(SDm - lo * SBm, delta):
+                for _ in range(60):
+                    mid = (lo + hi) / 2
+                    if is_pd(SDm - mid * SBm, delta): lo = mid
+                    else: hi = mid
+                kappa_exact = float(lo); Sr = SDm - lo * SBm; chol = True
+            else: kappa_exact = 0.0; chol = False
         try: lmin = min(mp.eigsy(Sr, eigvals_only=True)) if F <= 60 else None
         except Exception: lmin = None
-        status = 'PD with margin 1e-30' if chol else 'FAILED'
-    slam = sum(r['lam'].values()); smu = sum(r['mu'].values()); bound_exact = kappa * slam / smu
-    rec = dict(name=name, F=F, nB=len(B), nD=len(D), n_src=int(len(md.src)), kappa=kappa, rigorous=rig, bound_from_duals=bound_exact, cert_norm=float(norm), lambda_min_50digit=(float(lmin) if lmin is not None else None), cholesky_margin_1e30=chol, status=status, time=time.time() - t0)
-    np.savez(f'/home/user/Fable-Research/results/certs/{name}.npz', x=md.x, B=np.array(B), D=np.array(D), k=md.k, L=md.L, wavelength=md.lam, NA=md.NA, n_img=md.n_img, focus=np.array(md.focus), src=md.src, w=np.asarray(md.w_src if hasattr(md, 'w_src') else md.w), mu_keys=np.array([(float(z), int(ix)) for (z, ix) in r['mu']]), mu=np.array(list(r['mu'].values())), lam_keys=np.array([(float(z), int(ix)) for (z, ix) in r['lam']]), lam=np.array(list(r['lam'].values())), kappa=kappa, bound=rig)
-    print(json.dumps(rec), flush=True); out.append(rec); json.dump(out, open('/home/user/Fable-Research/results/exp21_exact_verify.json', 'w'), indent=1)
+        status = ('PD with margin 1e-30' + (' after exact kappa bisection' if bisected else '')) if chol else 'FAILED'
+    slam = sum(r['lam'].values()); smu = sum(r['mu'].values()); bound_exact = kappa_exact * slam / smu
+    rec = dict(name=name, F=F, nB=len(B), nD=len(D), n_src=int(len(md.src)), kappa=kappa, kappa_exact=kappa_exact, rigorous=rig, bound_exact=bound_exact, cert_norm=float(norm), lambda_min_50digit=(float(lmin) if lmin is not None else None), cholesky_margin_1e30=chol, status=status, time=time.time() - t0)
+    np.savez(f'/home/user/Fable-Research/results/certs/{name}.npz', x=md.x, B=np.array(B), D=np.array(D), k=md.k, L=md.L, wavelength=md.lam, NA=md.NA, n_img=md.n_img, focus=np.array(md.focus), src=md.src, w=np.asarray(md.w_src if hasattr(md, 'w_src') else md.w), mu_keys=np.array([(float(z), int(ix)) for (z, ix) in r['mu']]), mu=np.array(list(r['mu'].values())), lam_keys=np.array([(float(z), int(ix)) for (z, ix) in r['lam']]), lam=np.array(list(r['lam'].values())), kappa=kappa, kappa_exact=kappa_exact, bound=rig, bound_exact=bound_exact)
+    print(json.dumps(rec), flush=True); out.append(rec); json.dump(sorted(out, key=lambda q: q['name']) if ONLY else out, open(OUTF, 'w'), indent=1)

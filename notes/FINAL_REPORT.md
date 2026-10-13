@@ -1,8 +1,9 @@
-# FINAL SCIENTIFIC DELIVERABLE — v3 (adversarial hardening and clean reproduction, 2026-10-12)
+# FINAL SCIENTIFIC DELIVERABLE — v4 (major revision after referee report; final clean reproduction 2026-10-12/13)
 Classification: **VALIDATED RESEARCH CANDIDATE** — publication-ready as a methods paper pending the items in §11.
 All numbers below are generated from the result files of one clean execution of `code/run_all_par.sh` (started
 12:30 UTC, tests → 21 experiment scripts → independent verification → tables → figures) by `code/make_numbers.py`;
-the manuscript `paper/main.tex` contains no hand-typed number.
+the manuscript `paper/main.tex` contains no hand-typed number. The referee report (12 items) and the point-by-point
+response are in notes/RESPONSE_REFEREE.md; every item is addressed in the manuscript and code.
 
 ## 0 Completion-gate status
 | Gate | Status | Evidence |
@@ -23,15 +24,16 @@ Cholesky. The relaxation is exactly the unlimited multi-exposure problem (Theore
 under symmetric illumination and symmetric focus sets (Lemma 6); nonnegative 1D masks have an exact Toeplitz
 realizability cone (Theorem 4); vector imaging/aberrations/pixelation preserve the structure (Lemmas 7–8); and a
 branch-and-bound (Theorem 9; interval and SDP-bounded variants) certifies single-mask optima for small F.
-Results (final clean reproduction; manuscript tables): exact k1 cutoffs (DUV, EUV); on 108 non-degenerate random 1D
-targets local optimization is certified globally optimal in 73 % (86 % within 1 %); 1D library gaps ≤ 0.4 % except
-coherent illumination (10–19 %) and through-focus (1–6 %); all 2D contact arrays within 2.2 %, the 320 nm T-junction
-(annular) within 0.25 %, line-end within 0.02 %, quasar T-junction within 1.2 %; certified multi-exposure gains
-6.4–16.4 % (F = 5, converged B&B) and 8.9 % (F = 7, 30 M nodes); pixelated nonnegative masks forfeit 3–10 % vs PSM;
-pattern-error ILT lands 20–32 % above the certified optimum; SDP bound 1.4–135× tighter than the Rayleigh-quotient
-bound; vector TE bounds within 6 % of scalar, TM up to 2× (classical contrast loss); aberrations ≤ 0.1λ move bounds
-≤ 2 %. 2D entitlements use the full offset contour including corners (conservative); a 0.25-CD corner-exclusion zone
-raises the certified EL by 1.6–4.6× (Table "corner").
+Results (final clean reproduction with the converged 401^2 source quadrature; manuscript tables): exact k1 cutoffs
+(DUV, EUV); on 108 non-degenerate random 1D targets local optimization is certified optimal to within 1e-4 in 74 %
+(85 % within 1 %); 1D library gaps <= 1.3 % except coherent illumination (10-19 %) and through-focus (1-9 %); all 2D
+contact arrays within 2.3 %, T-junction (annular) 0.20 %, line-end 0.04 %, quasar T-junction 1.2 %; strict
+multi-exposure gains 6.4-16.4 % (F = 5, converged B&B) and 8.9 % (F = 7, 30 M nodes) certified against realized
+ensembles; nonnegative-mask penalty bracketed [2.6-11.4 %, 3.6-17.6 %]; pattern-error ILT 19-32 % above the PSM
+optimum (brackets within 1 %); SDP bound 1.5-135x tighter than the Rayleigh-quotient bound; vector TE within 6 % of
+scalar, TM up to 2x; aberrations <= 0.1 lambda move bounds <= 2 %; corner-exclusion (0.25 CD) raises 2D EL 1.6-4.6x.
+Exact verification: all 143 certificates rebuilt in 50-digit arithmetic from the model equations are positive definite
+with margin 1e-30 (one needed an exact kappa bisection, bound change < 1e-15); 0 certificate violations on all records.
 
 ## PART II — Five research directions — notes/PHASE2_DIRECTIONS.md (unchanged).
 ## PART III — Literature and prior art — notes/NOVELTY.md (session-3 calibration), notes/review_priorart.md; manuscript §2.
@@ -55,7 +57,7 @@ clips; 6. external replication; 7. full-text check of Rosenbluth 2002/2007, Liu�
 Nouralishahi 2008.
 
 ## 11 Publication-readiness assessment
-Ready for submission as a methods paper (JM3 / Optics Express / SIAM J. Imaging Sci.) with explicit caveats:
+Major revision completed (see RESPONSE_REFEREE.md). Ready for resubmission as a methods paper (JM3 / Optics Express / SIAM J. Imaging Sci.) with explicit caveats:
 (a) thin-mask periodic scalar/vector model, aerial-image entitlements only; (b) single-mask optima certified only for
 F ≤ 7; the quasar T-junction (1.2 %) and the large-F random-2D gaps (≤ 11 %) are unresolved; (c) 2D metric enforces
 corner fidelity (conservative; sensitivity reported); (d) literature verified from abstracts/snippets only;

@@ -6,9 +6,9 @@ cvxpy (CLARABEL, SCS), matplotlib, mpmath; the manuscript needs pdflatex + bibte
 ```
 pip install numpy scipy cvxpy matplotlib mpmath
 cd code
-python3 -W ignore test_certlitho.py   # 11 unit/regression tests (~2 min)
-./run_all_par.sh                      # clean reproduction: 20 experiment scripts in 4 parallel groups (~2-3 h on 4 cores,
-                                      #   16 GB RAM), then exp15 (independent verification), assemble.py, all figures.
+python3 -W ignore test_certlitho.py   # 13 unit/regression tests (~3 min)
+./run_all_par.sh                      # clean reproduction: 21 experiment scripts in 4 parallel groups (~8 h on 4 cores,
+                                      #   16 GB RAM), then exp15/exp21/exp22 (verification, exact 50-digit rebuild, brackets), assemble.py, all figures.
                                       #   Writes results/logs/run_all.log; ends with "=== ALL DONE" or "=== DONE WITH FAILURES".
 python3 assemble.py                   # -> results/RESULTS_TABLES.md
 python3 make_numbers.py               # -> paper/numbers.tex (all numeric macros) and paper/tab_*.tex (all table bodies)

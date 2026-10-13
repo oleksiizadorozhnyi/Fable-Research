@@ -51,3 +51,15 @@ FAILED exp16_physics rc=137
 FAILED exp21_exact_verify rc=143
 === START exp22_psm_penalty Tue Oct 13 03:33:25 UTC 2026
 === START exp21_exact_verify (rerun, fast exact rebuild) Tue Oct 13 03:33:48 UTC 2026
+=== END exp22_psm_penalty Tue Oct 13 03:36:14 UTC 2026 exit=0
+=== assembled Tue Oct 13 03:36:16 UTC 2026
+=== START figs Tue Oct 13 03:36:16 UTC 2026
+=== END figs Tue Oct 13 03:36:39 UTC 2026 exit=0
+=== START fig2d Tue Oct 13 03:36:39 UTC 2026
+=== END fig2d Tue Oct 13 03:37:06 UTC 2026 exit=0
+=== START fig5 Tue Oct 13 03:37:06 UTC 2026
+=== END fig5 Tue Oct 13 03:37:08 UTC 2026 exit=0
+=== START fig6 Tue Oct 13 03:37:08 UTC 2026
+=== END fig6 Tue Oct 13 03:37:10 UTC 2026 exit=0
+=== DONE WITH FAILURES Tue Oct 13 03:37:10 UTC 2026
+=== END exp21_exact_verify (rerun) Tue Oct 13 04:40:48 UTC 2026 exit=0

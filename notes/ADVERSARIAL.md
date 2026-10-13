@@ -78,3 +78,16 @@ Reviews (notes/review_*.md): mathematics, numerical provenance, lithographic phy
 22. Still open after session 3: quasar T-junction gap (optimizer shortfall or multi-exposure gain, unresolved);
     interval B&B informative only to F = 7; SDP-B&B certifies targets only away from the incumbent; full texts of
     Rosenbluth 2002/2007, Liu–Zakhor 1992, Nonaka 2025 and Nouralishahi 2008 were not accessible.
+
+## Referee report (2026-10-12, "major revision") — items 23–34
+23. Rounding safety: wording corrected; exact 50-digit rebuild of every certificate from the model equations (exp21):
+    143/143 positive definite with margin 1e-30; one instance (EUV cutoff, near-zero certificate) needed an exact kappa
+    bisection (bound change < 1e-15). 24. Theorem 4: measure vs bounded-function distinction with the point-mass example.
+25. K = -K enforced and explained. 26. Proposition 5: exact 1D criterion; radial condition only sufficient.
+27. PSM penalty and ILT suboptimality now bracketed with feasible upper bounds (exp22). 28. Relaxation gap is an upper
+    bound on the multi-exposure benefit; strict benefit only from B&B. 29. Attainment lemma (reduction to the complement
+    of the common dark null space; dual Slater); single-mask attainment proved. 30. SDP-B&B thresholds in the
+    informative range (none certified within 6,000 nodes; reported). 31. Geometry/caption/denominator inconsistencies
+    fixed. 32. EL brackets reported. 33. Source quadrature converged (401^2 grid; residual ~1e-4); discretization scope
+    stated. 34. Reproducibility: repository, per-instance archives (results/certs), versions, seeds; EUV cell stated;
+    prior-art claim narrowed; reference [2] corrected.

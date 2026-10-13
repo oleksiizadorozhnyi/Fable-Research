@@ -123,3 +123,13 @@ Bug log additions (honesty record):
 - Random trial 16 is near-degenerate (certified bound 4e-5; a phase-edge-like mask reaches rho = 0.018): CLARABEL's
   optimum (0.071) is unreliable there and its dual is scaled to 5e-4 by the rigorization; reported separately from the
   relative-gap statistics (108 non-degenerate instances).
+
+## Session 4 (2026-10-12/13) — major revision after the referee report
+- All 12 referee items addressed (notes/RESPONSE_REFEREE.md). New scripts: exp21_exact_verify.py (exact 50-digit
+  rebuild; integer pupil counts at best focus, rational decision of borderline pupil tests, exact kappa bisection
+  fallback), exp22_psm_penalty.py (certified brackets), env_versions.py, verify_instances.py.
+- Source quadrature raised from 21^2 to 401^2 (bounds converged to ~1e-4; 349-point rule was 0.3 % high); Model/ModelX
+  now build the coherent-mode matrix directly from pupil vectors (no per-source channel arrays; a 3.8 GB/focus array had
+  OOM-killed exp16 once). The per-source SMO relaxation keeps the coarse 349-point rule.
+- Final reproduction 19:30–03:37 UTC + exp21 (fast version, 1 h): 21 experiments exit 0, exp15 143/143, exp21 143/143,
+  0 certificate violations. Manuscript v4: 20 pages, 0 LaTeX errors, 168 generated macros.
