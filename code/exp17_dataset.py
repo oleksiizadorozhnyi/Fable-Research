@@ -15,7 +15,7 @@ for trial in range(24):
     try:
         md, B, D, tgt = build_2d((Lc, Lc), lam, NA, srcs2[sname], tf, 5, spacing=16.0, fine=2.0)
         if len(B) < 4 or len(D) < 4: continue
-        rec, rm, r, rb = analyze(md, B, D, nround=150, nstart=4, polish=(md.F <= 21))
+        rec, rm, r, rb = analyze(md, B, D, nround=150, nstart=4, polish=(md.F <= 21), save_prefix=f'/home/user/Fable-Research/results/masks/exp17_random2d_trial{trial}_{sname}')
         rec.update(trial=trial, L=Lc, src=sname, rects=[[float(v) for v in rr] for rr in rects]); out['random2d'].append(rec); print(json.dumps({k: rec[k] for k in ['trial','src','F','nB','nD','rigorous','best_feasible','gap_rel','rank','sdp_time']}), flush=True); save()
     except Exception as e: print("fail2d", trial, e, flush=True)
 # (b) adversarial 1D
@@ -31,7 +31,7 @@ for name, L, segs, margin in adv:
         try:
             md, B, D, tgt = build_1d(L, lam, NA, src, segs, margin, spacing=4.0)
             if len(B) < 1 or len(D) < 1: continue
-            rec, rm, r, rb = analyze(md, B, D, nround=200, nstart=10); rec.update(name=name, src=sname, L=L, segs=segs, margin=margin)
+            rec, rm, r, rb = analyze(md, B, D, nround=200, nstart=10, save_prefix=f'/home/user/Fable-Research/results/masks/exp17_adv_{name}_{sname}'); rec.update(name=name, src=sname, L=L, segs=segs, margin=margin)
             out['adversarial1d'].append(rec); print(json.dumps({k: rec[k] for k in ['name','src','F','rigorous','best_feasible','gap_rel','rank','EL_bound']}), flush=True); save()
         except Exception as e: print("fail1d", name, sname, e, flush=True)
 # (c) EUV 2D contacts: lam 13.5, NA 0.33, pitch 40/36/32 nm, holes 0.5 pitch, annular 0.5-0.9 and quasar, margin 0.1 pitch
@@ -42,6 +42,6 @@ for P in [44, 40, 36, 32]:
     for sname, src in [("annular", annE), ("quasar", quaE)]:
         try:
             md, B, D, tgt = build_2d((P, P), lamE, NAE, src, holes(P, 0.25*P), 0.05*P, spacing=P/6, fine=P/40, focus=(0.0, 40.0, -40.0))
-            rec, rm, r, rb = analyze(md, B, D, nround=150, nstart=6); rec.update(pitch=P, src=sname, k1=0.5*P*NAE/lamE)
+            rec, rm, r, rb = analyze(md, B, D, nround=150, nstart=6, save_prefix=f'/home/user/Fable-Research/results/masks/exp17_euv2d_p{P}_{sname}'); rec.update(pitch=P, src=sname, k1=0.5*P*NAE/lamE)
             out['euv2d'].append(rec); print(json.dumps({k: rec[k] for k in ['pitch','src','k1','F','rigorous','best_feasible','gap_rel','rank','EL_bound']}), flush=True); save()
         except Exception as e: print("failEUV", P, sname, e, flush=True)

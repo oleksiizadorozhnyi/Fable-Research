@@ -1,5 +1,5 @@
 # Independent high-precision verification of every reported certificate: recompute SDP, rigorize, then verify
-# S_c = SD - c SB (restricted to complement of null space of SD) is PSD via mpmath Cholesky at 50 digits; also check
+# S_c = SD - c SB (full space, no projection; rigorization v4) is PSD via mpmath Cholesky at 50 digits; also check
 # both solvers agree. Covers exp1 (1D features), exp2 (random), exp5 EUV, exp4 2D contacts.
 from pipeline import *
 import mpmath as mp

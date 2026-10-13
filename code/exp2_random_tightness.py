@@ -8,7 +8,7 @@ for trial in range(120):
     sname = str(rng.choice(list(srcs))); s, w = srcs[sname]
     md, B, D, tgt = build_1d(L, lam, NA, (s, w), segs, margin=TAU_DUV, spacing=5.0)
     if len(B) < 2 or len(D) < 2: continue
-    try: rec, rm, r, rb = analyze(md, B, D, nround=200, nstart=8)
+    try: rec, rm, r, rb = analyze(md, B, D, nround=200, nstart=8, save_prefix=f'/home/user/Fable-Research/results/masks/exp2_trial{trial}')
     except Exception as e: print("fail", trial, e); continue
     rec.update(trial=trial, L=L, src=sname, segs=[(float(a), float(b)) for a, b in segs], eig_ratio=float(r['eig'][1]/r['eig'][0]))
     print(json.dumps(rec), flush=True); out.append(rec)

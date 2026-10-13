@@ -93,7 +93,9 @@ def _blk_PSMvsbinaryILT():
     open(P+'tab_psm.tex','w').write(tabbody(rows))
     m('binPenLo', pct(min(plo),1)); m('binPenHi', pct(max(plo),1)); m('binPenHiLo', pct(min(phi),1)); m('binPenHiHi', pct(max(phi),1))
     m('iltPsmLo', pct(min(ilo),0)); m('iltPsmHi', pct(max(ihi),0)); iltb = [rb['ilt_binary_best']/rb['certified_bound']-1 for rb in e3b]; m('iltBinHi', pct(max(iltb),0))
-    m('pixFourierAgree', f"{max(abs(r3['t_fourier_psm']-r3['t_pixel_psm'])/r3['t_fourier_psm'] for r3 in e3):.0e}".replace('e-0','\\times10^{-').replace('e-','\\times10^{-')+'}')
+    m('pixFourierAgree', f"{max(abs(q['L_R']-q['L_pixel_psm'])/q['L_R'] for q in e22.values()):.0e}".replace('e-0','\\times10^{-').replace('e-','\\times10^{-')+'}')
+    assert all(q['L_R'] <= q['U_R'] + 1e-12 and q['L_plus'] <= q['U_plus'] + 1e-12 and all(v['ok'] for v in q['exact'].values()) for q in e22.values()), "bracket or exact-verification inconsistency in exp22"
+    m('psmPixelN', ", ".join(str(q['N_pixels']) for q in e22.values()))
 _run('PSM vs binary, ILT', _blk_PSMvsbinaryILT)
 def _blk_SMO():
     global M

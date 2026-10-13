@@ -1093,3 +1093,97 @@ def _image_grad(self, r, z=0.0):
     return I, (G.real if np.isrealobj(r) else G)
 for _cls in (Model, RealModel, ModelX):
     _cls.fields = _fields; _cls.image = _image_fast; _cls.image_grad = _image_grad
+
+# ----------------------------------------------------------------------------- rigorization v4 (second referee report): NO null-space projection
+def certificate_matrices(model, mu, lamb):
+    """SD = sum mu_d Q_d / sum mu, SB = sum lam_b Q_b / sum mu (Hermitian, F x F) and slam = sum lam / sum mu."""
+    F = model.F; SD = np.zeros((F, F), complex); smu = 0.0
+    for (z, ix), v in mu.items(): SD += v * model.Q(ix, z); smu += v
+    SB = np.zeros((F, F), complex); slam = 0.0
+    for (z, ix), v in lamb.items(): SB += v * model.Q(ix, z); slam += v
+    SD /= smu; SB /= smu; slam /= smu
+    return 0.5*(SD+SD.conj().T), 0.5*(SB+SB.conj().T), slam
+
+def rigorize_certificate(model, mu, lamb, margin=1e-10):
+    """v4. Largest c <= 1 with lambda_min(SD - c SB) >= margin * (||SD|| + c ||SB||) on the FULL space: the margin is
+       relative to the SUMMANDS (not to the difference, which can cancel), and no near-null-space projection is applied
+       (treating small eigenvalues as an exact null space is unsound: a direction with SD ~ 1e-13 and SB ~ 2e-13 caps the
+       true bound at 0.5 but would be projected away). If even c = 0 fails (SD singular) the bound is 0 (vacuous, valid).
+       Returns (bound = c * sum lam / sum mu, lambda_min / (||SD|| + c||SB||) at c, c). The value is a double-precision
+       choice of c; the exact 50-digit rebuild (exact_verify.py / exp21) is the actual certificate check."""
+    SD, SB, slam = certificate_matrices(model, mu, lamb)
+    nD = np.linalg.norm(SD, 2); nB = np.linalg.norm(SB, 2)
+    def rel(c):
+        S = SD - c*SB; S = 0.5*(S+S.conj().T); den = nD + c*nB
+        return (np.linalg.eigvalsh(S).min()/den) if den > 0 else 0.0
+    rigorize_certificate.last_null_dim = 0; rigorize_certificate.last_resid_null = 0.0
+    if rel(1.0) >= margin: return slam, rel(1.0), 1.0
+    if rel(0.0) < margin: return 0.0, rel(0.0), 0.0
+    lo, hi = 0.0, 1.0
+    for _ in range(60):
+        mid = 0.5*(lo+hi)
+        if rel(mid) >= margin: lo = mid
+        else: hi = mid
+    return lo*slam, rel(lo), lo
+
+def certificate_matrix_projected(model, mu, lamb, c):
+    """v4: the full (unprojected) certificate matrix S_c = SD - c SB; null_dim is always 0."""
+    SD, SB, _ = certificate_matrices(model, mu, lamb); S = SD - c*SB; return 0.5*(S+S.conj().T), 0
+
+def pixel_map(model, N, integrated=True):
+    """G (F x N) with M = G m for a mask piecewise constant on N pixels of width L/N (pixel n covers [nL/N,(n+1)L/N));
+       integrated=False gives the point-sampled DFT map used by the older relaxation."""
+    n = np.arange(N); k = model.k[:, 0]
+    if integrated: return (np.sinc(k/N)[:, None]) * np.exp(-2j*np.pi*np.outer(k, n + 0.5)/N)/N
+    return np.exp(-2j*np.pi*np.outer(k, n)/N)/N
+
+def sdp_bound_pixel_int(model, N, B, D, nonneg=False, box=None, solver="CLARABEL"):
+    """Pixel-domain lifted relaxation with the PIXEL-INTEGRATED transform (mask piecewise constant on N pixels):
+       min t s.t. Tr(Qp_d X) <= t, Tr(Qp_b X) >= 1, X PSD [, X >= 0 entrywise for nonnegative masks: DNN].
+       Returns t, X, status, rank and the duals (mu, lam, and Nmat = dual of X >= 0) needed for a certificate."""
+    assert model.dim == 1
+    G = pixel_map(model, N); X = cp.Variable((N, N), symmetric=True); t = cp.Variable(); cons = [X >> 0]
+    nn = None
+    if nonneg: nn = (X >= 0); cons.append(nn)
+    cd, cb = [], []
+    for z in model.focus:
+        for ix in D:
+            Qp = np.real(G.conj().T @ model.Q(ix, z) @ G); c_ = cp.trace(0.5*(Qp+Qp.T) @ X) <= t; cons.append(c_); cd.append(((z, ix), c_))
+        for ix in B:
+            Qp = np.real(G.conj().T @ model.Q(ix, z) @ G); c_ = cp.trace(0.5*(Qp+Qp.T) @ X) >= 1; cons.append(c_); cb.append(((z, ix), c_))
+    prob = cp.Problem(cp.Minimize(t), cons)
+    for sv in (solver, "SCS"):
+        try:
+            prob.solve(solver=sv, **(dict(eps=1e-9, max_iters=200000) if sv == "SCS" else {}))
+            if prob.status in ("optimal", "optimal_inaccurate"): break
+        except Exception: pass
+    ev = np.linalg.eigvalsh(X.value)[::-1]
+    mu = {key: max(float(np.atleast_1d(c_.dual_value)[0]), 0.0) for key, c_ in cd}; lam = {key: max(float(np.atleast_1d(c_.dual_value)[0]), 0.0) for key, c_ in cb}
+    Nmat = np.maximum(np.asarray(nn.dual_value, float), 0.0) if nonneg else None
+    return dict(t=float(t.value), X=X.value, status=prob.status, rank_eps=int(np.sum(ev > 1e-6*ev[0])), mu=mu, lam=lam, Nmat=Nmat, N=N)
+
+def rigorize_pixel_certificate(model, N, B, D, mu, lamb, Nmat=None, margin=1e-10):
+    """Certificate for the pixel-integrated relaxation (PSM: Nmat=None; nonnegative/DNN: Nmat >= 0 entrywise):
+       for every feasible X (PSD, and entrywise >= 0 in the DNN case), Tr((sum mu Qp_d - c sum lam Qp_b - Nmat) X) >= 0
+       whenever Z = sum mu Qp_d - c sum lam Qp_b - Nmat is PSD, since Tr(Nmat X) >= 0 for X >= 0; hence rho >= c sum lam / sum mu.
+       Largest c with lambda_min(Z) >= margin * (||SDp|| + c||SBp|| + ||Nmat||), by bisection. Returns (bound, rel_min, c)."""
+    if Nmat is None:   # PSM pixel certificate: G v is Hermitian-symmetric for real v, so Z = Re(G^H S G) >= 0 iff Re(U^H S U) >= 0 on the band: use the F x F real basis
+        return rigorize_certificate(RealModel(model), mu, lamb, margin)
+    G = pixel_map(model, N); smu = sum(mu.values()); slam = sum(lamb.values()) / smu
+    SDp = np.zeros((N, N)); SBp = np.zeros((N, N))
+    for (z, ix), v in mu.items():
+        if v: Qp = np.real(G.conj().T @ model.Q(ix, z) @ G); SDp += v/smu * 0.5*(Qp+Qp.T)
+    for (z, ix), v in lamb.items():
+        if v: Qp = np.real(G.conj().T @ model.Q(ix, z) @ G); SBp += v/smu * 0.5*(Qp+Qp.T)
+    Nm = (0.5*(Nmat+Nmat.T))/smu if Nmat is not None else np.zeros((N, N))
+    nD, nB, nN = np.linalg.norm(SDp, 2), np.linalg.norm(SBp, 2), np.linalg.norm(Nm, 2)
+    def rel(c):
+        Z = SDp - c*SBp - Nm; den = nD + c*nB + nN; return np.linalg.eigvalsh(0.5*(Z+Z.T)).min()/den if den > 0 else 0.0
+    if rel(1.0) >= margin: return slam, rel(1.0), 1.0
+    if rel(0.0) < margin: return 0.0, rel(0.0), 0.0
+    lo, hi = 0.0, 1.0
+    for _ in range(60):
+        mid = 0.5*(lo+hi)
+        if rel(mid) >= margin: lo = mid
+        else: hi = mid
+    return lo*slam, rel(lo), lo

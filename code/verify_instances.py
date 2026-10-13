@@ -26,3 +26,25 @@ def verify_instances():
     Tj = rect_target((320, 320), [(130, 60, 60, 160), (0, 10, 320, 60)]); lineend = rect_target((320, 320), [(75, 30, 50, 180), (195, 270, 50, 200)])
     for name, L, tf, src, margin in [("contacts160_annular", (160,160), holes(160,35), ann, 7), ("contacts160_conv0.5", (160,160), holes(160,35), cv, 7), ("contacts120_annular", (120,120), holes(120,25), ann, 5), ("contacts120_quasar", (120,120), holes(120,25), qua, 5), ("contacts100_quasar", (100,100), holes(100,22), qua, 4.4), ("Tjunction320_annular", (320,320), Tj, ann, 6), ("Tjunction320_quasar", (320,320), Tj, qua, 6), ("lineend320_annular", (320,320), lineend, ann, 6)]:
         md, B, D, tgt = build_2d(L, lam, NA, src, tf, margin, spacing=16.0, fine=2.0); yield name, md, B, D
+
+    # exp17: random 2D layouts, adversarial 1D targets, EUV 2D contacts (instance data read from the result file)
+    e17 = json.load(open('/home/user/Fable-Research/results/exp17_dataset.json'))
+    srcs2 = {"annular": SRC_DUV['annular'], "quasar": SRC_DUV['quasar'], "conv0.5": SRC_DUV['conv0.5']}
+    for r in e17['random2d']:
+        Lc = float(r['L']); tf = rect_target((Lc, Lc), r['rects'])
+        md, B, D, tgt = build_2d((Lc, Lc), lam, NA, srcs2[r['src']], tf, 5, spacing=16.0, fine=2.0); yield f"random2d_trial{r['trial']}_{r['src']}", md, B, D
+    srcs1 = {"coh": coh, "conv0.7": conv, "dipole0.8": dip}
+    for r in e17['adversarial1d']:
+        md, B, D, tgt = build_1d(r['L'], lam, NA, srcs1[r['src']], [tuple(sg) for sg in r['segs']], r['margin'], spacing=4.0); yield f"adv_{r['name']}_{r['src']}", md, B, D
+    holesE = lambda P, hw: rect_target((P, P), [(P/2 - hw, P/2 - hw, 2*hw, 2*hw)])
+    for r in e17['euv2d']:
+        P = r['pitch']; src = SRC_EUV['annularE'] if r['src'] == 'annular' else SRC_EUV['quasarE']
+        md, B, D, tgt = build_2d((P, P), lamE, NAE, src, holesE(P, 0.25*P), 0.05*P, spacing=P/6, fine=P/40, focus=(0.0, 40.0, -40.0)); yield f"euv2d_p{P}_{r['src']}", md, B, D
+    # exp20: corner-exclusion variants
+    for r in json.load(open('/home/user/Fable-Research/results/exp20_corner_exclusion.json')):
+        if r['frac_cd'] == 0.0: continue
+        nm = r['name']; cfg = {"contacts160_annular": ((160,160), holes(160,35), ann), "contacts120_quasar": ((120,120), holes(120,25), qua), "contacts100_quasar": ((100,100), holes(100,22), qua), "Tjunction320_annular": ((320,320), Tj, ann), "lineend320_annular": ((320,320), lineend, ann)}[nm]
+        md, B, D, tgt = build_2d(cfg[0], lam, NA, cfg[2], cfg[1], r['tau'], spacing=16.0, fine=2.0, corner_exclusion=r['corner_exclusion']); yield f"corner_{nm}_c{r['frac_cd']}", md, B, D
+    # exp3 / exp22: PSM instances (Fourier model; the pixel certificates are verified in exp22)
+    for name, (L, segs) in {"isodense": (600, [(0,50),(100,150),(200,250),(430,480)]), "mixed": (500, [(0,40),(100,180),(240,400)]), "dense120": (360, [(0,60),(120,180),(240,300)])}.items():
+        md, B, D, tgt = build_1d(L, lam, NA, conv, segs, margin=TAU_DUV, spacing=5.0); yield f"psm_{name}", md, B, D

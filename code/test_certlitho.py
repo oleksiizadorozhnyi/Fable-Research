@@ -107,6 +107,30 @@ def test_coherent_mode_compression():
     x0, B, D, _ = build_1d_x(600, lam, NA, (s, w), segs, 5, spacing=4.0, vector=True, pol='TM', n_img=1.7, compress=False)
     x1, _, _, _ = build_1d_x(600, lam, NA, (s, w), segs, 5, spacing=4.0, vector=True, pol='TM', n_img=1.7)
     I0, I1 = x0.image(M), x1.image(M); assert np.abs(I0 - I1).max() <= 1e-10 * I0.max() and x1.n_channels < len(x0.w)
+def test_rigorize_no_false_null_space():
+    # referee counterexample: a direction where SD ~ 1e-13 and SB ~ 2e-13 caps the true bound at 0.5; treating it as a
+    # null space would return 1. Forms: Q_d = diag(1, 1e-13), Q_b = diag(1, 2e-13); rho(M) >= 0.5 is tight at M = e_2.
+    class Fake:
+        F = 2; focus = (0.0,)
+        def Q(self, ix, z=0.0): return np.diag([1.0, 1e-13]) if ix == 0 else np.diag([1.0, 2e-13])
+    b, rel, c = rigorize_certificate(Fake(), {(0.0, 0): 1.0}, {(0.0, 1): 1.0})
+    assert b <= 0.5 + 1e-9, b
+def test_pixel_certificates_exact():
+    from exact_verify import mp_source_matrices, real_basis, pixel_basis, real_sym, verify_scale
+    s, w = disk_source(0.7, NA, n=21); L = 240.0; segs = [(0, 40), (120, 160)]
+    md, B, D, _ = build_1d(L, lam, NA, (s, w), segs, 4, spacing=8.0); N = 48
+    rN = sdp_bound_pixel_int(md, N, B, D, nonneg=True, solver="SCS"); rig, rel, c = rigorize_pixel_certificate(md, N, B, D, rN['mu'], rN['lam'], Nmat=rN['Nmat'])
+    rP = sdp_bound_pixel_int(md, N, B, D, nonneg=False); rigP, _, cP = rigorize_pixel_certificate(md, N, B, D, rP['mu'], rP['lam'])
+    assert rig >= rigP - 1e-9 and rig <= rN['t'] + 1e-6                                # DNN >= PSM pixel bound; rigorized <= solver value
+    G = pixel_map(md, N); rng = np.random.default_rng(1)
+    for _ in range(100):                                                               # feasibility: random nonnegative pixel masks never beat the DNN bound
+        m = rng.uniform(0, 1, N); M = G @ m; I = md.image(M); assert I[D].max() / I[B].min() >= rig - 1e-9
+    def parse_keys(d): return d
+    S, SB = mp_source_matrices(md, rN['mu'], rN['lam']); V = pixel_basis(md, N); SDm, SBm = real_sym(S, V), real_sym(SB, V)
+    smu = sum(rN['mu'].values()); Nm = 0.5*(rN['Nmat'] + rN['Nmat'].T) / smu
+    import mpmath as mp; extra = mp.matrix([[mp.mpf(float(Nm[a, b])) for b in range(N)] for a in range(N)])
+    kd, Sr, bis, ok = verify_scale(SDm, SBm, c, extra=extra); assert ok and kd <= c
+    S2, SB2 = mp_source_matrices(md, rP['mu'], rP['lam']); U = real_basis(md); SDm2, SBm2 = real_sym(S2, U), real_sym(SB2, U); kd2, _, _, ok2 = verify_scale(SDm2, SBm2, cP); assert ok2 and rigP > 0.1
 if __name__ == "__main__":
-    for f in [test_abbe_cutoff, test_certificate_and_rounding, test_pixel_vs_fourier, test_real_equals_complex_symmetric_source, test_ilt_gradient, test_toeplitz_necessity, test_bnb_consistency, test_vector_model_consistency, test_multifocus_metric, test_two_beam_closed_form, test_catalogue_and_defocus_medium, test_samples_2d_exact, test_coherent_mode_compression]:
+    for f in [test_abbe_cutoff, test_certificate_and_rounding, test_pixel_vs_fourier, test_real_equals_complex_symmetric_source, test_ilt_gradient, test_toeplitz_necessity, test_bnb_consistency, test_vector_model_consistency, test_multifocus_metric, test_two_beam_closed_form, test_catalogue_and_defocus_medium, test_samples_2d_exact, test_coherent_mode_compression, test_rigorize_no_false_null_space, test_pixel_certificates_exact]:
         f(); print("PASS", f.__name__)

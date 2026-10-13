@@ -73,4 +73,6 @@ def analyze_el(rec):
     return rec
 _analyze_orig = analyze
 def analyze(md, B, D, **kw):
+    import os
+    if kw.get('save_prefix'): os.makedirs(os.path.dirname(kw['save_prefix']), exist_ok=True)
     rec, rm, r, rbest = _analyze_orig(md, B, D, **kw); rec['n_img'] = float(getattr(md, 'n_img', 1.0)); rec['dead_orders_dropped'] = int(getattr(md, 'n_dead_dropped', 0)); return analyze_el(rec), rm, r, rbest

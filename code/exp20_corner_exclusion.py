@@ -14,4 +14,5 @@ for name, L, tf, src, tau, cd in cases:
         v, rb = strong_primal(rm, B, D, [r['X']], nround=200, nstart=8) if md.F <= 20 else (float('nan'), None)
         rec = dict(name=name, tau=tau, corner_exclusion=c, frac_cd=frac, F=md.F, nB=len(B), nD=len(D), rigorous=rig, EL_full_bound=el_full(rig), best_single=v, time=time.time()-t0)
         print(json.dumps(rec), flush=True); out.append(rec)
+        if rb is not None: import os; os.makedirs('/home/user/Fable-Research/results/masks', exist_ok=True); np.save(f'/home/user/Fable-Research/results/masks/exp20_{name}_c{frac}_rbest.npy', rb)
         json.dump(out, open('/home/user/Fable-Research/results/exp20_corner_exclusion.json', 'w'), indent=1)

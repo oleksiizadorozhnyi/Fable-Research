@@ -17,7 +17,7 @@ for pitch in [20, 22, 24, 26, 28, 32, 40]:
     for sname, (s, w) in {"conv0.9": SRC_EUV['conv0.9'], "dipole0.8": SRC_EUV['dipole0.8']}.items():
         segsE = [(i*pitch, i*pitch + pitch/2) for i in range(4)]
         md, B, D, tgt = build_1d(4*pitch, lam, NA, (s, w), segsE, 0.05*pitch, spacing=pitch/8, focus=(0.0, 50.0, -50.0))   # +-50nm defocus process window
-        rec, rm, r, rb = analyze(md, B, D, nround=200, nstart=6)
+        rec, rm, r, rb = analyze(md, B, D, nround=200, nstart=6, save_prefix=f'/home/user/Fable-Research/results/masks/exp5_EUV_p{pitch}_{sname}')
         rec.update(pitch=pitch, src=sname, k1=pitch/2*NA/lam); res.append(rec); print(json.dumps({k: rec[k] for k in ['pitch','src','k1','F','t_sdp','rigorous','rank','best_feasible','gap_rel','EL_bound']}), flush=True)
 out['euv_pw'] = res
 # --- (c) Theorem 4 numerical check: necessity (random nonneg masks -> Toeplitz PSD) and sufficiency (Toeplitz PD -> nonneg realization)
