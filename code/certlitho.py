@@ -1187,3 +1187,26 @@ def rigorize_pixel_certificate(model, N, B, D, mu, lamb, Nmat=None, margin=1e-10
         if rel(mid) >= margin: lo = mid
         else: hi = mid
     return lo*slam, rel(lo), lo
+
+def rigorize_dnn_certificate(model, N, B, D, mu, lamb, Nmat, kappas=None):
+    """Rigorous (Jansson-type) lower bound from an approximately feasible DNN dual (mu, lam >= 0, Nmat >= 0 entrywise).
+       For every feasible X (PSD, entrywise >= 0, Tr(Qp_d X) <= t, Tr(Qp_b X) >= 1), with Z = SDp - kappa SBp - Nm and
+       delta = max(0, -lambda_min(Z)):  t*smu - kappa*slam >= Tr(Z X) >= -delta Tr X, and Tr X <= 1^T X 1 = N^2 Xhat_00
+       <= N^2 Tr Xhat <= N^2 |D| t / lambda_min(sum_d Q_d) (Xhat = G X G^H is the band part; sum_d Q_d must be positive
+       definite). Hence t >= kappa*slam / (smu + delta N^2 |D| / lamQ). Returns dict(bound, kappa, delta, lamQ, smu, slam)
+       for the best kappa on a grid; the exact (50-digit) version of this bound is computed in exp22."""
+    G = pixel_map(model, N); smu = sum(mu.values()); slam = sum(lamb.values())
+    SDp = np.zeros((N, N)); SBp = np.zeros((N, N))
+    for (z, ix), v in mu.items():
+        if v: Qp = np.real(G.conj().T @ model.Q(ix, z) @ G); SDp += v * 0.5*(Qp+Qp.T)
+    for (z, ix), v in lamb.items():
+        if v: Qp = np.real(G.conj().T @ model.Q(ix, z) @ G); SBp += v * 0.5*(Qp+Qp.T)
+    Nm = 0.5*(Nmat+Nmat.T)
+    SQ = sum(model.Q(ix, z) for z in model.focus for ix in D); lamQ = float(np.linalg.eigvalsh(0.5*(SQ+SQ.conj().T)).min()); nD = len(D) * len(model.focus)
+    best = dict(bound=0.0, kappa=0.0, delta=None, lamQ=lamQ, smu=smu, slam=slam)
+    if lamQ <= 0: return best
+    for kappa in (kappas if kappas is not None else np.linspace(0.5, 1.0, 51)):
+        Z = SDp - kappa*SBp - Nm; delta = max(0.0, -float(np.linalg.eigvalsh(0.5*(Z+Z.T)).min()))
+        b = kappa*slam / (smu + delta * N*N * nD / lamQ)
+        if b > best['bound']: best = dict(bound=b, kappa=float(kappa), delta=delta, lamQ=lamQ, smu=smu, slam=slam)
+    return best

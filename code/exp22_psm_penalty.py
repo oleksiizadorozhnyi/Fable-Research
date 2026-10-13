@@ -34,11 +34,16 @@ for name, (L, segs) in cases.items():
         mu, lm, kap = parse(du[key]['mu']), parse(du[key]['lam']), du[key]['kappa']
         S, SB = mp_source_matrices(md, mu, lm); V = real_basis(md) if basis == 'U' else pixel_basis(md, N)
         SDm, SBm = real_sym(S, V), real_sym(SB, V); smu = sum(mu.values())
-        extra = None
-        if key == 'NN':
-            Nm = 0.5*(Nmat + Nmat.T) / smu; extra = mp.matrix([[mp.mpf(float(Nm[a, b])) for b in range(N)] for a in range(N)])
-        kd, Sr, bis, ok = verify_scale(SDm, SBm, kap, extra=extra)
-        ver[key] = dict(kappa=kap, kappa_exact=kd, bound_exact=kd * sum(lm.values()) / smu, bisected=bis, ok=ok)
+        if key != 'NN':
+            kd, Sr, bis, ok = verify_scale(SDm, SBm, kap)
+            ver[key] = dict(kappa=kap, kappa_exact=kd, bound_exact=kd * sum(lm.values()) / smu, bisected=bis, ok=ok)
+        else:   # exact Jansson-type bound: t >= kappa*slam / (smu + delta N^2 |D| / lamQ), delta = max(0, -lambda_min(Z)) at 50 digits
+            slam = sum(lm.values()); Nm = 0.5*(Nmat + Nmat.T)
+            Z = SDm * smu - mp.mpf(kap) * SBm * smu - mp.matrix([[mp.mpf(float(Nm[a, b])) for b in range(N)] for a in range(N)])   # un-normalized (SDm, SBm are divided by smu)
+            lminZ = min(mp.eigsy(Z, eigvals_only=True)); delta = max(mp.mpf(0), -lminZ)
+            SQ, _ = mp_source_matrices(md, {(z, ix): 1.0 for z in md.focus for ix in D}, {}); lamQ = min(mp.re(v) for v in mp.eighe(SQ, eigvals_only=True)); nDk = len(D) * len(md.focus)
+            b_exact = mp.mpf(kap) * slam / (smu + delta * N * N * nDk / lamQ) if lamQ > 0 else mp.mpf(0)
+            ver[key] = dict(kappa=kap, kappa_exact=kap, bound_exact=float(b_exact), delta_exact=float(delta), lamQ_exact=float(lamQ), bisected=False, ok=bool(lamQ > 0))
         print(name, key, ver[key], flush=True)
     L_R = ver['F']['bound_exact']; L_plus = ver['NN']['bound_exact']; L_pixpsm = ver['P']['bound_exact']
     U_R = min(r3['best_psm_pipeline'], r3['ilt_psm_refined_on_ratio'])

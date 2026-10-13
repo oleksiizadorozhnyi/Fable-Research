@@ -96,6 +96,7 @@ def _blk_PSMvsbinaryILT():
     m('pixFourierAgree', f"{max(abs(q['L_R']-q['L_pixel_psm'])/q['L_R'] for q in e22.values()):.0e}".replace('e-0','\\times10^{-').replace('e-','\\times10^{-')+'}')
     assert all(q['L_R'] <= q['U_R'] + 1e-12 and q['L_plus'] <= q['U_plus'] + 1e-12 and all(v['ok'] for v in q['exact'].values()) for q in e22.values()), "bracket or exact-verification inconsistency in exp22"
     m('psmPixelN', ", ".join(str(q['N_pixels']) for q in e22.values()))
+    dl = [1 - q['L_plus'] / r3['t_pixel_nonneg_DNN'] for q, r3 in zip(e22.values(), e3)]; m('dnnLossLo', pct(min(dl),1)); m('dnnLossHi', pct(max(dl),1))
 _run('PSM vs binary, ILT', _blk_PSMvsbinaryILT)
 def _blk_SMO():
     global M
