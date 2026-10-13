@@ -2,7 +2,7 @@
  {
   "name": "isodense",
   "F": 15,
-  "certified_bound": 0.7162505867523712,
+  "certified_bound": 0.7162505843932415,
   "ilt_psm_a10.0_lr0.02_target": 0.9624468193579055,
   "ilt_psm_a10.0_lr0.02_random": 0.8840925930145905,
   "ilt_psm_a4.0_lr0.05_target": 1.041723986901175,
@@ -23,7 +23,7 @@
  {
   "name": "mixed",
   "F": 11,
-  "certified_bound": 0.681194791260995,
+  "certified_bound": 0.6811947886511459,
   "ilt_psm_a10.0_lr0.02_target": 0.9267766539050734,
   "ilt_psm_a10.0_lr0.02_random": 0.9298389486203401,
   "ilt_psm_a4.0_lr0.05_target": 1.038138491003449,
@@ -44,7 +44,7 @@
  {
   "name": "dense120",
   "F": 9,
-  "certified_bound": 0.673500009770295,
+  "certified_bound": 0.6735000095473124,
   "ilt_psm_a10.0_lr0.02_target": 0.8265235874194659,
   "ilt_psm_a10.0_lr0.02_random": 0.8514194675058173,
   "ilt_psm_a4.0_lr0.05_target": 0.8261296488197819,

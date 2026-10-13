@@ -1,0 +1,15 @@
+Tjunction320_annular SDP 0.80497 CLARABEL 1098
+Tjunction320_annular face failed 'NoneType' object is not subscriptable
+Tjunction320_annular best single 0.8066 2577
+Tjunction320_annular two-exposure 0.86522 2636
+{"name": "Tjunction320_annular", "F": 61, "bound": 0.80497291745345, "ipm_rank": 2, "ipm_eigs": [5.2096794855524955, 0.6660186939347356, 1.0803202487112268e-07, 5.2705745152138265e-08], "face_rank_trace": null, "best_single": 0.8065963218489144, "gap_single": 0.002016719271252075, "two_exposure_ratio": 0.8652199605375396, "gap_two": 0.07484356526513022, "time": 2636.197930574417}
+Tjunction320_quasar SDP 0.78167 CLARABEL 152
+Tjunction320_quasar face failed 'NoneType' object is not subscriptable
+Tjunction320_quasar best single 0.79106 800
+Tjunction320_quasar two-exposure 0.83677 836
+{"name": "Tjunction320_quasar", "F": 49, "bound": 0.7816712583003513, "ipm_rank": 4, "ipm_eigs": [1.5593141977977134, 0.49553456539160096, 0.4168640706377779, 0.22961492446795034], "face_rank_trace": null, "best_single": 0.7910644017590832, "gap_single": 0.012016744071102373, "two_exposure_ratio": 0.8367742889784667, "gap_two": 0.07049386822528207, "time": 836.0863034725189}
+lineend320_annular SDP 0.86775 CLARABEL 305
+lineend320_annular face failed 'NoneType' object is not subscriptable
+lineend320_annular best single 0.8681 1580
+lineend320_annular two-exposure 0.89499 1639
+{"name": "lineend320_annular", "F": 61, "bound": 0.867747819264583, "ipm_rank": 2, "ipm_eigs": [8.649044825702465, 0.4636445246423682, 1.6958374839040168e-08, 1.6923737513675056e-08], "face_rank_trace": null, "best_single": 0.8680982239026588, "gap_single": 0.0004038092983889645, "two_exposure_ratio": 0.8949877736077143, "gap_two": 0.0313915560931253, "time": 1639.4215774536133}

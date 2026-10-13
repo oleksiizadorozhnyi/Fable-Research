@@ -19,3 +19,19 @@
 === START exp13_2d_strong Tue Oct 13 21:02:45 UTC 2026
 === END exp5_smo_euv_toeplitz Tue Oct 13 21:10:43 UTC 2026 exit=0
 === START exp3_pixel_binary Tue Oct 13 21:10:43 UTC 2026
+=== END exp16_physics Tue Oct 13 21:16:41 UTC 2026 exit=0
+=== END exp9_outlier_pw Tue Oct 13 21:19:53 UTC 2026 exit=0
+=== START exp14_bnb Tue Oct 13 21:19:53 UTC 2026
+=== END exp3_pixel_binary Tue Oct 13 21:37:47 UTC 2026 exit=0
+=== START exp3b_ilt Tue Oct 13 21:37:47 UTC 2026
+=== END exp14_bnb Tue Oct 13 21:40:25 UTC 2026 exit=0
+=== START exp14b_bnb_big Tue Oct 13 21:40:25 UTC 2026
+=== END exp3b_ilt Tue Oct 13 21:48:02 UTC 2026 exit=0
+=== END exp13_2d_strong Tue Oct 13 22:28:11 UTC 2026 exit=0
+=== START exp18_quasar_strong Tue Oct 13 22:28:11 UTC 2026
+=== END exp14b_bnb_big Tue Oct 13 22:29:01 UTC 2026 exit=0
+=== START exp19_bnb_sdp Tue Oct 13 22:29:01 UTC 2026
+=== END exp18_quasar_strong Tue Oct 13 22:43:22 UTC 2026 exit=0
+=== START exp10_baselines_complex Tue Oct 13 22:43:22 UTC 2026
+=== END exp10_baselines_complex Tue Oct 13 22:43:41 UTC 2026 exit=0
+=== START exp20_corner_exclusion Tue Oct 13 22:43:41 UTC 2026
