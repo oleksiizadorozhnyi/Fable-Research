@@ -34,3 +34,16 @@ FAILED exp16_physics rc=137
 === START exp19_bnb_sdp Mon Oct 12 23:00:46 UTC 2026
 === END exp13_2d_strong Mon Oct 12 23:21:02 UTC 2026 exit=0
 === START exp18_quasar_strong Mon Oct 12 23:21:02 UTC 2026
+=== END exp18_quasar_strong Mon Oct 12 23:39:55 UTC 2026 exit=0
+=== START exp10_baselines_complex Mon Oct 12 23:39:55 UTC 2026
+=== END exp10_baselines_complex Mon Oct 12 23:40:19 UTC 2026 exit=0
+=== START exp20_corner_exclusion Mon Oct 12 23:40:19 UTC 2026
+=== END exp20_corner_exclusion Tue Oct 13 00:25:11 UTC 2026 exit=0
+=== END exp19_bnb_sdp Tue Oct 13 00:35:43 UTC 2026 exit=0
+=== START exp11b_lasserre_pw Tue Oct 13 00:35:43 UTC 2026
+=== END exp11b_lasserre_pw Tue Oct 13 00:40:26 UTC 2026 exit=0
+=== START exp12_lasserre_xcheck Tue Oct 13 00:40:26 UTC 2026
+=== END exp12_lasserre_xcheck Tue Oct 13 00:49:39 UTC 2026 exit=0
+=== START exp15_verify_all Tue Oct 13 00:49:39 UTC 2026
+=== END exp15_verify_all Tue Oct 13 01:28:40 UTC 2026 exit=0
+=== START exp21_exact_verify Tue Oct 13 01:28:40 UTC 2026
