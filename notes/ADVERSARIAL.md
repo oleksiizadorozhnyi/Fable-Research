@@ -91,3 +91,13 @@ Reviews (notes/review_*.md): mathematics, numerical provenance, lithographic phy
     fixed. 32. EL brackets reported. 33. Source quadrature converged (401^2 grid; residual ~1e-4); discretization scope
     stated. 34. Reproducibility: repository, per-instance archives (results/certs), versions, seeds; EUV cell stated;
     prior-art claim narrowed; reference [2] corrected.
+
+## Second referee report (2026-10-13) — items 35–40
+35. Archived EUV-cutoff certificate not PSD (saved kappa rounded up): archived scales are now doubles <= the verified
+    value, re-verified before saving. 36. Rigorization projected near-null directions (could return 1 vs true 0.5):
+    v4 without projection, summand-relative margin, regression test. 37. Table 5 used raw solver values: all three
+    bounds rigorized and exactly verified (Jansson-type DNN bound). 38. No pixel integration / three grid spacings:
+    pixel-integrated map, N = L/5. 39. B&B random instances at 10 nm vs 5 nm: fixed. 40. Clean-run claim vs rerun
+    logs, coverage, artifacts: single uninterrupted run; exact verification of all 206 reported Fourier certificates;
+    every best mask archived. Found on our side while fixing 37: the exact rebuild used the conjugate of the model's
+    form convention (invisible in the real-mask basis, decisive for pixel certificates); fixed with a regression test.

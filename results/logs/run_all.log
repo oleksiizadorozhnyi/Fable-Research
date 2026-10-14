@@ -44,3 +44,16 @@
 === START exp15_verify_all Tue Oct 13 23:47:07 UTC 2026
 === END exp15_verify_all Wed Oct 14 00:14:53 UTC 2026 exit=0
 === START exp21_exact_verify Wed Oct 14 00:14:53 UTC 2026
+=== END exp21_exact_verify Wed Oct 14 01:59:35 UTC 2026 exit=0
+=== START exp22_psm_penalty Wed Oct 14 01:59:35 UTC 2026
+=== END exp22_psm_penalty Wed Oct 14 02:00:52 UTC 2026 exit=0
+=== assembled Wed Oct 14 02:00:56 UTC 2026
+=== START figs Wed Oct 14 02:00:56 UTC 2026
+=== END figs Wed Oct 14 02:01:09 UTC 2026 exit=0
+=== START fig2d Wed Oct 14 02:01:09 UTC 2026
+=== END fig2d Wed Oct 14 02:01:27 UTC 2026 exit=0
+=== START fig5 Wed Oct 14 02:01:27 UTC 2026
+=== END fig5 Wed Oct 14 02:01:28 UTC 2026 exit=0
+=== START fig6 Wed Oct 14 02:01:28 UTC 2026
+=== END fig6 Wed Oct 14 02:01:30 UTC 2026 exit=0
+=== ALL DONE Wed Oct 14 02:01:30 UTC 2026

@@ -133,3 +133,9 @@ Bug log additions (honesty record):
   OOM-killed exp16 once). The per-source SMO relaxation keeps the coarse 349-point rule.
 - Final reproduction 19:30–03:37 UTC + exp21 (fast version, 1 h): 21 experiments exit 0, exp15 143/143, exp21 143/143,
   0 certificate violations. Manuscript v4: 20 pages, 0 LaTeX errors, 168 generated macros.
+
+## Session 5 (2026-10-13/14) — second referee report, final uninterrupted reproduction
+- Fixes: double-safe archived kappa; rigorize v4 (no projection); pixel-integrated 5-nm DNN/PSM certificates rigorized
+  (Jansson-type bound) and exactly verified; B&B random instances at tau = 5 nm; masks saved for all reported instances;
+  verify_instances covers exp17/exp20/exp3 (206 instances); exact-rebuild conjugation convention fixed; 15 tests.
+- Final run 19:12 -> 02:01 UTC: ALL DONE, 0 failures, 0 reruns. exp21 206/206, exp15 143/143, exp22 all exact.

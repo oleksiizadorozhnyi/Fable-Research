@@ -6,7 +6,7 @@ cvxpy (CLARABEL, SCS), matplotlib, mpmath; the manuscript needs pdflatex + bibte
 ```
 pip install numpy scipy cvxpy matplotlib mpmath
 cd code
-python3 -W ignore test_certlitho.py   # 13 unit/regression tests (~3 min)
+python3 -W ignore test_certlitho.py   # 15 unit/regression tests (~5 min)
 ./run_all_par.sh                      # clean reproduction: 21 experiment scripts in 4 parallel groups (~8 h on 4 cores,
                                       #   16 GB RAM), then exp15/exp21/exp22 (verification, exact 50-digit rebuild, brackets), assemble.py, all figures.
                                       #   Writes results/logs/run_all.log; ends with "=== ALL DONE" or "=== DONE WITH FAILURES".

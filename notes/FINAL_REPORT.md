@@ -1,9 +1,11 @@
-# FINAL SCIENTIFIC DELIVERABLE — v4 (major revision after referee report; final clean reproduction 2026-10-12/13)
+# FINAL SCIENTIFIC DELIVERABLE — v5 (two referee reports addressed; uninterrupted clean reproduction 2026-10-13/14)
 Classification: **VALIDATED RESEARCH CANDIDATE** — publication-ready as a methods paper pending the items in §11.
 All numbers below are generated from the result files of one clean execution of `code/run_all_par.sh` (started
 12:30 UTC, tests → 21 experiment scripts → independent verification → tables → figures) by `code/make_numbers.py`;
-the manuscript `paper/main.tex` contains no hand-typed number. The referee report (12 items) and the point-by-point
-response are in notes/RESPONSE_REFEREE.md; every item is addressed in the manuscript and code.
+the manuscript `paper/main.tex` contains no hand-typed number. Two referee reports (12 + 6 items) and the point-by-point
+responses are in notes/RESPONSE_REFEREE.md and notes/RESPONSE_REFEREE_2.md; every item is addressed in the manuscript and code.
+Final run: `run_all_par.sh` started 19:12 UTC 2026-10-13, ALL DONE 02:01 UTC 2026-10-14, 21 experiments + 3 verification
+passes, zero failures, zero reruns (results/logs/run_all.log).
 
 ## 0 Completion-gate status
 | Gate | Status | Evidence |
@@ -24,16 +26,18 @@ Cholesky. The relaxation is exactly the unlimited multi-exposure problem (Theore
 under symmetric illumination and symmetric focus sets (Lemma 6); nonnegative 1D masks have an exact Toeplitz
 realizability cone (Theorem 4); vector imaging/aberrations/pixelation preserve the structure (Lemmas 7–8); and a
 branch-and-bound (Theorem 9; interval and SDP-bounded variants) certifies single-mask optima for small F.
-Results (final clean reproduction with the converged 401^2 source quadrature; manuscript tables): exact k1 cutoffs
-(DUV, EUV); on 108 non-degenerate random 1D targets local optimization is certified optimal to within 1e-4 in 74 %
-(85 % within 1 %); 1D library gaps <= 1.3 % except coherent illumination (10-19 %) and through-focus (1-9 %); all 2D
-contact arrays within 2.3 %, T-junction (annular) 0.20 %, line-end 0.04 %, quasar T-junction 1.2 %; strict
-multi-exposure gains 6.4-16.4 % (F = 5, converged B&B) and 8.9 % (F = 7, 30 M nodes) certified against realized
-ensembles; nonnegative-mask penalty bracketed [2.6-11.4 %, 3.6-17.6 %]; pattern-error ILT 19-32 % above the PSM
-optimum (brackets within 1 %); SDP bound 1.5-135x tighter than the Rayleigh-quotient bound; vector TE within 6 % of
-scalar, TM up to 2x; aberrations <= 0.1 lambda move bounds <= 2 %; corner-exclusion (0.25 CD) raises 2D EL 1.6-4.6x.
-Exact verification: all 143 certificates rebuilt in 50-digit arithmetic from the model equations are positive definite
-with margin 1e-30 (one needed an exact kappa bisection, bound change < 1e-15); 0 certificate violations on all records.
+Results (final uninterrupted reproduction, 401^2 source quadrature; manuscript tables): exact k1 cutoffs (DUV, EUV);
+on 108 non-degenerate random 1D targets local optimization is certified optimal to within 1e-4 in 74 % (85 % within
+1 %); 1D library gaps <= 1.3 % except coherent illumination (10-19 %) and through-focus (1-9 %); all 2D contact arrays
+within 2.3 %, T-junction (annular) 0.20 %, line-end 0.04 %, quasar T-junction 1.2 %; strict multi-exposure gains
+4.6-37.4 % (F = 5, converged B&B, instances at the study tolerance) and 8.9 % (F = 7, 30 M nodes) certified against
+realized ensembles; nonnegative-mask penalty bracketed [1.0-7.7 %, 4.2-17.8 %] with exactly verified pixel-integrated
+5-nm-grid certificates (Jansson-type DNN bound, 0.1-0.9 % below the solver value); pattern-error ILT 19-32 % above the
+PSM optimum (brackets within 1 %); SDP bound 1.5-135x tighter than the Rayleigh-quotient bound; vector TE within 6 %
+of scalar, TM up to 2x; aberrations <= 0.1 lambda move bounds <= 2 %; corner-exclusion (0.25 CD) raises 2D EL 1.6-4.6x.
+Exact verification: all 206 reported Fourier certificates rebuilt in 50-digit arithmetic are positive definite with
+margin 1e-30 (no scale needed lowering; lambda_min 2e-15 .. 9e-8); 143/143 double-precision checks; 0 certificate
+violations; every reported best mask archived (results/masks).
 
 ## PART II — Five research directions — notes/PHASE2_DIRECTIONS.md (unchanged).
 ## PART III — Literature and prior art — notes/NOVELTY.md (session-3 calibration), notes/review_priorart.md; manuscript §2.
