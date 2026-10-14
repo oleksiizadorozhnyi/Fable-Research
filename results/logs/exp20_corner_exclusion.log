@@ -12,3 +12,4 @@
 {"name": "Tjunction320_annular", "tau": 6, "corner_exclusion": 15.0, "frac_cd": 0.25, "F": 61, "nB": 480, "nD": 680, "rigorous": 0.7046466805421857, "EL_full_bound": 0.3465273159877016, "best_single": NaN, "time": 246.86757493019104}
 {"name": "lineend320_annular", "tau": 6, "corner_exclusion": 0.0, "frac_cd": 0.0, "F": 61, "nB": 474, "nD": 814, "rigorous": 0.867747819264583, "EL_full_bound": 0.14161674222967713, "best_single": NaN, "time": 295.4729130268097}
 {"name": "lineend320_annular", "tau": 6, "corner_exclusion": 7.5, "frac_cd": 0.15, "F": 61, "nB": 466, "nD": 724, "rigorous": 0.8430157224023221, "EL_full_bound": 0.17035587454788828, "best_single": NaN, "time": 304.04576444625854}
+{"name": "lineend320_annular", "tau": 6, "corner_exclusion": 12.5, "frac_cd": 0.25, "F": 61, "nB": 418, "nD": 676, "rigorous": 0.7776899216754992, "EL_full_bound": 0.2501111983747652, "best_single": NaN, "time": 252.36481857299805}

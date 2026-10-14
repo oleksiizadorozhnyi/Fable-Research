@@ -180,5 +180,18 @@
   "EL_full_bound": 0.17035587454788828,
   "best_single": NaN,
   "time": 304.04576444625854
+ },
+ {
+  "name": "lineend320_annular",
+  "tau": 6,
+  "corner_exclusion": 12.5,
+  "frac_cd": 0.25,
+  "F": 61,
+  "nB": 418,
+  "nD": 676,
+  "rigorous": 0.7776899216754992,
+  "EL_full_bound": 0.2501111983747652,
+  "best_single": NaN,
+  "time": 252.36481857299805
  }
 ]

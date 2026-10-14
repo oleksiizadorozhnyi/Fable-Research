@@ -1,2 +1,2 @@
-{"stage": "shor", "nB": 6, "nD": 6, "shor": 0.8369826643479354, "best_single": 0.8450897783397225}
-{"name": "mixed_conv0.7_PW80_edgeonly", "F": 11, "nB": 6, "nD": 6, "shor": 0.8369826643479354, "best_single": 0.8450897783397225, "lasserre2": 0.8450906139133111, "status": "optimal_inaccurate", "time": 267.9917664527893, "M2": 91}
+{"stage": "shor", "nB": 6, "nD": 6, "shor": 0.8369826611194608, "best_single": 0.8450897783397225}
+{"name": "mixed_conv0.7_PW80_edgeonly", "F": 11, "nB": 6, "nD": 6, "shor": 0.8369826611194608, "best_single": 0.8450897783397225, "lasserre2": 0.8450906139133111, "status": "optimal_inaccurate", "time": 212.76510334014893, "M2": 91}

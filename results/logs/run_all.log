@@ -35,3 +35,12 @@
 === START exp10_baselines_complex Tue Oct 13 22:43:22 UTC 2026
 === END exp10_baselines_complex Tue Oct 13 22:43:41 UTC 2026 exit=0
 === START exp20_corner_exclusion Tue Oct 13 22:43:41 UTC 2026
+=== END exp20_corner_exclusion Tue Oct 13 23:13:41 UTC 2026 exit=0
+=== END exp19_bnb_sdp Tue Oct 13 23:36:18 UTC 2026 exit=0
+=== START exp11b_lasserre_pw Tue Oct 13 23:36:18 UTC 2026
+=== END exp11b_lasserre_pw Tue Oct 13 23:40:02 UTC 2026 exit=0
+=== START exp12_lasserre_xcheck Tue Oct 13 23:40:02 UTC 2026
+=== END exp12_lasserre_xcheck Tue Oct 13 23:47:07 UTC 2026 exit=0
+=== START exp15_verify_all Tue Oct 13 23:47:07 UTC 2026
+=== END exp15_verify_all Wed Oct 14 00:14:53 UTC 2026 exit=0
+=== START exp21_exact_verify Wed Oct 14 00:14:53 UTC 2026
